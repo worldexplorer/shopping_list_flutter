@@ -7,7 +7,6 @@ import 'env/env_loader.dart';
 import 'network/connection.dart';
 import 'network/connection_notifier.dart';
 import 'network/incoming/incoming_notifier.dart';
-// import 'network/net_log.dart';
 import 'network/outgoing/outgoing_notifier.dart';
 
 Future<void> main() async {

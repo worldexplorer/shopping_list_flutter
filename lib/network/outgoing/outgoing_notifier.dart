@@ -18,16 +18,16 @@ class OutgoingNotifier extends ChangeNotifier {
       debugPrint('sendLogin($phone): ${connectionNotifier.socketId}');
       return;
     }
-    connectionNotifier.socket.emit(
-        "login",
-        Login(
-          phone: phone,
-        ).toJson());
+    final login = Login(
+      phone: phone,
+    ).toJson();
+    connectionNotifier.socket.emit("login", login);
+    debugPrint('    >> LOGIN [$login]');
   }
 
   sendTyping(bool typing) {
     if (!connectionNotifier.socketConnected) {
-      debugPrint('sendTyping($typing): ${connectionNotifier.socketId}');
+      // debugPrint('sendTyping($typing): ${connectionNotifier.socketId}');
       return;
     }
     connectionNotifier.socket.emit(
@@ -55,16 +55,15 @@ class OutgoingNotifier extends ChangeNotifier {
       return;
     }
 
-    debugPrint(
-        'sending message[$msg] to a ${connectionNotifier.sConnected} socket');
-
     final message = Message(
-      id: connectionNotifier.socketId,
+      socketId: connectionNotifier.socketId,
+      userId: incomingNotifier.userId,
       username: incomingNotifier.userName,
       message: msg,
       timestamp: DateTime.now(),
     ).toJson();
     connectionNotifier.socket.emit("message", message);
+    debugPrint('   >> MESSAGE [$message]');
     msgInputCtrl.clear();
   }
 }

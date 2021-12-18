@@ -1,43 +1,61 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:platform_plus/platform_plus.dart';
-// import 'package:shopping_list_flutter/network/net_log.dart';
 import 'package:mobile_number/mobile_number.dart';
 
+import 'heroku_workaround.dart';
 import 'is_emulator.dart';
 
 class Env {
   String envName;
   String websocketURL;
-  String phone;
+  String? wsPortJsonHost;
+  String myMobile;
 
-  Env({required this.envName, required this.websocketURL, required this.phone});
+  Env(
+      {required this.envName,
+      this.wsPortJsonHost,
+      required this.websocketURL,
+      required this.myMobile});
 }
 
-final Env DEV_ENV = Env(
+final Env DEV_LOCAL = Env(
     envName: "DEV_LOCAL",
     websocketURL: "http://10.0.2.2:5000",
-    phone: "+1-555-555-55-55");
+    myMobile: "+1-555-555-55-55");
+
+final Env PROD_HEROKU = Env(
+    envName: "PROD_HEROKU",
+    // wsPortJsonHost: "shopping-list-server-typescrip.herokuapp.com",
+    websocketURL: "http://shopping-list-server-typescrip.herokuapp.com:80",
+    myMobile: "+1-555-555-55-55");
 
 class EnvLoader {
   // https://blog.codemagic.io/flutter-ui-socket/
-  static Future<Env> load() async {
-    var ret = DEV_ENV;
+  static Future<Env> load([forceProd = true]) async {
+    Env ret = forceProd ? PROD_HEROKU : DEV_LOCAL;
 
     try {
       bool isEmulator = await EmulatorDetector.detectEmulator();
       bool isPhysicalDevice = await platformPlus.isPhysicalDevice();
-      String mobileNumber = await fetchMobileNumber(DEV_ENV.phone);
+      String mobileNumber = await fetchMobileNumber(DEV_LOCAL.myMobile);
 
       if (isPhysicalDevice || !isEmulator) {
-        ret = Env(
-            envName: "PROD_HEROKU",
-            websocketURL:
-                "http://shopping-list-server-typescrip.herokuapp.com:80",
-            phone: mobileNumber);
+        ret = PROD_HEROKU;
+        ret.myMobile = mobileNumber;
       }
+      debugPrint('EnvLoader:load(): mobileNumber=${mobileNumber}');
     } catch (e) {
-      debugPrint(e.toString());
+      debugPrint(
+          'FAILED EnvLoader:load() to detect mobileNumber: ${e.toString()}');
+    }
+
+    if (ret.wsPortJsonHost != null) {
+      final int port =
+          await HerokuWorkaround.fetchWebsocketPort(ret.wsPortJsonHost!);
+      if (port != 0) {
+        ret.websocketURL += ':$port';
+      }
     }
 
     return ret;

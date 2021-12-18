@@ -39,7 +39,7 @@ class MessageItem extends StatelessWidget {
                   color: (isMe ? Colors.white : Colors.black).withOpacity(0.12),
                   borderRadius: BorderRadius.circular(6),
                 ),
-                padding: EdgeInsets.all(15),
+                padding: const EdgeInsets.all(15),
                 child: Center(
                   child: Text(
                     message.message,
@@ -54,7 +54,7 @@ class MessageItem extends StatelessWidget {
           ),
           const YMargin(3),
           Text(
-            '${timeAgoSinceDate(message.timestamp)}',
+            timeAgoSinceDate(message.timestamp),
             style: GoogleFonts.manrope(
                 color: Colors.grey, fontSize: 10, fontWeight: FontWeight.w300),
           ),

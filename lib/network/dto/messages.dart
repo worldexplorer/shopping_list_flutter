@@ -10,13 +10,15 @@ part 'messages.g.dart';
     disallowUnrecognizedKeys: true,
     includeIfNull: true)
 class Message {
-  String id;
+  String socketId;
+  int userId;
   String username;
   String message;
   DateTime timestamp;
 
   Message({
-    required this.id,
+    required this.socketId,
+    required this.userId,
     required this.username,
     required this.message,
     required this.timestamp,

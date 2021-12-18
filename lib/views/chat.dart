@@ -32,7 +32,7 @@ class Chat extends HookWidget {
           title: Column(
             children: [
               Text(
-                incoming.currentRoom.name,
+                '${incoming.currentRoom.name} (${incoming.currentRoomUsersCsv})',
                 style: GoogleFonts.manrope(
                   color: Colors.white,
                   fontWeight: FontWeight.w600,

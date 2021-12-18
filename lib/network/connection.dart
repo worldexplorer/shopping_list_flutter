@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-// import 'package:shopping_list_flutter/network/net_log.dart';
 import 'package:socket_io_client/socket_io_client.dart';
 
 import 'package:shopping_list_flutter/env/env_loader.dart';
@@ -35,7 +34,7 @@ class Connection {
 
       socket.on('connect', (_) {
         debugPrint('#2/3 connected: [${connectionNotifier.socketId}]');
-        outgoingNotifier.sendLogin(env.phone);
+        outgoingNotifier.sendLogin(env.myMobile);
       });
       socket.on('disconnect', (_) => {debugPrint('disconnected')});
       socket.on('fromServer', (_) => {debugPrint(_)});
@@ -43,7 +42,7 @@ class Connection {
       socket.on('user', incomingNotifier.onUser);
       socket.on('rooms', incomingNotifier.onRooms);
       socket.on('typing', incomingNotifier.onTyping);
-      socket.on('message', incomingNotifier.onNewMessage);
+      socket.on('message', incomingNotifier.onMessage);
 
       debugPrint(
           '#3/3 handlers hooked to a socket [${connectionNotifier.sConnected}]');

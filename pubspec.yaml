@@ -48,6 +48,7 @@ dependencies:
   device_info_plus: ^3.2.0
   platform_plus: ^2.1.0
   mobile_number: ^1.0.4
+  http: ^0.13.4
 
 dev_dependencies:
   flutter_test:

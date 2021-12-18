@@ -10,6 +10,7 @@ import '../connection_notifier.dart';
 class IncomingNotifier extends ChangeNotifier {
   User? _user;
   User get user => _user!;
+  int get userId => _user?.id ?? -1;
   String get userName => _user?.name ?? "USER_DTO_NOT_YET_RECEIVED";
   set user(User val) {
     _user = val;
@@ -54,60 +55,70 @@ class IncomingNotifier extends ChangeNotifier {
     }
   }
 
+  String get currentRoomUsersCsv {
+    return currentRoom.users.map((x) => x.name).join(", ");
+  }
+
   ConnectionNotifier connectionNotifier;
   IncomingNotifier(this.connectionNotifier);
 
   void onUser(data) {
     try {
+      debugPrint('< USER [$data]');
       final userParsed = User.fromJson(data);
       user = userParsed;
     } catch (e) {
-      debugPrint(e.toString());
+      debugPrint('FAILED onUser($data): ${e.toString()}');
     }
   }
 
   void onRooms(data) {
     try {
+      debugPrint('< ROOMS [$data]');
       final roomsParsed = Rooms.fromJson(data);
       rooms = roomsParsed.rooms;
     } catch (e) {
-      debugPrint(e.toString());
+      debugPrint('FAILED onRooms($data): ${e.toString()}');
     }
   }
 
   void onTyping(data) {
-    final typingDto = Typing.fromJson(data);
+    try {
+      final typingDto = Typing.fromJson(data);
 
-    final imTyping = connectionNotifier.isMySocketId(typingDto.socketId);
-    if (imTyping) {
-      return;
-    }
+      final imTyping = connectionNotifier.isMySocketId(typingDto.socketId);
+      if (imTyping) {
+        return;
+      }
 
-    if (typingDto.typing) {
-      typing = '${typingDto.userName} is typing...';
-    } else if (!typingDto.typing) {
-      typing = '';
+      if (typingDto.typing) {
+        typing = '${typingDto.userName} is typing...';
+      } else if (!typingDto.typing) {
+        typing = '';
+      }
+    } catch (e) {
+      debugPrint('FAILED onTyping($data): ${e.toString()}');
     }
   }
 
-  void onNewMessage(data) {
+  void onMessage(data) {
     try {
+      debugPrint('< MESSAGE [$data]');
       Message msg = Message.fromJson(data);
-      debugPrint('onNewMessage(): [$msg]');
 
-      if (!connectionNotifier.isMySocketId(msg.id)) {
+      if (!connectionNotifier.isMySocketId(msg.socketId)) {
         debugPrint('${msg.username}: ${msg.message}');
       }
       messages.insert(
         0,
         MessageItem(
-          isMe: connectionNotifier.isMySocketId(msg.id),
+          isMe: connectionNotifier.isMySocketId(msg.socketId),
           message: msg,
         ),
       );
       notifyListeners();
     } catch (e) {
-      debugPrint(e.toString());
+      debugPrint('FAILED onMessage($data): ${e.toString()}');
     }
   }
 }

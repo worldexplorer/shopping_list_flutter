@@ -12,10 +12,17 @@ Message _$MessageFromJson(Map<String, dynamic> json) => $checkedCreate(
       ($checkedConvert) {
         $checkKeys(
           json,
-          allowedKeys: const ['id', 'username', 'message', 'timestamp'],
+          allowedKeys: const [
+            'socketId',
+            'userId',
+            'username',
+            'message',
+            'timestamp'
+          ],
         );
         final val = Message(
-          id: $checkedConvert('id', (v) => v as String),
+          socketId: $checkedConvert('socketId', (v) => v as String),
+          userId: $checkedConvert('userId', (v) => v as int),
           username: $checkedConvert('username', (v) => v as String),
           message: $checkedConvert('message', (v) => v as String),
           timestamp:
@@ -26,7 +33,8 @@ Message _$MessageFromJson(Map<String, dynamic> json) => $checkedCreate(
     );
 
 Map<String, dynamic> _$MessageToJson(Message instance) => <String, dynamic>{
-      'id': instance.id,
+      'socketId': instance.socketId,
+      'userId': instance.userId,
       'username': instance.username,
       'message': instance.message,
       'timestamp': instance.timestamp.toIso8601String(),
