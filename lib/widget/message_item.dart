@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:shopping_list_flutter/network/objects/message.dart';
+import 'package:shopping_list_flutter/network/dto/messages.dart';
 import 'package:shopping_list_flutter/utils/margin.dart';
 import 'package:shopping_list_flutter/utils/timeago.dart';
 
@@ -23,7 +23,7 @@ class MessageItem extends StatelessWidget {
             isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
         children: [
           Text(
-            isMe ? 'Me' : message?.username ?? '',
+            isMe ? 'Me' : message.username,
             style: GoogleFonts.manrope(
                 color: isMe ? Colors.grey : Colors.green,
                 fontSize: 15,
@@ -42,7 +42,7 @@ class MessageItem extends StatelessWidget {
                 padding: EdgeInsets.all(15),
                 child: Center(
                   child: Text(
-                    message?.message ?? '',
+                    message.message,
                     style: GoogleFonts.poppins(
                       color: Colors.white.withOpacity(isMe ? 1 : 0.8),
                       fontSize: 14,
@@ -54,7 +54,7 @@ class MessageItem extends StatelessWidget {
           ),
           const YMargin(3),
           Text(
-            '${timeAgoSinceDate(message?.timestamp ?? DateTime.now())}',
+            '${timeAgoSinceDate(message.timestamp)}',
             style: GoogleFonts.manrope(
                 color: Colors.grey, fontSize: 10, fontWeight: FontWeight.w300),
           ),

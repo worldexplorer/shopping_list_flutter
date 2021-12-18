@@ -1,4 +1,0 @@
-{
-    "name": "PROD_HEROKU",
-    "websocketURL": "http://shopping-list-server-typescrip.herokuapp.com"
-}
