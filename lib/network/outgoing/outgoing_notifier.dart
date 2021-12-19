@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:shopping_list_flutter/network/dto/messages.dart';
-import 'package:shopping_list_flutter/network/dto/typing.dart';
+import 'package:shopping_list_flutter/network/common/message_dto.dart';
+import 'package:shopping_list_flutter/network/common/typing_dto.dart';
 import 'package:shopping_list_flutter/network/incoming/incoming_notifier.dart';
+import 'package:shopping_list_flutter/network/outgoing/get_messages_dto.dart';
 
 import '../connection_notifier.dart';
 import '../net_log.dart';
-import 'login.dart';
+import 'login_dto.dart';
 
 class OutgoingNotifier extends ChangeNotifier {
   ConnectionNotifier connectionNotifier;
@@ -18,11 +19,11 @@ class OutgoingNotifier extends ChangeNotifier {
       debugPrint('sendLogin($phone): ${connectionNotifier.socketId}');
       return;
     }
-    final login = Login(
+    final json = LoginDto(
       phone: phone,
     ).toJson();
-    connectionNotifier.socket.emit("login", login);
-    debugPrint('    >> LOGIN [$login]');
+    connectionNotifier.socket.emit("login", json);
+    debugPrint('<< LOGIN [$json]');
   }
 
   sendTyping(bool typing) {
@@ -32,21 +33,14 @@ class OutgoingNotifier extends ChangeNotifier {
     }
     connectionNotifier.socket.emit(
         "typing",
-        Typing(
+        TypingDto(
           socketId: connectionNotifier.socketId,
           userName: incomingNotifier.userName,
           typing: typing,
         ).toJson());
   }
 
-  TextEditingController msgInputCtrl = TextEditingController();
-  bool get inputIsEmpty => msgInputCtrl.text.isEmpty;
-  sendMessage() {
-    if (inputIsEmpty) {
-      return;
-    }
-    final msg = msgInputCtrl.text;
-
+  sendMessage(String msg) {
     sendTyping(false);
 
     if (!connectionNotifier.socketConnected) {
@@ -55,15 +49,31 @@ class OutgoingNotifier extends ChangeNotifier {
       return;
     }
 
-    final message = Message(
-      socketId: connectionNotifier.socketId,
-      userId: incomingNotifier.userId,
-      username: incomingNotifier.userName,
-      message: msg,
-      timestamp: DateTime.now(),
+    final json = MessageDto(
+      id: null,
+      date_created: DateTime.now(),
+      date_updated: DateTime.now(),
+      content: msg,
+      room: incomingNotifier.currentRoomId,
+      user: incomingNotifier.userId,
+      user_name: incomingNotifier.userName,
+      purchaseId: null,
+      purchase: null,
     ).toJson();
-    connectionNotifier.socket.emit("message", message);
-    debugPrint('   >> MESSAGE [$message]');
-    msgInputCtrl.clear();
+    connectionNotifier.socket.emit("message", json);
+    debugPrint('<< MESSAGE [$json]');
+  }
+
+  sendGetMessages(int roomId, [int fromMessageId = 0]) {
+    if (!connectionNotifier.socketConnected) {
+      debugPrint('sendRoomChange($roomId): ${connectionNotifier.socketId}');
+      return;
+    }
+    final json = GetMessagesDto(
+      room: roomId,
+      fromMessageId: fromMessageId,
+    ).toJson();
+    connectionNotifier.socket.emit("getMessages", json);
+    debugPrint('<< GET_MESSAGES [$json]');
   }
 }

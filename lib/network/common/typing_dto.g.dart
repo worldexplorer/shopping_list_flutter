@@ -1,20 +1,20 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'typing.dart';
+part of 'typing_dto.dart';
 
 // **************************************************************************
 // JsonSerializableGenerator
 // **************************************************************************
 
-Typing _$TypingFromJson(Map<String, dynamic> json) => $checkedCreate(
-      'Typing',
+TypingDto _$TypingDtoFromJson(Map<String, dynamic> json) => $checkedCreate(
+      'TypingDto',
       json,
       ($checkedConvert) {
         $checkKeys(
           json,
           allowedKeys: const ['socketId', 'userName', 'typing'],
         );
-        final val = Typing(
+        final val = TypingDto(
           socketId: $checkedConvert('socketId', (v) => v as String),
           userName: $checkedConvert('userName', (v) => v as String),
           typing: $checkedConvert('typing', (v) => v as bool),
@@ -23,7 +23,7 @@ Typing _$TypingFromJson(Map<String, dynamic> json) => $checkedCreate(
       },
     );
 
-Map<String, dynamic> _$TypingToJson(Typing instance) => <String, dynamic>{
+Map<String, dynamic> _$TypingDtoToJson(TypingDto instance) => <String, dynamic>{
       'socketId': instance.socketId,
       'userName': instance.userName,
       'typing': instance.typing,

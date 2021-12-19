@@ -7,12 +7,13 @@ class HerokuWorkaround {
   static Future<int> fetchWebsocketPort(String wsPortJsonHost) async {
     int port = 0;
     try {
+      // http://shopping-list-server-typescrip.herokuapp.com
       Uri uri = Uri.http(wsPortJsonHost, '/');
       // Await the http get response, then decode the json-formatted response.
       final resp = await http.get(uri);
       if (resp.statusCode == 200) {
         final json = convert.jsonDecode(resp.body) as Map<String, dynamic>;
-        port = json['WEBSOCKET_PORT'];
+        port = json['WEBSOCKET_PORT']; // json = {"WEBSOCKET_PORT":30521}
 
         debugPrint('HerokuWorkaround:$port replied: $json');
       } else {

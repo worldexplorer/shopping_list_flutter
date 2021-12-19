@@ -1,11 +1,13 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'login.dart';
+part of 'get_messages_dto.dart';
 
 // **************************************************************************
 // JsonSerializableGenerator
 // **************************************************************************
 
-Map<String, dynamic> _$LoginToJson(Login instance) => <String, dynamic>{
-      'phone': instance.phone,
+Map<String, dynamic> _$GetMessagesDtoToJson(GetMessagesDto instance) =>
+    <String, dynamic>{
+      'room': instance.room,
+      'fromMessageId': instance.fromMessageId,
     };

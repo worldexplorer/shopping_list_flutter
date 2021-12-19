@@ -60,13 +60,13 @@ class Chat extends HookWidget {
                 child: ListView(
                   reverse: true,
                   padding: const EdgeInsets.all(16),
-                  children: [...incoming.messages],
+                  children: [...incoming.getMessageItems],
                 ),
               ),
               Container(
                   height: 50,
                   margin: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-                  child: const FlatTextField()),
+                  child: FlatTextField()),
             ],
           ),
         ),

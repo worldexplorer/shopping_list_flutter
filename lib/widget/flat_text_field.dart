@@ -9,12 +9,22 @@ import 'package:shopping_list_flutter/utils/theme.dart';
 import 'package:shopping_list_flutter/utils/ui_notifier.dart';
 
 class FlatTextField extends HookWidget {
-  const FlatTextField({Key? key}) : super(key: key);
+  TextEditingController msgInputCtrl = TextEditingController();
+
+  FlatTextField({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Consumer2<OutgoingNotifier, UiNotifier>(
         builder: (context, outgoing, ui, child) {
+      sendMessageFromInput() {
+        if (msgInputCtrl.text.isEmpty) {
+          return;
+        }
+        outgoing.sendMessage(msgInputCtrl.text);
+        msgInputCtrl.clear();
+      }
+
       return Container(
         decoration: BoxDecoration(
           color: altColor,
@@ -44,8 +54,8 @@ class FlatTextField extends HookWidget {
                       });
                     },
                     textInputAction: TextInputAction.send,
-                    onSubmitted: (txt) => outgoing.sendMessage(),
-                    controller: outgoing.msgInputCtrl,
+                    onSubmitted: (txt) => sendMessageFromInput,
+                    controller: msgInputCtrl,
                     decoration: InputDecoration(
                       hintText: "Enter Message...",
                       hintStyle: TextStyle(
@@ -65,12 +75,14 @@ class FlatTextField extends HookWidget {
                   size: 24.0,
                   color: Colors.green,
                 ),
-                onPressed: outgoing.sendMessage,
+                onPressed: sendMessageFromInput,
               ),
             ],
           ),
         ),
       );
     });
+
+    sendMessage() {}
   }
 }

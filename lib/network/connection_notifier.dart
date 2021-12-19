@@ -31,8 +31,6 @@ class ConnectionNotifier extends ChangeNotifier {
     notifyListeners();
   }
 
-  bool isMySocketId(String id) => id == socket.id;
-
   @override
   void dispose() {
     _socket?.disconnect();

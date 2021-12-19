@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:shopping_list_flutter/env/env.dart';
 import 'package:socket_io_client/socket_io_client.dart';
-
-import 'package:shopping_list_flutter/env/env_loader.dart';
 
 import 'connection_notifier.dart';
 import 'incoming/incoming_notifier.dart';
@@ -17,6 +16,7 @@ class Connection {
     connectionNotifier = ConnectionNotifier();
     incomingNotifier = IncomingNotifier(connectionNotifier);
     outgoingNotifier = OutgoingNotifier(connectionNotifier, incomingNotifier);
+    incomingNotifier.outgoingNotifier = outgoingNotifier;
   }
 
   void connect() {
@@ -43,6 +43,7 @@ class Connection {
       socket.on('rooms', incomingNotifier.onRooms);
       socket.on('typing', incomingNotifier.onTyping);
       socket.on('message', incomingNotifier.onMessage);
+      socket.on('messages', incomingNotifier.onMessages);
 
       debugPrint(
           '#3/3 handlers hooked to a socket [${connectionNotifier.sConnected}]');

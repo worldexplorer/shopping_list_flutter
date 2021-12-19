@@ -1,18 +1,22 @@
 import 'package:flutter/material.dart';
-import 'package:shopping_list_flutter/network/dto/messages.dart';
-import 'package:shopping_list_flutter/network/dto/typing.dart';
-import 'package:shopping_list_flutter/network/dto/user.dart';
-import 'package:shopping_list_flutter/network/incoming/rooms.dart';
+import 'package:shopping_list_flutter/network/common/message_dto.dart';
+import 'package:shopping_list_flutter/network/common/typing_dto.dart';
+import 'package:shopping_list_flutter/network/common/user_dto.dart';
+import 'package:shopping_list_flutter/network/incoming/room_dto.dart';
+import 'package:shopping_list_flutter/network/outgoing/outgoing_notifier.dart';
 import 'package:shopping_list_flutter/widget/message_item.dart';
 
 import '../connection_notifier.dart';
+import 'messages_dto.dart';
+import 'rooms_dto.dart';
 
 class IncomingNotifier extends ChangeNotifier {
-  User? _user;
-  User get user => _user!;
+  UserDto? _user;
+  UserDto get user => _user!;
   int get userId => _user?.id ?? -1;
+  bool isMyUserId(int id) => id == userId;
   String get userName => _user?.name ?? "USER_DTO_NOT_YET_RECEIVED";
-  set user(User val) {
+  set user(UserDto val) {
     _user = val;
     notifyListeners();
   }
@@ -24,34 +28,43 @@ class IncomingNotifier extends ChangeNotifier {
     notifyListeners();
   }
 
-  List<MessageItem> _messages = [];
-  List<MessageItem> get messages => _messages;
-  set messages(List<MessageItem> val) {
-    _messages = val;
-    notifyListeners();
-  }
+  final Map<int, MessageDto> _messagesById = <int, MessageDto>{};
+  final Map<int, MessageItem> _messageItemsById = <int, MessageItem>{};
+  // Iterable<MessageItem> get getMessageItems => _messageItemsById.values;
+  final List<MessageItem> _messageItems = <MessageItem>[];
+  List<MessageItem> get getMessageItems => _messageItems;
 
-  List<Room> _rooms = [];
-  List<Room> get rooms => _rooms;
-  set rooms(List<Room> val) {
-    _rooms = val;
-    notifyListeners();
-  }
+  final Map<int, RoomDto> _roomsById = <int, RoomDto>{};
+  List<RoomDto> get rooms => _roomsById.values.toList();
 
-  int _currentRoomIndex = 0;
-  int get currentRoomIndex => _currentRoomIndex;
-  set currentRoomIndex(int val) {
-    _currentRoomIndex = val;
-    notifyListeners();
-  }
-
-  Room get currentRoom {
-    try {
-      return rooms[currentRoomIndex];
-    } catch (e) {
+  int _currentRoomId = 0;
+  int get currentRoomId => _currentRoomId;
+  set currentRoomId(int val) {
+    if (!_roomsById.containsKey(val)) {
       debugPrint(
-          'CANT_GET_ROOM_BY_INDEX[$currentRoomIndex], rooms.length=[${rooms.length}]: ${e.toString()}');
-      return Room(id: 999, name: '<NO_ROOMS_RECEIVED>', users: []);
+          'CANT_SET_CURRENT_ROOM_BY_ID[$val], _roomsById.keys=[${_roomsById.keys}]');
+      return;
+    }
+    if (_currentRoomId == val) {
+      debugPrint(
+          'SAME_CURRENT_ROOM_BY_ID[$val], _currentRoomId=[$_currentRoomId}]');
+      return;
+    }
+    _currentRoomId = val;
+
+    _messagesById.clear();
+    outgoingNotifier.sendGetMessages(_currentRoomId, 0);
+
+    notifyListeners();
+  }
+
+  RoomDto get currentRoom {
+    if (_roomsById.containsKey(currentRoomId)) {
+      return _roomsById[currentRoomId]!;
+    } else {
+      debugPrint(
+          'CANT_GET_ROOM_BY_ID[$currentRoomId], rooms.length=[${rooms.length}]');
+      return RoomDto(id: 999, name: '<NO_ROOMS_RECEIVED>', users: []);
     }
   }
 
@@ -59,35 +72,62 @@ class IncomingNotifier extends ChangeNotifier {
     return currentRoom.users.map((x) => x.name).join(", ");
   }
 
+  late OutgoingNotifier outgoingNotifier;
   ConnectionNotifier connectionNotifier;
   IncomingNotifier(this.connectionNotifier);
 
   void onUser(data) {
     try {
-      debugPrint('< USER [$data]');
-      final userParsed = User.fromJson(data);
+      debugPrint('   > USER [$data]');
+      final userParsed = UserDto.fromJson(data);
       user = userParsed;
     } catch (e) {
-      debugPrint('FAILED onUser($data): ${e.toString()}');
+      debugPrint('      FAILED onUser($data): ${e.toString()}');
     }
   }
 
   void onRooms(data) {
+    debugPrint('   > ROOMS [$data]');
     try {
-      debugPrint('< ROOMS [$data]');
-      final roomsParsed = Rooms.fromJson(data);
-      rooms = roomsParsed.rooms;
+      RoomsDto roomsParsed = RoomsDto.fromJson(data);
+
+      var changed = false;
+      var firstRoomId = 0;
+      for (int i = 1; i <= roomsParsed.rooms.length; i++) {
+        RoomDto room = roomsParsed.rooms[i - 1];
+        if (firstRoomId == 0) {
+          firstRoomId = room.id;
+        }
+
+        if (_roomsById.containsKey(room.id)) {
+          debugPrint('      DUPLICATE onRooms(): ${room.id}: ${room.name}');
+          return;
+        }
+
+        debugPrint(
+            '   > ROOM $i/${roomsParsed.rooms.length} [${room.toJson()}]');
+
+        _roomsById[room.id] = room;
+
+        changed = true;
+      }
+
+      if (changed) {
+        if (currentRoomId == 0) {
+          currentRoomId = firstRoomId; // will trigger sendGetMessages()
+        } else {
+          notifyListeners();
+        }
+      }
     } catch (e) {
-      debugPrint('FAILED onRooms($data): ${e.toString()}');
+      debugPrint('      FAILED onRooms(): ${e.toString()}');
     }
   }
 
   void onTyping(data) {
     try {
-      final typingDto = Typing.fromJson(data);
-
-      final imTyping = connectionNotifier.isMySocketId(typingDto.socketId);
-      if (imTyping) {
+      final typingDto = TypingDto.fromJson(data);
+      if (typingDto.userName == userName) {
         return;
       }
 
@@ -97,28 +137,66 @@ class IncomingNotifier extends ChangeNotifier {
         typing = '';
       }
     } catch (e) {
-      debugPrint('FAILED onTyping($data): ${e.toString()}');
+      debugPrint('      FAILED onTyping($data): ${e.toString()}');
     }
   }
 
   void onMessage(data) {
+    debugPrint('> MESSAGE [$data]');
     try {
-      debugPrint('< MESSAGE [$data]');
-      Message msg = Message.fromJson(data);
+      MessageDto msg = MessageDto.fromJson(data);
 
-      if (!connectionNotifier.isMySocketId(msg.socketId)) {
-        debugPrint('${msg.username}: ${msg.message}');
+      if (_messagesById.containsKey(msg.id)) {
+        debugPrint(
+            '      DUPLICATE onMessage(): ${msg.user_name}: ${msg.content}');
+        return;
       }
-      messages.insert(
-        0,
-        MessageItem(
-          isMe: connectionNotifier.isMySocketId(msg.socketId),
-          message: msg,
-        ),
+
+      _messagesById[msg.id!] = msg;
+      _messageItemsById[msg.id!] = MessageItem(
+        isMe: isMyUserId(msg.user),
+        message: msg,
       );
+
       notifyListeners();
     } catch (e) {
-      debugPrint('FAILED onMessage($data): ${e.toString()}');
+      debugPrint('      FAILED onMessage($data): ${e.toString()}');
+    }
+  }
+
+  void onMessages(data) {
+    debugPrint('   > MESSAGES [$data]');
+    try {
+      MessagesDto msgs = MessagesDto.fromJson(data);
+
+      var changed = false;
+      for (int i = 1; i <= msgs.messages.length; i++) {
+        MessageDto msg = msgs.messages[i - 1];
+
+        if (_messagesById.containsKey(msg.id)) {
+          debugPrint(
+              '      DUPLICATE onMessage(): ${msg.user_name}: ${msg.content}');
+          return;
+        }
+
+        debugPrint('   > MESSAGE $i/${msgs.messages.length} [${msg.toJson()}]');
+        final widget = MessageItem(
+          isMe: isMyUserId(msg.user),
+          message: msg,
+        );
+
+        _messagesById[msg.id!] = msg;
+        _messageItemsById[msg.id!] = widget;
+        _messageItems.insert(0, widget);
+
+        changed = true;
+      }
+
+      if (changed) {
+        notifyListeners();
+      }
+    } catch (e) {
+      debugPrint('      FAILED onMessages(): ${e.toString()}');
     }
   }
 }
