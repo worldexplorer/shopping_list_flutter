@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:platform_plus/platform_plus.dart';
 import 'package:mobile_number/mobile_number.dart';
+import 'package:shopping_list_flutter/utils/static_logger.dart';
 
 import 'env.dart';
 import 'heroku_workaround.dart';
@@ -15,27 +16,29 @@ class EnvLoader {
     bool isEmulator = true;
     try {
       isEmulator = await EmulatorDetector.detectEmulator();
-      debugPrint('EnvLoader:load(): deviceInfo=${EmulatorDetector.deviceInfo}');
+      StaticLogger.append(
+          'EnvLoader:load(): deviceInfo=${EmulatorDetector.deviceInfo}');
     } catch (e) {
-      debugPrint(
+      StaticLogger.append(
           'FAILED EnvLoader:load(): DeviceInfo().readDeviceData(): ${e.toString()}');
     }
 
     bool isPhysicalDevice = false;
     try {
       isPhysicalDevice = await platformPlus.isPhysicalDevice();
-      debugPrint('EnvLoader:load(): isPhysicalDevice=$isPhysicalDevice');
+      StaticLogger.append(
+          'EnvLoader:load(): isPhysicalDevice=$isPhysicalDevice');
     } catch (e) {
-      debugPrint(
+      StaticLogger.append(
           'FAILED EnvLoader:load(): platformPlus.isPhysicalDevice(): ${e.toString()}');
     }
 
     String mobileNumber = ret.myMobile;
     try {
       mobileNumber = await fetchMobileNumber(DEV_LOCAL.myMobile);
-      debugPrint('EnvLoader:load(): mobileNumber=$mobileNumber');
+      StaticLogger.append('EnvLoader:load(): mobileNumber=$mobileNumber');
     } catch (e) {
-      debugPrint(
+      StaticLogger.append(
           'FAILED EnvLoader:load() to detect mobileNumber: ${e.toString()}');
     }
 
@@ -70,7 +73,8 @@ class EnvLoader {
       mobileNumber = (await MobileNumber.mobileNumber)!;
       _simCard = (await MobileNumber.getSimCards)!;
     } on PlatformException catch (e) {
-      debugPrint("Failed to get mobile number because of '${e.message}'");
+      StaticLogger.append(
+          "Failed to get mobile number because of '${e.message}'");
     }
 
     return mobileNumber;

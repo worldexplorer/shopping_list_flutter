@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:shopping_list_flutter/env/env.dart';
+import 'package:shopping_list_flutter/utils/static_logger.dart';
 import 'package:socket_io_client/socket_io_client.dart';
 
 import 'connection_notifier.dart';
@@ -28,16 +28,16 @@ class Connection {
       });
 
       socket.connect();
-      debugPrint('#1/3 connecting to [$url]');
+      StaticLogger.append('#1/3 connecting to [$url]');
 
       connectionNotifier.socket = socket;
 
       socket.on('connect', (_) {
-        debugPrint('#2/3 connected: [${connectionNotifier.socketId}]');
+        StaticLogger.append('#2/3 connected: [${connectionNotifier.socketId}]');
         outgoingNotifier.sendLogin(env.myMobile);
       });
-      socket.on('disconnect', (_) => {debugPrint('disconnected')});
-      socket.on('fromServer', (_) => {debugPrint(_)});
+      socket.on('disconnect', (_) => {StaticLogger.append('disconnected')});
+      socket.on('fromServer', (_) => {StaticLogger.append(_)});
 
       socket.on('user', incomingNotifier.onUser);
       socket.on('rooms', incomingNotifier.onRooms);
@@ -45,10 +45,10 @@ class Connection {
       socket.on('message', incomingNotifier.onMessage);
       socket.on('messages', incomingNotifier.onMessages);
 
-      debugPrint(
+      StaticLogger.append(
           '#3/3 handlers hooked to a socket [${connectionNotifier.sConnected}]');
     } catch (e) {
-      debugPrint(e.toString());
+      StaticLogger.append(e.toString());
     }
   }
 }

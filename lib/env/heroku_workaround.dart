@@ -1,6 +1,6 @@
 import 'dart:convert' as convert;
-import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
+import 'package:shopping_list_flutter/utils/static_logger.dart';
 
 class HerokuWorkaround {
   // https://pub.dev/packages/http/example
@@ -15,12 +15,13 @@ class HerokuWorkaround {
         final json = convert.jsonDecode(resp.body) as Map<String, dynamic>;
         port = json['WEBSOCKET_PORT']; // json = {"WEBSOCKET_PORT":30521}
 
-        debugPrint('HerokuWorkaround:$port replied: $json');
+        StaticLogger.append('HerokuWorkaround:$port replied: $json');
       } else {
-        debugPrint('FAILED HerokuWorkaround:$port: ${resp.statusCode}.');
+        StaticLogger.append(
+            'FAILED HerokuWorkaround:$port: ${resp.statusCode}.');
       }
     } catch (e) {
-      debugPrint(
+      StaticLogger.append(
           'FAILED HerokuWorkaround:$port http.get($wsPortJsonHost): ${e.toString()}.');
     }
     return port;

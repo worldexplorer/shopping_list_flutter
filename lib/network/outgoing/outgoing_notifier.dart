@@ -1,8 +1,9 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:shopping_list_flutter/network/common/message_dto.dart';
 import 'package:shopping_list_flutter/network/common/typing_dto.dart';
 import 'package:shopping_list_flutter/network/incoming/incoming_notifier.dart';
 import 'package:shopping_list_flutter/network/outgoing/get_messages_dto.dart';
+import 'package:shopping_list_flutter/utils/static_logger.dart';
 
 import '../connection_notifier.dart';
 import '../net_log.dart';
@@ -16,19 +17,19 @@ class OutgoingNotifier extends ChangeNotifier {
 
   sendLogin(String phone) {
     if (!connectionNotifier.socketConnected) {
-      debugPrint('sendLogin($phone): ${connectionNotifier.socketId}');
+      StaticLogger.append('sendLogin($phone): ${connectionNotifier.socketId}');
       return;
     }
     final json = LoginDto(
       phone: phone,
     ).toJson();
     connectionNotifier.socket.emit("login", json);
-    debugPrint('<< LOGIN [$json]');
+    StaticLogger.append('<< LOGIN [$json]');
   }
 
   sendTyping(bool typing) {
     if (!connectionNotifier.socketConnected) {
-      // debugPrint('sendTyping($typing): ${connectionNotifier.socketId}');
+      // StaticLogger.append('sendTyping($typing): ${connectionNotifier.socketId}');
       return;
     }
     connectionNotifier.socket.emit(
@@ -61,12 +62,13 @@ class OutgoingNotifier extends ChangeNotifier {
       purchase: null,
     ).toJson();
     connectionNotifier.socket.emit("message", json);
-    debugPrint('<< MESSAGE [$json]');
+    StaticLogger.append('<< MESSAGE [$json]');
   }
 
   sendGetMessages(int roomId, [int fromMessageId = 0]) {
     if (!connectionNotifier.socketConnected) {
-      debugPrint('sendRoomChange($roomId): ${connectionNotifier.socketId}');
+      StaticLogger.append(
+          'sendRoomChange($roomId): ${connectionNotifier.socketId}');
       return;
     }
     final json = GetMessagesDto(
@@ -74,6 +76,6 @@ class OutgoingNotifier extends ChangeNotifier {
       fromMessageId: fromMessageId,
     ).toJson();
     connectionNotifier.socket.emit("getMessages", json);
-    debugPrint('<< GET_MESSAGES [$json]');
+    StaticLogger.append('<< GET_MESSAGES [$json]');
   }
 }

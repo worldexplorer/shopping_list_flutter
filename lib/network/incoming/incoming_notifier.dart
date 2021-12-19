@@ -1,9 +1,10 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:shopping_list_flutter/network/common/message_dto.dart';
 import 'package:shopping_list_flutter/network/common/typing_dto.dart';
 import 'package:shopping_list_flutter/network/common/user_dto.dart';
 import 'package:shopping_list_flutter/network/incoming/room_dto.dart';
 import 'package:shopping_list_flutter/network/outgoing/outgoing_notifier.dart';
+import 'package:shopping_list_flutter/utils/static_logger.dart';
 import 'package:shopping_list_flutter/widget/message_item.dart';
 
 import '../connection_notifier.dart';
@@ -41,12 +42,12 @@ class IncomingNotifier extends ChangeNotifier {
   int get currentRoomId => _currentRoomId;
   set currentRoomId(int val) {
     if (!_roomsById.containsKey(val)) {
-      debugPrint(
+      StaticLogger.append(
           'CANT_SET_CURRENT_ROOM_BY_ID[$val], _roomsById.keys=[${_roomsById.keys}]');
       return;
     }
     if (_currentRoomId == val) {
-      debugPrint(
+      StaticLogger.append(
           'SAME_CURRENT_ROOM_BY_ID[$val], _currentRoomId=[$_currentRoomId}]');
       return;
     }
@@ -62,7 +63,7 @@ class IncomingNotifier extends ChangeNotifier {
     if (_roomsById.containsKey(currentRoomId)) {
       return _roomsById[currentRoomId]!;
     } else {
-      debugPrint(
+      StaticLogger.append(
           'CANT_GET_ROOM_BY_ID[$currentRoomId], rooms.length=[${rooms.length}]');
       return RoomDto(id: 999, name: '<NO_ROOMS_RECEIVED>', users: []);
     }
@@ -78,16 +79,16 @@ class IncomingNotifier extends ChangeNotifier {
 
   void onUser(data) {
     try {
-      debugPrint('   > USER [$data]');
+      StaticLogger.append('   > USER [$data]');
       final userParsed = UserDto.fromJson(data);
       user = userParsed;
     } catch (e) {
-      debugPrint('      FAILED onUser($data): ${e.toString()}');
+      StaticLogger.append('      FAILED onUser($data): ${e.toString()}');
     }
   }
 
   void onRooms(data) {
-    debugPrint('   > ROOMS [$data]');
+    StaticLogger.append('   > ROOMS [$data]');
     try {
       RoomsDto roomsParsed = RoomsDto.fromJson(data);
 
@@ -100,11 +101,12 @@ class IncomingNotifier extends ChangeNotifier {
         }
 
         if (_roomsById.containsKey(room.id)) {
-          debugPrint('      DUPLICATE onRooms(): ${room.id}: ${room.name}');
+          StaticLogger.append(
+              '      DUPLICATE onRooms(): ${room.id}: ${room.name}');
           return;
         }
 
-        debugPrint(
+        StaticLogger.append(
             '   > ROOM $i/${roomsParsed.rooms.length} [${room.toJson()}]');
 
         _roomsById[room.id] = room;
@@ -120,7 +122,7 @@ class IncomingNotifier extends ChangeNotifier {
         }
       }
     } catch (e) {
-      debugPrint('      FAILED onRooms(): ${e.toString()}');
+      StaticLogger.append('      FAILED onRooms(): ${e.toString()}');
     }
   }
 
@@ -137,17 +139,17 @@ class IncomingNotifier extends ChangeNotifier {
         typing = '';
       }
     } catch (e) {
-      debugPrint('      FAILED onTyping($data): ${e.toString()}');
+      StaticLogger.append('      FAILED onTyping($data): ${e.toString()}');
     }
   }
 
   void onMessage(data) {
-    debugPrint('> MESSAGE [$data]');
+    StaticLogger.append('> MESSAGE [$data]');
     try {
       MessageDto msg = MessageDto.fromJson(data);
 
       if (_messagesById.containsKey(msg.id)) {
-        debugPrint(
+        StaticLogger.append(
             '      DUPLICATE onMessage(): ${msg.user_name}: ${msg.content}');
         return;
       }
@@ -160,12 +162,12 @@ class IncomingNotifier extends ChangeNotifier {
 
       notifyListeners();
     } catch (e) {
-      debugPrint('      FAILED onMessage($data): ${e.toString()}');
+      StaticLogger.append('      FAILED onMessage($data): ${e.toString()}');
     }
   }
 
   void onMessages(data) {
-    debugPrint('   > MESSAGES [$data]');
+    StaticLogger.append('   > MESSAGES [$data]');
     try {
       MessagesDto msgs = MessagesDto.fromJson(data);
 
@@ -174,12 +176,13 @@ class IncomingNotifier extends ChangeNotifier {
         MessageDto msg = msgs.messages[i - 1];
 
         if (_messagesById.containsKey(msg.id)) {
-          debugPrint(
+          StaticLogger.append(
               '      DUPLICATE onMessage(): ${msg.user_name}: ${msg.content}');
           return;
         }
 
-        debugPrint('   > MESSAGE $i/${msgs.messages.length} [${msg.toJson()}]');
+        StaticLogger.append(
+            '   > MESSAGE $i/${msgs.messages.length} [${msg.toJson()}]');
         final widget = MessageItem(
           isMe: isMyUserId(msg.user),
           message: msg,
@@ -196,7 +199,7 @@ class IncomingNotifier extends ChangeNotifier {
         notifyListeners();
       }
     } catch (e) {
-      debugPrint('      FAILED onMessages(): ${e.toString()}');
+      StaticLogger.append('      FAILED onMessages(): ${e.toString()}');
     }
   }
 }
