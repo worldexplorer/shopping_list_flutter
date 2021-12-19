@@ -2,7 +2,7 @@
 
 import 'package:shopping_list_flutter/env/device_info.dart';
 
-class EmulatorDetector {
+class DeviceEmulatorDetector {
   static late DeviceInfo deviceInfo;
 
   static Future<bool> detectEmulator() async {

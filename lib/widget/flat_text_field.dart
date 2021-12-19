@@ -82,7 +82,5 @@ class FlatTextField extends HookWidget {
         ),
       );
     });
-
-    sendMessage() {}
   }
 }

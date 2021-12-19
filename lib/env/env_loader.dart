@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:platform_plus/platform_plus.dart';
 import 'package:mobile_number/mobile_number.dart';
@@ -6,18 +5,18 @@ import 'package:shopping_list_flutter/utils/static_logger.dart';
 
 import 'env.dart';
 import 'heroku_workaround.dart';
-import 'is_emulator.dart';
+import 'device_emulator_detector.dart';
 
 class EnvLoader {
   // https://blog.codemagic.io/flutter-ui-socket/
-  static Future<Env> load([forceProd = false]) async {
-    Env ret = forceProd ? PROD_HEROKU : DEV_LOCAL;
+  static Future<Env> load([forceHeroku = true]) async {
+    Env ret = forceHeroku ? PROD_HEROKU : DEV_LOCAL;
 
     bool isEmulator = true;
     try {
-      isEmulator = await EmulatorDetector.detectEmulator();
+      isEmulator = await DeviceEmulatorDetector.detectEmulator();
       StaticLogger.append(
-          'EnvLoader:load(): deviceInfo=${EmulatorDetector.deviceInfo}');
+          'EnvLoader:load(): deviceInfo=${DeviceEmulatorDetector.deviceInfo}');
     } catch (e) {
       StaticLogger.append(
           'FAILED EnvLoader:load(): DeviceInfo().readDeviceData(): ${e.toString()}');
@@ -61,11 +60,12 @@ class EnvLoader {
   // https://pub.dev/packages/mobile_number/example
   // Platform messages are asynchronous, so we initialize in an async method.
   static Future<String> fetchMobileNumber(String devNumber) async {
+    String mobileNumber = devNumber;
+
     if (!await MobileNumber.hasPhonePermission) {
       await MobileNumber.requestPhonePermission;
     }
 
-    String mobileNumber = devNumber;
     List<SimCard> _simCard = <SimCard>[];
 
     // Platform messages may fail, so we use a try/catch PlatformException.

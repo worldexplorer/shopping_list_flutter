@@ -12,12 +12,12 @@ class Env {
 }
 
 final Env DEV_LOCAL = Env(
-    envName: "DEV_LOCAL",
-    websocketURL: "http://10.0.2.2:5000",
-    myMobile: "+1-555-555-55-55");
+    envName: 'DEV_LOCAL',
+    websocketURL: 'http://10.0.2.2:5000',
+    myMobile: '+1-555-555-55-55');
 
 final Env PROD_HEROKU = Env(
-    envName: "PROD_HEROKU",
-    // wsPortJsonHost: "shopping-list-server-typescrip.herokuapp.com",
-    websocketURL: "http://shopping-list-server-typescrip.herokuapp.com:80",
-    myMobile: "+1-555-555-55-55");
+    envName: 'PROD_HEROKU',
+    // wsPortJsonHost: 'shopping-list-server-typescrip.herokuapp.com',
+    websocketURL: 'http://shopping-list-server-typescrip.herokuapp.com',
+    myMobile: '+1-555-555-55-55');

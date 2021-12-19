@@ -134,21 +134,21 @@ class Chat extends HookWidget {
       ), // // Column(children: [
       // // Flexible( child:
 
-      child: Expanded(
-        child: SingleChildScrollView(
-          scrollDirection: Axis.vertical,
-          child: Text(
-            text,
-            style: const TextStyle(
-              color: Colors.white,
-              // fontWeight: FontWeight.bold,
-              fontSize: 16.0,
-              letterSpacing: 1,
-              wordSpacing: 1,
-            ),
+      // child: Expanded(
+      child: SingleChildScrollView(
+        scrollDirection: Axis.vertical,
+        child: Text(
+          text,
+          style: const TextStyle(
+            color: Colors.white,
+            // fontWeight: FontWeight.bold,
+            fontSize: 16.0,
+            letterSpacing: 1,
+            wordSpacing: 1,
           ),
         ),
       ),
+      // ),
     )
         // )
         // ])
