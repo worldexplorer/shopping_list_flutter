@@ -46,9 +46,9 @@ class EnvLoader {
       ret.myMobile = mobileNumber;
     }
 
-    if (ret.wsPortJsonHost != null) {
+    if (ret.wsPortJsonURL != null) {
       final int port =
-          await HerokuWorkaround.fetchWebsocketPort(ret.wsPortJsonHost!);
+          await HerokuWorkaround.fetchWebsocketPort(ret.wsPortJsonURL!);
       if (port != 0) {
         ret.websocketURL += ':$port';
       }

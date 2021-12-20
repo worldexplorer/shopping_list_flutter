@@ -1,12 +1,12 @@
 class Env {
   String envName;
   String websocketURL;
-  String? wsPortJsonHost;
+  String? wsPortJsonURL;
   String myMobile;
 
   Env(
       {required this.envName,
-      this.wsPortJsonHost,
+      this.wsPortJsonURL,
       required this.websocketURL,
       required this.myMobile});
 }
@@ -18,6 +18,6 @@ final Env DEV_LOCAL = Env(
 
 final Env PROD_HEROKU = Env(
     envName: 'PROD_HEROKU',
-    // wsPortJsonHost: 'shopping-list-server-typescrip.herokuapp.com',
+    wsPortJsonURL: 'http://shopping-list-server-typescrip.herokuapp.com',
     websocketURL: 'http://shopping-list-server-typescrip.herokuapp.com',
     myMobile: '+1-555-555-55-55');

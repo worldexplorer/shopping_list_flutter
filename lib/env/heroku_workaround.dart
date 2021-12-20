@@ -4,11 +4,11 @@ import 'package:shopping_list_flutter/utils/static_logger.dart';
 
 class HerokuWorkaround {
   // https://pub.dev/packages/http/example
-  static Future<int> fetchWebsocketPort(String wsPortJsonHost) async {
+  static Future<int> fetchWebsocketPort(String wsPortJsonUrl) async {
     int port = 0;
     try {
       // http://shopping-list-server-typescrip.herokuapp.com
-      Uri uri = Uri.http(wsPortJsonHost, '/');
+      Uri uri = Uri.parse(wsPortJsonUrl);
       // Await the http get response, then decode the json-formatted response.
       final resp = await http.get(uri);
       if (resp.statusCode == 200) {
@@ -22,7 +22,7 @@ class HerokuWorkaround {
       }
     } catch (e) {
       StaticLogger.append(
-          'FAILED HerokuWorkaround:$port http.get($wsPortJsonHost): ${e.toString()}.');
+          'FAILED HerokuWorkaround:$port http.get($wsPortJsonUrl): ${e.toString()}.');
     }
     return port;
   }

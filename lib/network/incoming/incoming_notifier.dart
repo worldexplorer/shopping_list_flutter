@@ -173,16 +173,16 @@ class IncomingNotifier extends ChangeNotifier {
 
       var changed = false;
       for (int i = 1; i <= msgs.messages.length; i++) {
+        final counter = '$i/${msgs.messages.length} ';
         MessageDto msg = msgs.messages[i - 1];
 
         if (_messagesById.containsKey(msg.id)) {
           StaticLogger.append(
-              '      DUPLICATE onMessage(): ${msg.user_name}: ${msg.content}');
-          return;
+              '      MESSAGE DUPLICATE $counter: ${msg.user_name}: ${msg.content}');
+          continue;
         }
 
-        StaticLogger.append(
-            '   > MESSAGE $i/${msgs.messages.length} [${msg.toJson()}]');
+        StaticLogger.append('   > MESSAGE $counter [${msg.toJson()}]');
         final widget = MessageItem(
           isMe: isMyUserId(msg.user),
           message: msg,
