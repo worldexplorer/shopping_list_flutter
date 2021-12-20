@@ -37,15 +37,18 @@ class MessageItem extends StatelessWidget {
               Container(
                 decoration: BoxDecoration(
                   color: (isMe ? Colors.white : Colors.black).withOpacity(0.12),
-                  borderRadius: BorderRadius.circular(6),
+                  borderRadius: BorderRadius.circular(7),
                 ),
-                padding: const EdgeInsets.all(15),
+                padding: const EdgeInsets.all(10),
                 child: Center(
                   child: Text(
                     message.content,
                     style: GoogleFonts.poppins(
-                      color: Colors.white.withOpacity(isMe ? 1 : 0.8),
-                      fontSize: 14,
+                      // NULL_ID__SERVER_SHOULD_ASSIGN
+                      color: message.id == null
+                          ? Colors.red.withOpacity(isMe ? 1 : 0.8)
+                          : Colors.white.withOpacity(isMe ? 1 : 0.8),
+                      fontSize: 15,
                     ),
                   ),
                 ),

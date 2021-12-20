@@ -7,7 +7,7 @@ class StaticLogger {
     buffer.add(msg);
   }
 
-  static dumpAll() {
-    return buffer.join('\n');
+  static dumpAll([String separator = '\n']) {
+    return buffer.join(separator);
   }
 }

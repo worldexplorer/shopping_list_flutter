@@ -147,33 +147,45 @@ class IncomingNotifier extends ChangeNotifier {
     StaticLogger.append('> MESSAGE [$data]');
     try {
       MessageDto msg = MessageDto.fromJson(data);
+      final msig = ' onMessage(): ${msg.user_name}: ${msg.content}';
 
-      if (_messagesById.containsKey(msg.id)) {
-        StaticLogger.append(
-            '      DUPLICATE onMessage(): ${msg.user_name}: ${msg.content}');
-        return;
-      }
-
-      _messagesById[msg.id!] = msg;
-      _messageItemsById[msg.id!] = MessageItem(
+      var msgItem = MessageItem(
         isMe: isMyUserId(msg.user),
         message: msg,
       );
 
+      if (msg.id == null) {
+        StaticLogger.append('      NULL_ID__SERVER_SHOULD_ASSIGN $msig');
+      } else {
+        if (_messagesById.containsKey(msg.id)) {
+          StaticLogger.append('      DUPLICATE $msig');
+        } else {
+          _messagesById[msg.id!] = msg;
+          _messageItemsById[msg.id!] = msgItem;
+        }
+      }
+
+      _messageItems.insert(0, msgItem);
       notifyListeners();
     } catch (e) {
-      StaticLogger.append('      FAILED onMessage($data): ${e.toString()}');
+      StaticLogger.append('      FAILED onMessage(): ${e.toString()}');
     }
   }
 
   void onMessages(data) {
     StaticLogger.append('   > MESSAGES [$data]');
+    int i = 1;
+    int total = 0;
+
     try {
       MessagesDto msgs = MessagesDto.fromJson(data);
 
       var changed = false;
-      for (int i = 1; i <= msgs.messages.length; i++) {
-        final counter = '$i/${msgs.messages.length} ';
+      i = 1;
+      total = msgs.messages.length;
+
+      for (; i <= total; i++) {
+        final counter = '$i/$total ';
         MessageDto msg = msgs.messages[i - 1];
 
         if (_messagesById.containsKey(msg.id)) {
@@ -199,7 +211,8 @@ class IncomingNotifier extends ChangeNotifier {
         notifyListeners();
       }
     } catch (e) {
-      StaticLogger.append('      FAILED onMessages(): ${e.toString()}');
+      StaticLogger.append(
+          '      FAILED onMessages($i/$total): ${e.toString()}');
     }
   }
 }

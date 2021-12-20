@@ -18,6 +18,6 @@ final Env DEV_LOCAL = Env(
 
 final Env PROD_HEROKU = Env(
     envName: 'PROD_HEROKU',
-    wsPortJsonURL: 'http://shopping-list-server-typescrip.herokuapp.com',
-    websocketURL: 'http://shopping-list-server-typescrip.herokuapp.com',
+    // wsPortJsonURL: 'http://shopping-list-server-typescrip.herokuapp.com',
+    websocketURL: 'https://shopping-list-server-typescrip.herokuapp.com',
     myMobile: '+1-555-555-55-55');

@@ -24,7 +24,7 @@ class Chat extends HookWidget {
           slivers: <Widget>[
             SliverAppBar(
                 pinned: true,
-                floating: true,
+                floating: false,
                 //_debugExpanded.value,
                 leading: IconButton(
                   icon: const Icon(
@@ -33,7 +33,7 @@ class Chat extends HookWidget {
                     size: 20,
                   ),
                   onPressed: () {
-                    // _debugExpanded.value = !_debugExpanded.value
+                    _debugExpanded.value = !_debugExpanded.value;
                   },
                 ),
                 title: Column(children: [
@@ -75,8 +75,10 @@ class Chat extends HookWidget {
                 ],
                 bottom: PreferredSize(
                   preferredSize:
-                      Size.fromHeight(_debugExpanded.value ? 10 : 300),
-                  child: _buildScrollingText(StaticLogger.dumpAll()),
+                      Size.fromHeight(_debugExpanded.value ? 300 : 0),
+                  child: _debugExpanded.value
+                      ? _buildScrollingText(StaticLogger.dumpAll('\n\n'))
+                      : Container(),
                 )),
             SliverFillRemaining(
               hasScrollBody: true,
