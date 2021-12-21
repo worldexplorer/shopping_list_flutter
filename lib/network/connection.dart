@@ -30,10 +30,11 @@ class Connection {
       socket.connect();
       StaticLogger.append('#1/3 connecting to [$url]');
 
-      connectionNotifier.socket = socket;
+      connectionNotifier.socket = socket; // notifies
 
       socket.on('connect', (_) {
         StaticLogger.append('#2/3 connected: [${connectionNotifier.socketId}]');
+        // connectionNotifier.notify();
         outgoingNotifier.sendLogin(env.myMobile);
       });
       socket.on('disconnect', (_) => {StaticLogger.append('disconnected')});

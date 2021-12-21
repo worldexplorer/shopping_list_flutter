@@ -9,6 +9,7 @@ import 'network/connection.dart';
 import 'network/connection_notifier.dart';
 import 'network/incoming/incoming_notifier.dart';
 import 'network/outgoing/outgoing_notifier.dart';
+import 'views/menu_dashboard_page.dart';
 
 Future<void> main() async {
   // TODO: move somewhere to let UI draw spinner & NetLog panel
@@ -47,7 +48,8 @@ class MyApp extends StatelessWidget {
           theme: ThemeData(
             primarySwatch: Colors.blue,
           ),
-          home: HomeWidget(),
+          // home: HomeWidget(),
+          home: MenuDashboardPage(),
           debugShowCheckedModeBanner: true,
         ));
   }
