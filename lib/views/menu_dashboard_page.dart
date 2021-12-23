@@ -1,6 +1,8 @@
 // https://github.com/TechieBlossom/flutter-samples/blob/master/menu_dashboard_layout.dart
 
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:shopping_list_flutter/utils/ui_notifier.dart';
 
 import 'chat.dart';
 
@@ -13,7 +15,6 @@ class MenuDashboardPage extends StatefulWidget {
 
 class _MenuDashboardPageState extends State<MenuDashboardPage>
     with SingleTickerProviderStateMixin {
-  bool isCollapsed = true;
   late double screenWidth, screenHeight;
   final Duration duration = const Duration(milliseconds: 300);
   late AnimationController _controller;
@@ -45,15 +46,17 @@ class _MenuDashboardPageState extends State<MenuDashboardPage>
     screenHeight = size.height;
     screenWidth = size.width;
 
-    return Scaffold(
-      backgroundColor: backgroundColor,
-      body: Stack(
-        children: <Widget>[
-          menu(context),
-          dashboard(context),
-        ],
-      ),
-    );
+    return Consumer<UiNotifier>(builder: (context, ui, child) {
+      return Scaffold(
+        backgroundColor: backgroundColor,
+        body: Stack(
+          children: <Widget>[
+            menu(context),
+            dashboard(context),
+          ],
+        ),
+      );
+    });
   }
 
   Widget menu(context) {
@@ -93,22 +96,24 @@ class _MenuDashboardPageState extends State<MenuDashboardPage>
   }
 
   Widget dashboard(context) {
-    return AnimatedPositioned(
-      duration: duration,
-      top: 0,
-      bottom: 0,
-      left: isCollapsed ? 0 : 0.6 * screenWidth,
-      right: isCollapsed ? 0 : -0.2 * screenWidth,
-      child: ScaleTransition(
-        scale: _scaleAnimation,
-        child: Material(
-          animationDuration: duration,
-          borderRadius: const BorderRadius.all(Radius.circular(40)),
-          elevation: 8,
-          color: backgroundColor,
-          child: const Chat(),
+    return Consumer<UiNotifier>(builder: (context, ui, child) {
+      return AnimatedPositioned(
+        duration: duration,
+        top: 0,
+        bottom: 0,
+        left: ui.isCollapsed ? 0 : 0.6 * screenWidth,
+        right: ui.isCollapsed ? 0 : -0.2 * screenWidth,
+        child: ScaleTransition(
+          scale: _scaleAnimation,
+          child: Material(
+            animationDuration: duration,
+            borderRadius: const BorderRadius.all(Radius.circular(40)),
+            elevation: 8,
+            color: backgroundColor,
+            child: const Chat(),
+          ),
         ),
-      ),
-    );
+      );
+    });
   }
 }

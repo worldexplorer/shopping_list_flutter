@@ -45,6 +45,7 @@ class Connection {
       socket.on('typing', incomingNotifier.onTyping);
       socket.on('message', incomingNotifier.onMessage);
       socket.on('messages', incomingNotifier.onMessages);
+      socket.on('error', incomingNotifier.onError);
 
       StaticLogger.append(
           '#3/3 handlers hooked to a socket [${connectionNotifier.sConnected}]');

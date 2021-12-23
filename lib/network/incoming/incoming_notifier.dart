@@ -172,6 +172,10 @@ class IncomingNotifier extends ChangeNotifier {
     }
   }
 
+  void onError(data) {
+    StaticLogger.append('> SERVER_ERROR [$data]');
+  }
+
   void onMessages(data) {
     StaticLogger.append('   > MESSAGES [$data]');
     int i = 1;

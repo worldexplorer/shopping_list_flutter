@@ -8,6 +8,7 @@ import 'package:shopping_list_flutter/network/incoming/incoming_notifier.dart';
 import 'package:shopping_list_flutter/utils/margin.dart';
 import 'package:shopping_list_flutter/utils/static_logger.dart';
 import 'package:shopping_list_flutter/utils/theme.dart';
+import 'package:shopping_list_flutter/utils/ui_notifier.dart';
 import 'package:shopping_list_flutter/widget/flat_text_field.dart';
 
 class Chat extends HookWidget {
@@ -17,7 +18,8 @@ class Chat extends HookWidget {
   Widget build(BuildContext context) {
     final _debugExpanded = useState(false);
 
-    return Consumer<IncomingNotifier>(builder: (context, incoming, child) {
+    return Consumer2<IncomingNotifier, UiNotifier>(
+        builder: (context, incoming, ui, child) {
       return Scaffold(
         backgroundColor: bg,
         body: CustomScrollView(
@@ -33,7 +35,12 @@ class Chat extends HookWidget {
                     size: 20,
                   ),
                   onPressed: () {
-                    _debugExpanded.value = !_debugExpanded.value;
+                    if (ui.isCollapsed) {
+                      ui.collapseController?.forward();
+                    } else {
+                      ui.collapseController?.reverse();
+                    }
+                    ui.isCollapsed = !ui.isCollapsed;
                   },
                 ),
                 title: Column(children: [
@@ -60,7 +67,9 @@ class Chat extends HookWidget {
                 actions: <Widget>[
                   IconButton(
                     icon: const Icon(Icons.search),
-                    onPressed: () {},
+                    onPressed: () {
+                      _debugExpanded.value = !_debugExpanded.value;
+                    },
                   ),
                   // PopSliverToBoxAdapter(upMenuButton(
                   //   child: Icon(Icons.more_vert),
