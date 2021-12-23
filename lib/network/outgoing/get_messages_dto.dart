@@ -16,8 +16,12 @@ part 'get_messages_dto.g.dart';
 class GetMessagesDto {
   int room;
   int fromMessageId;
+  int deviceTimezoneOffsetMinutes;
 
-  GetMessagesDto({required this.room, required this.fromMessageId});
+  GetMessagesDto(
+      {required this.room,
+      required this.fromMessageId,
+      required this.deviceTimezoneOffsetMinutes});
 
   // factory GetMessagesDto.fromJson(Map<String, dynamic> json) => _$GetMessagesDtoFromJson(json);
   Map<String, dynamic> toJson() => _$GetMessagesDtoToJson(this);

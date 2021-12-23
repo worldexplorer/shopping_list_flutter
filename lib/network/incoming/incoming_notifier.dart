@@ -103,7 +103,7 @@ class IncomingNotifier extends ChangeNotifier {
         if (_roomsById.containsKey(room.id)) {
           StaticLogger.append(
               '      DUPLICATE onRooms(): ${room.id}: ${room.name}');
-          return;
+          continue;
         }
 
         StaticLogger.append(
@@ -119,6 +119,11 @@ class IncomingNotifier extends ChangeNotifier {
           currentRoomId = firstRoomId; // will trigger sendGetMessages()
         } else {
           notifyListeners();
+        }
+      } else {
+        if (connectionNotifier.willGetMessagesOnReconnect) {
+          outgoingNotifier.sendGetMessages(_currentRoomId, 0);
+          connectionNotifier.willGetMessagesOnReconnect = false;
         }
       }
     } catch (e) {

@@ -31,6 +31,8 @@ class ConnectionNotifier extends ChangeNotifier {
     notifyListeners();
   }
 
+  bool willGetMessagesOnReconnect = false;
+
   @override
   void dispose() {
     _socket?.disconnect();

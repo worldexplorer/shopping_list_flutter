@@ -14,8 +14,8 @@ PurchaseDto _$PurchaseDtoFromJson(Map<String, dynamic> json) => $checkedCreate(
           json,
           allowedKeys: const [
             'id',
-            'dateCreated',
-            'dateUpdated',
+            'date_created',
+            'date_updated',
             'name',
             'room',
             'message',
@@ -33,10 +33,10 @@ PurchaseDto _$PurchaseDtoFromJson(Map<String, dynamic> json) => $checkedCreate(
         );
         final val = PurchaseDto(
           id: $checkedConvert('id', (v) => v as int),
-          dateCreated: $checkedConvert(
-              'dateCreated', (v) => DateTime.parse(v as String)),
-          dateUpdated: $checkedConvert(
-              'dateUpdated', (v) => DateTime.parse(v as String)),
+          date_created: $checkedConvert(
+              'date_created', (v) => DateTime.parse(v as String)),
+          date_updated: $checkedConvert(
+              'date_updated', (v) => DateTime.parse(v as String)),
           name: $checkedConvert('name', (v) => v as String),
           room: $checkedConvert('room', (v) => v as int),
           message: $checkedConvert('message', (v) => v as int),
@@ -48,13 +48,13 @@ PurchaseDto _$PurchaseDtoFromJson(Map<String, dynamic> json) => $checkedCreate(
           person_created_name:
               $checkedConvert('person_created_name', (v) => v as String),
           person_purchased:
-              $checkedConvert('person_purchased', (v) => v as int),
+              $checkedConvert('person_purchased', (v) => v as int?),
           person_purchased_name:
-              $checkedConvert('person_purchased_name', (v) => v as String),
+              $checkedConvert('person_purchased_name', (v) => v as String?),
           price_total:
-              $checkedConvert('price_total', (v) => (v as num).toDouble()),
+              $checkedConvert('price_total', (v) => (v as num?)?.toDouble()),
           weight_total:
-              $checkedConvert('weight_total', (v) => (v as num).toDouble()),
+              $checkedConvert('weight_total', (v) => (v as num?)?.toDouble()),
         );
         return val;
       },
@@ -63,8 +63,8 @@ PurchaseDto _$PurchaseDtoFromJson(Map<String, dynamic> json) => $checkedCreate(
 Map<String, dynamic> _$PurchaseDtoToJson(PurchaseDto instance) =>
     <String, dynamic>{
       'id': instance.id,
-      'dateCreated': instance.dateCreated.toIso8601String(),
-      'dateUpdated': instance.dateUpdated.toIso8601String(),
+      'date_created': instance.date_created.toIso8601String(),
+      'date_updated': instance.date_updated.toIso8601String(),
       'name': instance.name,
       'room': instance.room,
       'message': instance.message,

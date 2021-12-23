@@ -15,8 +15,8 @@ part 'purchase_dto.g.dart';
     includeIfNull: true)
 class PurchaseDto {
   int id;
-  DateTime dateCreated;
-  DateTime dateUpdated;
+  DateTime date_created;
+  DateTime date_updated;
   String name;
 
   int room;
@@ -29,16 +29,16 @@ class PurchaseDto {
 
   int person_created;
   String person_created_name;
-  int person_purchased;
-  String person_purchased_name;
+  int? person_purchased;
+  String? person_purchased_name;
 
-  double price_total;
-  double weight_total;
+  double? price_total;
+  double? weight_total;
 
   PurchaseDto({
     required this.id,
-    required this.dateCreated,
-    required this.dateUpdated,
+    required this.date_created,
+    required this.date_updated,
     required this.name,
     required this.room,
     required this.message,
@@ -48,10 +48,10 @@ class PurchaseDto {
     required this.show_weight,
     required this.person_created,
     required this.person_created_name,
-    required this.person_purchased,
-    required this.person_purchased_name,
-    required this.price_total,
-    required this.weight_total,
+    this.person_purchased,
+    this.person_purchased_name,
+    this.price_total,
+    this.weight_total,
   });
 
   factory PurchaseDto.fromJson(Map<String, dynamic> json) =>

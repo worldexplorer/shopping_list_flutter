@@ -11,46 +11,67 @@ class Connection {
   late ConnectionNotifier connectionNotifier;
   late IncomingNotifier incomingNotifier;
   late OutgoingNotifier outgoingNotifier;
+  late Socket socket;
 
   Connection(this.env) {
     connectionNotifier = ConnectionNotifier();
     incomingNotifier = IncomingNotifier(connectionNotifier);
     outgoingNotifier = OutgoingNotifier(connectionNotifier, incomingNotifier);
     incomingNotifier.outgoingNotifier = outgoingNotifier;
+
+    socket = io(env.websocketURL, <String, dynamic>{
+      'transports': ['websocket'],
+      'autoConnect': true,
+    });
+
+    socket.on('connect', (_) {
+      StaticLogger.append('#3/4 connected: [${connectionNotifier.socketId}]');
+      // connectionNotifier.notify();
+      outgoingNotifier.sendLogin(env.myMobile);
+    });
+    socket.on('disconnect', (_) {
+      StaticLogger.append(
+          'disconnected by server; willGetMessagesOnReconnect=true');
+      connectionNotifier.willGetMessagesOnReconnect = true;
+    });
+    socket.on('fromServer', (_) => {StaticLogger.append(_)});
+
+    socket.on('user', incomingNotifier.onUser);
+    socket.on('rooms', incomingNotifier.onRooms);
+    socket.on('typing', incomingNotifier.onTyping);
+    socket.on('message', incomingNotifier.onMessage);
+    socket.on('messages', incomingNotifier.onMessages);
+    socket.on('error', incomingNotifier.onError);
+
+    StaticLogger.append(
+        '#1/4 handlers hooked to a socket [${connectionNotifier.sConnected}]');
   }
 
   void connect() {
-    final url = env.websocketURL;
     try {
-      final socket = io(url, <String, dynamic>{
-        'transports': ['websocket'],
-        'autoConnect': true,
-      });
-
       socket.connect();
-      StaticLogger.append('#1/3 connecting to [$url]');
-
+      StaticLogger.append('#2/4 connecting to [${env.websocketURL}]');
       connectionNotifier.socket = socket; // notifies
-
-      socket.on('connect', (_) {
-        StaticLogger.append('#2/3 connected: [${connectionNotifier.socketId}]');
-        // connectionNotifier.notify();
-        outgoingNotifier.sendLogin(env.myMobile);
-      });
-      socket.on('disconnect', (_) => {StaticLogger.append('disconnected')});
-      socket.on('fromServer', (_) => {StaticLogger.append(_)});
-
-      socket.on('user', incomingNotifier.onUser);
-      socket.on('rooms', incomingNotifier.onRooms);
-      socket.on('typing', incomingNotifier.onTyping);
-      socket.on('message', incomingNotifier.onMessage);
-      socket.on('messages', incomingNotifier.onMessages);
-      socket.on('error', incomingNotifier.onError);
-
-      StaticLogger.append(
-          '#3/3 handlers hooked to a socket [${connectionNotifier.sConnected}]');
     } catch (e) {
       StaticLogger.append(e.toString());
     }
+  }
+
+  void disconnect() {
+    try {
+      socket.connect();
+      StaticLogger.append('#4/4 disconnected');
+    } catch (e) {
+      StaticLogger.append(e.toString());
+    }
+  }
+
+  void reconnect() {
+    disconnect();
+    connect();
+  }
+
+  void dispose() {
+    socket.dispose();
   }
 }

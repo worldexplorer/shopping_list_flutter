@@ -61,8 +61,8 @@ class OutgoingNotifier extends ChangeNotifier {
       purchaseId: null,
       purchase: null,
     ).toJson();
-    connectionNotifier.socket.emit("message", json);
-    StaticLogger.append('<< MESSAGE [$json]');
+    connectionNotifier.socket.emit("newMessage", json);
+    StaticLogger.append('<< NEW_MESSAGE [$json]');
   }
 
   sendGetMessages(int roomId, [int fromMessageId = 0]) {
@@ -74,6 +74,7 @@ class OutgoingNotifier extends ChangeNotifier {
     final json = GetMessagesDto(
       room: roomId,
       fromMessageId: fromMessageId,
+      deviceTimezoneOffsetMinutes: 180,
     ).toJson();
     connectionNotifier.socket.emit("getMessages", json);
     StaticLogger.append('<< GET_MESSAGES [$json]');
