@@ -1,19 +1,18 @@
-import 'package:flutter/foundation.dart';
-import 'package:shopping_list_flutter/network/common/message_dto.dart';
-import 'package:shopping_list_flutter/network/common/typing_dto.dart';
-import 'package:shopping_list_flutter/network/incoming/incoming_notifier.dart';
-import 'package:shopping_list_flutter/network/outgoing/get_messages_dto.dart';
-import 'package:shopping_list_flutter/utils/static_logger.dart';
-
+import '../common/typing_dto.dart';
 import '../connection_notifier.dart';
+import '../incoming/incoming_notifier.dart';
+import '../../utils/static_logger.dart';
 import '../net_log.dart';
+import 'edit_message_dto.dart';
 import 'login_dto.dart';
+import 'new_message_dto.dart';
+import './get_messages_dto.dart';
 
-class OutgoingNotifier extends ChangeNotifier {
+class Outgoing {
   ConnectionNotifier connectionNotifier;
   IncomingNotifier incomingNotifier;
 
-  OutgoingNotifier(this.connectionNotifier, this.incomingNotifier);
+  Outgoing(this.connectionNotifier, this.incomingNotifier);
 
   sendLogin(String phone) {
     if (!connectionNotifier.socketConnected) {
@@ -50,19 +49,34 @@ class OutgoingNotifier extends ChangeNotifier {
       return;
     }
 
-    final json = MessageDto(
-      id: null,
-      date_created: DateTime.now(),
-      date_updated: DateTime.now(),
+    final json = NewMessageDto(
       content: msg,
       room: incomingNotifier.currentRoomId,
       user: incomingNotifier.userId,
-      user_name: incomingNotifier.userName,
-      purchaseId: null,
       purchase: null,
     ).toJson();
     connectionNotifier.socket.emit("newMessage", json);
     StaticLogger.append('<< NEW_MESSAGE [$json]');
+  }
+
+  sendEditMessage(int id, String msg) {
+    sendTyping(false);
+
+    if (!connectionNotifier.socketConnected) {
+      NetLog.showSnackBar(
+          'sendEditMessage($msg): ${connectionNotifier.socketId}',
+          10,
+          () => {});
+      return;
+    }
+
+    final json = EditMessageDto(
+      id: id,
+      content: msg,
+      purchase: null,
+    ).toJson();
+    connectionNotifier.socket.emit("editMessage", json);
+    StaticLogger.append('<< EDIT_MESSAGE [$json]');
   }
 
   sendGetMessages(int roomId, [int fromMessageId = 0]) {

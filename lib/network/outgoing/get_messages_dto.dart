@@ -17,11 +17,14 @@ class GetMessagesDto {
   int room;
   int fromMessageId;
   int deviceTimezoneOffsetMinutes;
+  late DateTime currentDeviceTime;
 
   GetMessagesDto(
       {required this.room,
       required this.fromMessageId,
-      required this.deviceTimezoneOffsetMinutes});
+      required this.deviceTimezoneOffsetMinutes}) {
+    currentDeviceTime = DateTime.now();
+  }
 
   // factory GetMessagesDto.fromJson(Map<String, dynamic> json) => _$GetMessagesDtoFromJson(json);
   Map<String, dynamic> toJson() => _$GetMessagesDtoToJson(this);

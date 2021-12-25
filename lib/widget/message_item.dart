@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:shopping_list_flutter/network/common/message_dto.dart';
+import 'package:shopping_list_flutter/network/incoming/message_dto.dart';
 import 'package:shopping_list_flutter/utils/margin.dart';
 import 'package:shopping_list_flutter/utils/timeago.dart';
 
@@ -42,12 +42,10 @@ class MessageItem extends StatelessWidget {
                 padding: const EdgeInsets.all(10),
                 child: Center(
                   child: Text(
-                    message.content,
+                    message.edited ? '* ${message.content}' : message.content,
                     style: GoogleFonts.poppins(
                       // NULL_ID__SERVER_SHOULD_ASSIGN
-                      color: message.id == null
-                          ? Colors.red.withOpacity(isMe ? 1 : 0.8)
-                          : Colors.white.withOpacity(isMe ? 1 : 0.8),
+                      color: Colors.white.withOpacity(isMe ? 1 : 0.8),
                       fontSize: 15,
                     ),
                   ),

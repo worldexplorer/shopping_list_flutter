@@ -8,7 +8,7 @@ import 'env/env_loader.dart';
 import 'network/connection.dart';
 import 'network/connection_notifier.dart';
 import 'network/incoming/incoming_notifier.dart';
-import 'network/outgoing/outgoing_notifier.dart';
+import 'network/outgoing/outgoing.dart';
 import 'views/menu_dashboard_page.dart';
 
 Future<void> main() async {
@@ -37,8 +37,7 @@ class MyApp extends StatelessWidget {
       ChangeNotifierProvider<UiNotifier>(create: (context) => uiNotifier),
       ChangeNotifierProvider<IncomingNotifier>(
           create: (context) => connection.incomingNotifier),
-      ChangeNotifierProvider<OutgoingNotifier>(
-          create: (context) => connection.outgoingNotifier),
+      Provider<Outgoing>(create: (context) => connection.outgoingNotifier),
     ];
 
     return MultiProvider(
@@ -49,7 +48,7 @@ class MyApp extends StatelessWidget {
             primarySwatch: Colors.blue,
           ),
           // home: HomeWidget(),
-          home: MenuDashboardPage(),
+          home: SafeArea(child: MenuDashboardPage()),
           debugShowCheckedModeBanner: true,
         ));
   }

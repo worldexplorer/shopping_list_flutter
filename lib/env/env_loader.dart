@@ -1,6 +1,6 @@
 import 'package:flutter/services.dart';
-import 'package:platform_plus/platform_plus.dart';
 import 'package:mobile_number/mobile_number.dart';
+import 'package:platform_plus/platform_plus.dart';
 import 'package:shopping_list_flutter/utils/static_logger.dart';
 
 import 'env.dart';
@@ -23,14 +23,14 @@ class EnvLoader {
     }
 
     bool isPhysicalDevice = false;
-    try {
-      isPhysicalDevice = await platformPlus.isPhysicalDevice();
-      StaticLogger.append(
-          'EnvLoader:load(): isPhysicalDevice=$isPhysicalDevice');
-    } catch (e) {
-      StaticLogger.append(
-          'FAILED EnvLoader:load(): platformPlus.isPhysicalDevice(): ${e.toString()}');
-    }
+    // try {
+    //   isPhysicalDevice = await platformPlus.isPhysicalDevice();
+    //   StaticLogger.append(
+    //       'EnvLoader:load(): isPhysicalDevice=$isPhysicalDevice');
+    // } catch (e) {
+    //   StaticLogger.append(
+    //       'FAILED EnvLoader:load(): platformPlus.isPhysicalDevice(): ${e.toString()}');
+    // }
 
     String mobileNumber = ret.myMobile;
     try {

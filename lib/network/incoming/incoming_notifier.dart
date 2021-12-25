@@ -1,9 +1,9 @@
 import 'package:flutter/foundation.dart';
-import 'package:shopping_list_flutter/network/common/message_dto.dart';
+import 'package:shopping_list_flutter/network/incoming/message_dto.dart';
 import 'package:shopping_list_flutter/network/common/typing_dto.dart';
 import 'package:shopping_list_flutter/network/common/user_dto.dart';
 import 'package:shopping_list_flutter/network/incoming/room_dto.dart';
-import 'package:shopping_list_flutter/network/outgoing/outgoing_notifier.dart';
+import 'package:shopping_list_flutter/network/outgoing/outgoing.dart';
 import 'package:shopping_list_flutter/utils/static_logger.dart';
 import 'package:shopping_list_flutter/widget/message_item.dart';
 
@@ -73,7 +73,7 @@ class IncomingNotifier extends ChangeNotifier {
     return currentRoom.users.map((x) => x.name).join(", ");
   }
 
-  late OutgoingNotifier outgoingNotifier;
+  late Outgoing outgoingNotifier;
   ConnectionNotifier connectionNotifier;
   IncomingNotifier(this.connectionNotifier);
 
@@ -154,23 +154,21 @@ class IncomingNotifier extends ChangeNotifier {
       MessageDto msg = MessageDto.fromJson(data);
       final msig = ' onMessage(): ${msg.user_name}: ${msg.content}';
 
-      var msgItem = MessageItem(
-        isMe: isMyUserId(msg.user),
-        message: msg,
-      );
+      final prevMsg = _messagesById[msg.id];
+      if (prevMsg == null) {
+        final widget = MessageItem(
+          isMe: isMyUserId(msg.user),
+          message: msg,
+        );
 
-      if (msg.id == null) {
-        StaticLogger.append('      NULL_ID__SERVER_SHOULD_ASSIGN $msig');
+        _messagesById[msg.id] = msg;
+        _messageItemsById[msg.id] = widget;
+        _messageItems.insert(0, widget);
       } else {
-        if (_messagesById.containsKey(msg.id)) {
-          StaticLogger.append('      DUPLICATE $msig');
-        } else {
-          _messagesById[msg.id!] = msg;
-          _messageItemsById[msg.id!] = msgItem;
-        }
+        StaticLogger.append('      EDITED $msig: [$prevMsg] => [$msg]');
+        prevMsg.edited = msg.edited;
       }
 
-      _messageItems.insert(0, msgItem);
       notifyListeners();
     } catch (e) {
       StaticLogger.append('      FAILED onMessage(): ${e.toString()}');
@@ -198,9 +196,10 @@ class IncomingNotifier extends ChangeNotifier {
         MessageDto msg = msgs.messages[i - 1];
 
         if (_messagesById.containsKey(msg.id)) {
+          final prevValue = _messagesById[msg.id];
           StaticLogger.append(
-              '      MESSAGE DUPLICATE $counter: ${msg.user_name}: ${msg.content}');
-          continue;
+              '      MESSAGE EDITED $counter: ${msg.user_name}:' +
+                  ' [$prevValue] => ${msg.content}, edited[${msg.edited}]');
         }
 
         StaticLogger.append('   > MESSAGE $counter [${msg.toJson()}]');
@@ -209,8 +208,8 @@ class IncomingNotifier extends ChangeNotifier {
           message: msg,
         );
 
-        _messagesById[msg.id!] = msg;
-        _messageItemsById[msg.id!] = widget;
+        _messagesById[msg.id] = msg;
+        _messageItemsById[msg.id] = widget;
         _messageItems.insert(0, widget);
 
         changed = true;

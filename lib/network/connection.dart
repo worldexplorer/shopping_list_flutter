@@ -4,19 +4,19 @@ import 'package:socket_io_client/socket_io_client.dart';
 
 import 'connection_notifier.dart';
 import 'incoming/incoming_notifier.dart';
-import 'outgoing/outgoing_notifier.dart';
+import 'outgoing/outgoing.dart';
 
 class Connection {
   Env env;
   late ConnectionNotifier connectionNotifier;
   late IncomingNotifier incomingNotifier;
-  late OutgoingNotifier outgoingNotifier;
+  late Outgoing outgoingNotifier;
   late Socket socket;
 
   Connection(this.env) {
     connectionNotifier = ConnectionNotifier();
     incomingNotifier = IncomingNotifier(connectionNotifier);
-    outgoingNotifier = OutgoingNotifier(connectionNotifier, incomingNotifier);
+    outgoingNotifier = Outgoing(connectionNotifier, incomingNotifier);
     incomingNotifier.outgoingNotifier = outgoingNotifier;
 
     socket = io(env.websocketURL, <String, dynamic>{

@@ -4,7 +4,8 @@
 
 import 'package:json_annotation/json_annotation.dart';
 
-import 'purchase_dto.dart';
+import '../common/purchase_dto.dart';
+
 part 'message_dto.g.dart';
 
 @JsonSerializable(
@@ -15,11 +16,12 @@ part 'message_dto.g.dart';
     disallowUnrecognizedKeys: true,
     includeIfNull: true)
 class MessageDto {
-  int? id;
+  int id;
   DateTime date_created;
   DateTime date_updated;
 
   String content;
+  bool edited;
   int room;
   int user;
   String user_name;
@@ -28,11 +30,12 @@ class MessageDto {
   PurchaseDto? purchase;
 
   MessageDto({
-    this.id,
+    required this.id,
     required this.date_created,
     required this.date_updated,
     required this.content,
     required this.room,
+    required this.edited,
     required this.user,
     required this.user_name,
     required this.purchaseId,

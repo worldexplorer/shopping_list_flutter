@@ -1,12 +1,10 @@
-import 'dart:async';
-
 import 'package:fluentui_system_icons/fluentui_system_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:provider/provider.dart';
-import 'package:shopping_list_flutter/network/outgoing/outgoing_notifier.dart';
+import 'package:shopping_list_flutter/network/outgoing/outgoing.dart';
 import 'package:shopping_list_flutter/utils/theme.dart';
-import 'package:shopping_list_flutter/utils/ui_notifier.dart';
+import 'dart:async';
 
 class FlatTextField extends HookWidget {
   TextEditingController msgInputCtrl = TextEditingController();
@@ -15,8 +13,11 @@ class FlatTextField extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer2<OutgoingNotifier, UiNotifier>(
-        builder: (context, outgoing, ui, child) {
+    // final msgTyped = useState("");
+
+    return Consumer<Outgoing>(builder: (context, outgoing, child) {
+      // var debounce = useState(Timer); // TODO: use river_pod
+
       sendMessageFromInput() {
         if (msgInputCtrl.text.isEmpty) {
           return;
@@ -45,14 +46,13 @@ class FlatTextField extends HookWidget {
               //prefix ?? SizedBox(width: 0, height: 0,),
               Expanded(
                 child: TextField(
-                    onChanged: (String text) {
-                      outgoing.sendTyping(true);
-                      if (ui.debounce?.isActive ?? false) ui.debounce?.cancel();
-                      ui.debounce =
-                          Timer(const Duration(milliseconds: 2000), () {
-                        outgoing.sendTyping(false);
-                      });
-                    },
+                    // onChanged: (String text) {
+                    //   outgoing.sendTyping(true);
+                    //   if (debounce.value.isActive ?? false) debounce.cancel();
+                    //   debounce = Timer(const Duration(milliseconds: 2000), () {
+                    //     outgoing.sendTyping(false);
+                    //   });
+                    // },
                     textInputAction: TextInputAction.send,
                     onSubmitted: (txt) => sendMessageFromInput,
                     controller: msgInputCtrl,

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+import 'package:shopping_list_flutter/hooks/scroll_controller_for_animation.dart';
 
 import 'package:shopping_list_flutter/network/incoming/incoming_notifier.dart';
 import 'package:shopping_list_flutter/utils/margin.dart';
@@ -17,17 +18,42 @@ class Chat extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final _debugExpanded = useState(false);
+    final hideFabAnimController = useAnimationController(
+        duration: kThemeAnimationDuration, initialValue: 1);
+    final scrollController =
+        useScrollControllerForAnimation(hideFabAnimController);
 
     return Consumer2<IncomingNotifier, UiNotifier>(
         builder: (context, incoming, ui, child) {
       return Scaffold(
         backgroundColor: bg,
+        floatingActionButton: FadeTransition(
+          opacity: hideFabAnimController,
+          child: ScaleTransition(
+            scale: hideFabAnimController,
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(0, 0, 0, 80),
+              child: FloatingActionButton.small(
+                // label: const Text(
+                //   '+',
+                //   // style: Theme.of(context).textTheme.headline4,
+                // ),
+                child: const Icon(
+                  Icons.arrow_drop_down,
+                  size: 28,
+                ),
+                onPressed: () {},
+              ),
+            ),
+          ),
+        ),
+        // floatingActionButtonLocation: FloatingActionButtonLocation.miniEndFloat,
         body: CustomScrollView(
+          controller: scrollController,
           slivers: <Widget>[
             SliverAppBar(
                 pinned: true,
                 floating: false,
-                //_debugExpanded.value,
                 leading: IconButton(
                   icon: const Icon(
                     // FluentIcons.settings_28_filled,
@@ -47,10 +73,10 @@ class Chat extends HookWidget {
                   Text(
                     '${incoming.currentRoom.name} (${incoming.currentRoomUsersCsv})',
                     style: GoogleFonts.manrope(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w600,
-                      fontSize: 19,
-                    ),
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 19,
+                        backgroundColor: Colors.cyan),
                   ),
                   if (incoming.typing.isNotEmpty) ...[
                     const YMargin(4),
