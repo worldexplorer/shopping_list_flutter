@@ -73,10 +73,10 @@ class Chat extends HookWidget {
                   Text(
                     '${incoming.currentRoom.name} (${incoming.currentRoomUsersCsv})',
                     style: GoogleFonts.manrope(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w600,
-                        fontSize: 19,
-                        backgroundColor: Colors.cyan),
+                      color: Colors.white,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 19,
+                    ),
                   ),
                   if (incoming.typing.isNotEmpty) ...[
                     const YMargin(4),

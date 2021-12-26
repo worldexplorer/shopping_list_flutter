@@ -6,9 +6,9 @@ import 'package:shopping_list_flutter/utils/timeago.dart';
 
 class MessageItem extends StatelessWidget {
   final bool isMe;
-  final MessageDto message;
+  MessageDto message;
 
-  const MessageItem({
+  MessageItem({
     Key? key,
     required this.message,
     this.isMe = false,

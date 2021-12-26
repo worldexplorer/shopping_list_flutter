@@ -40,8 +40,9 @@ class Connection {
     socket.on('rooms', incomingNotifier.onRooms);
     socket.on('typing', incomingNotifier.onTyping);
     socket.on('message', incomingNotifier.onMessage);
+    socket.on('updatedMessageRead', incomingNotifier.onUpdateMessageRead);
     socket.on('messages', incomingNotifier.onMessages);
-    socket.on('error', incomingNotifier.onError);
+    socket.on('error', incomingNotifier.onServerError);
 
     StaticLogger.append(
         '#1/4 handlers hooked to a socket [${connectionNotifier.sConnected}]');

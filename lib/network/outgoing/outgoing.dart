@@ -1,8 +1,9 @@
+import 'package:shopping_list_flutter/network/incoming/mark_message_read_dto.dart';
+
 import '../common/typing_dto.dart';
 import '../connection_notifier.dart';
 import '../incoming/incoming_notifier.dart';
 import '../../utils/static_logger.dart';
-import '../net_log.dart';
 import 'edit_message_dto.dart';
 import 'login_dto.dart';
 import 'new_message_dto.dart';
@@ -44,8 +45,7 @@ class Outgoing {
     sendTyping(false);
 
     if (!connectionNotifier.socketConnected) {
-      NetLog.showSnackBar(
-          'sendMessage($msg): ${connectionNotifier.socketId}', 10, () => {});
+      StaticLogger.append('sendMessage($msg): ${connectionNotifier.socketId}');
       return;
     }
 
@@ -59,24 +59,39 @@ class Outgoing {
     StaticLogger.append('<< NEW_MESSAGE [$json]');
   }
 
-  sendEditMessage(int id, String msg) {
+  sendEditMessage(int messageId, String msg) {
     sendTyping(false);
 
     if (!connectionNotifier.socketConnected) {
-      NetLog.showSnackBar(
-          'sendEditMessage($msg): ${connectionNotifier.socketId}',
-          10,
-          () => {});
+      StaticLogger.append(
+          'sendEditMessage($msg): ${connectionNotifier.socketId}');
       return;
     }
 
     final json = EditMessageDto(
-      id: id,
+      id: messageId,
       content: msg,
       purchase: null,
     ).toJson();
     connectionNotifier.socket.emit("editMessage", json);
     StaticLogger.append('<< EDIT_MESSAGE [$json]');
+  }
+
+  sendMarkMessageRead(int messageId, int userId) {
+    sendTyping(false);
+
+    if (!connectionNotifier.socketConnected) {
+      StaticLogger.append(
+          'sendEditMessage($messageId): ${connectionNotifier.socketId}');
+      return;
+    }
+
+    final json = MarkMessageReadDto(
+      message: messageId,
+      user: userId,
+    ).toJson();
+    connectionNotifier.socket.emit("markMessageRead", json);
+    StaticLogger.append('<< MARK_MESSAGE_READ [$json]');
   }
 
   sendGetMessages(int roomId, [int fromMessageId = 0]) {

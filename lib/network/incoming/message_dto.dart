@@ -22,6 +22,13 @@ class MessageDto {
 
   String content;
   bool edited;
+
+  int? replyto_id;
+  int? forwardfrom_id;
+
+  List<int> persons_sent;
+  List<int> persons_read;
+
   int room;
   int user;
   String user_name;
@@ -36,6 +43,10 @@ class MessageDto {
     required this.content,
     required this.room,
     required this.edited,
+    required this.replyto_id,
+    required this.forwardfrom_id,
+    required this.persons_sent,
+    required this.persons_read,
     required this.user,
     required this.user_name,
     required this.purchaseId,

@@ -8,6 +8,7 @@ import 'package:shopping_list_flutter/utils/static_logger.dart';
 import 'package:shopping_list_flutter/widget/message_item.dart';
 
 import '../connection_notifier.dart';
+import 'mark_message_read_dto.dart';
 import 'messages_dto.dart';
 import 'rooms_dto.dart';
 
@@ -154,20 +155,9 @@ class IncomingNotifier extends ChangeNotifier {
       MessageDto msg = MessageDto.fromJson(data);
       final msig = ' onMessage(): ${msg.user_name}: ${msg.content}';
 
-      final prevMsg = _messagesById[msg.id];
-      if (prevMsg == null) {
-        final widget = MessageItem(
-          isMe: isMyUserId(msg.user),
-          message: msg,
-        );
+      _messageAddOrEdit(msg, msig);
 
-        _messagesById[msg.id] = msg;
-        _messageItemsById[msg.id] = widget;
-        _messageItems.insert(0, widget);
-      } else {
-        StaticLogger.append('      EDITED $msig: [$prevMsg] => [$msg]');
-        prevMsg.edited = msg.edited;
-      }
+      outgoingNotifier.sendMarkMessageRead(msg.id, userId);
 
       notifyListeners();
     } catch (e) {
@@ -175,8 +165,34 @@ class IncomingNotifier extends ChangeNotifier {
     }
   }
 
-  void onError(data) {
-    StaticLogger.append('> SERVER_ERROR [$data]');
+  bool _messageAddOrEdit(MessageDto msg, String msig) {
+    bool changed = false;
+
+    final prevMsg = _messagesById[msg.id];
+    if (prevMsg == null) {
+      final widget = MessageItem(
+        isMe: isMyUserId(msg.user),
+        message: msg,
+      );
+
+      _messagesById[msg.id] = msg;
+      _messageItemsById[msg.id] = widget;
+      _messageItems.insert(0, widget);
+    } else {
+      StaticLogger.append('      EDITED $msig: ' +
+          '[${prevMsg.content}] => [${msg.content}]' +
+          ', edited[${msg.edited}]');
+      _messagesById[msg.id] = msg;
+
+      var widget = _messageItemsById[msg.id];
+      if (widget != null) {
+        widget.message =
+            msg; // no need to find widget in _messageItems and re-insert a new instance
+      }
+      changed = true;
+    }
+
+    return changed;
   }
 
   void onMessages(data) {
@@ -192,27 +208,11 @@ class IncomingNotifier extends ChangeNotifier {
       total = msgs.messages.length;
 
       for (; i <= total; i++) {
-        final counter = '$i/$total ';
+        final counter = '$i/$total';
         MessageDto msg = msgs.messages[i - 1];
+        final msig = ' onMessages($counter): ${msg.user_name}: ${msg.content}';
 
-        if (_messagesById.containsKey(msg.id)) {
-          final prevValue = _messagesById[msg.id];
-          StaticLogger.append(
-              '      MESSAGE EDITED $counter: ${msg.user_name}:' +
-                  ' [$prevValue] => ${msg.content}, edited[${msg.edited}]');
-        }
-
-        StaticLogger.append('   > MESSAGE $counter [${msg.toJson()}]');
-        final widget = MessageItem(
-          isMe: isMyUserId(msg.user),
-          message: msg,
-        );
-
-        _messagesById[msg.id] = msg;
-        _messageItemsById[msg.id] = widget;
-        _messageItems.insert(0, widget);
-
-        changed = true;
+        changed &= _messageAddOrEdit(msg, msig);
       }
 
       if (changed) {
@@ -222,5 +222,32 @@ class IncomingNotifier extends ChangeNotifier {
       StaticLogger.append(
           '      FAILED onMessages($i/$total): ${e.toString()}');
     }
+  }
+
+  void onUpdateMessageRead(data) {
+    StaticLogger.append('> UPDATE_MESSAGE_READ [$data]');
+    try {
+      UpdatedMessageReadDto msg = UpdatedMessageReadDto.fromJson(data);
+      final msig = ' onUpdateMessageRead(): ${msg.id}: ${msg.persons_read}';
+
+      final MessageDto? existingMsg = _messagesById[msg.id];
+      if (existingMsg == null) {
+        throw '_messagesById[msg.id] NOT FOUND';
+      } else {
+        StaticLogger.append(
+            '      MESSAGE_READ_UPDATED $msig: [$existingMsg] => [$msg]');
+        existingMsg.persons_read = msg.persons_read;
+        // no need to find widget in _messageItems and re-insert a new instance
+      }
+
+      notifyListeners();
+    } catch (e) {
+      StaticLogger.append(
+          '      FAILED onUpdateMessageRead(): ${e.toString()}');
+    }
+  }
+
+  void onServerError(data) {
+    StaticLogger.append('> SERVER_ERROR [$data]');
   }
 }
