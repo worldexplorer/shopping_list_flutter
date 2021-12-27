@@ -1,42 +1,41 @@
-import 'package:shopping_list_flutter/network/incoming/mark_message_read_dto.dart';
-
 import '../common/typing_dto.dart';
-import '../connection_notifier.dart';
-import '../incoming/incoming_notifier.dart';
+import '../connection_state.dart';
+import '../incoming/incoming_state.dart';
 import '../../utils/static_logger.dart';
 import 'edit_message_dto.dart';
 import 'login_dto.dart';
 import 'new_message_dto.dart';
 import './get_messages_dto.dart';
+import './mark_message_read_dto.dart';
 
-class Outgoing {
-  ConnectionNotifier connectionNotifier;
-  IncomingNotifier incomingNotifier;
+class OutgoingHandlers {
+  ConnectionState connectionState;
+  IncomingState incomingState;
 
-  Outgoing(this.connectionNotifier, this.incomingNotifier);
+  OutgoingHandlers(this.connectionState, this.incomingState);
 
   sendLogin(String phone) {
-    if (!connectionNotifier.socketConnected) {
-      StaticLogger.append('sendLogin($phone): ${connectionNotifier.socketId}');
+    if (!connectionState.socketConnected) {
+      StaticLogger.append('sendLogin($phone): ${connectionState.socketId}');
       return;
     }
     final json = LoginDto(
       phone: phone,
     ).toJson();
-    connectionNotifier.socket.emit("login", json);
+    connectionState.socket.emit("login", json);
     StaticLogger.append('<< LOGIN [$json]');
   }
 
   sendTyping(bool typing) {
-    if (!connectionNotifier.socketConnected) {
+    if (!connectionState.socketConnected) {
       // StaticLogger.append('sendTyping($typing): ${connectionNotifier.socketId}');
       return;
     }
-    connectionNotifier.socket.emit(
+    connectionState.socket.emit(
         "typing",
         TypingDto(
-          socketId: connectionNotifier.socketId,
-          userName: incomingNotifier.userName,
+          socketId: connectionState.socketId,
+          userName: incomingState.userName,
           typing: typing,
         ).toJson());
   }
@@ -44,27 +43,26 @@ class Outgoing {
   sendMessage(String msg) {
     sendTyping(false);
 
-    if (!connectionNotifier.socketConnected) {
-      StaticLogger.append('sendMessage($msg): ${connectionNotifier.socketId}');
+    if (!connectionState.socketConnected) {
+      StaticLogger.append('sendMessage($msg): ${connectionState.socketId}');
       return;
     }
 
     final json = NewMessageDto(
       content: msg,
-      room: incomingNotifier.currentRoomId,
-      user: incomingNotifier.userId,
+      room: incomingState.currentRoomId,
+      user: incomingState.userId,
       purchase: null,
     ).toJson();
-    connectionNotifier.socket.emit("newMessage", json);
+    connectionState.socket.emit("newMessage", json);
     StaticLogger.append('<< NEW_MESSAGE [$json]');
   }
 
   sendEditMessage(int messageId, String msg) {
     sendTyping(false);
 
-    if (!connectionNotifier.socketConnected) {
-      StaticLogger.append(
-          'sendEditMessage($msg): ${connectionNotifier.socketId}');
+    if (!connectionState.socketConnected) {
+      StaticLogger.append('sendEditMessage($msg): ${connectionState.socketId}');
       return;
     }
 
@@ -73,16 +71,16 @@ class Outgoing {
       content: msg,
       purchase: null,
     ).toJson();
-    connectionNotifier.socket.emit("editMessage", json);
+    connectionState.socket.emit("editMessage", json);
     StaticLogger.append('<< EDIT_MESSAGE [$json]');
   }
 
   sendMarkMessageRead(int messageId, int userId) {
     sendTyping(false);
 
-    if (!connectionNotifier.socketConnected) {
+    if (!connectionState.socketConnected) {
       StaticLogger.append(
-          'sendEditMessage($messageId): ${connectionNotifier.socketId}');
+          'sendEditMessage($messageId): ${connectionState.socketId}');
       return;
     }
 
@@ -90,14 +88,14 @@ class Outgoing {
       message: messageId,
       user: userId,
     ).toJson();
-    connectionNotifier.socket.emit("markMessageRead", json);
+    connectionState.socket.emit("markMessageRead", json);
     StaticLogger.append('<< MARK_MESSAGE_READ [$json]');
   }
 
   sendGetMessages(int roomId, [int fromMessageId = 0]) {
-    if (!connectionNotifier.socketConnected) {
+    if (!connectionState.socketConnected) {
       StaticLogger.append(
-          'sendRoomChange($roomId): ${connectionNotifier.socketId}');
+          'sendRoomChange($roomId): ${connectionState.socketId}');
       return;
     }
     final json = GetMessagesDto(
@@ -105,7 +103,7 @@ class Outgoing {
       fromMessageId: fromMessageId,
       deviceTimezoneOffsetMinutes: 180,
     ).toJson();
-    connectionNotifier.socket.emit("getMessages", json);
+    connectionState.socket.emit("getMessages", json);
     StaticLogger.append('<< GET_MESSAGES [$json]');
   }
 }

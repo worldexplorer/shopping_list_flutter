@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-class UiNotifier extends ChangeNotifier {
+final uiStateProvider = ChangeNotifierProvider((ref) => UiState());
+
+class UiState extends ChangeNotifier {
   bool _isCollapsed = true;
   bool get isCollapsed => _isCollapsed;
   set isCollapsed(bool val) {

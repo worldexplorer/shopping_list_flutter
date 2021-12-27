@@ -1,7 +1,9 @@
-import 'package:flutter/foundation.dart';
+// import 'package:flutter/foundation.dart';
 import 'package:socket_io_client/socket_io_client.dart';
 
-class ConnectionNotifier extends ChangeNotifier {
+class ConnectionState
+// extends ChangeNotifier
+{
   // bool _receiving = false;
   // bool get receiving => _receiving;
   // set receiving(bool val) {
@@ -28,7 +30,7 @@ class ConnectionNotifier extends ChangeNotifier {
           : 'disconnected';
   set socket(Socket val) {
     _socket = val;
-    notifyListeners();
+    // notifyListeners();
   }
 
   bool willGetMessagesOnReconnect = false;
@@ -36,6 +38,6 @@ class ConnectionNotifier extends ChangeNotifier {
   @override
   void dispose() {
     _socket?.disconnect();
-    super.dispose();
+    // super.dispose();
   }
 }

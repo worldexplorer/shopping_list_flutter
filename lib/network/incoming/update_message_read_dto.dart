@@ -4,25 +4,7 @@
 
 import 'package:json_annotation/json_annotation.dart';
 
-part 'mark_message_read_dto.g.dart';
-
-@JsonSerializable(
-    checked: true,
-    createFactory: true,
-    createToJson: true,
-    explicitToJson: true,
-    disallowUnrecognizedKeys: true,
-    includeIfNull: true)
-class MarkMessageReadDto {
-  int message;
-  int user;
-
-  MarkMessageReadDto({required this.message, required this.user});
-
-  factory MarkMessageReadDto.fromJson(Map<String, dynamic> json) =>
-      _$MarkMessageReadDtoFromJson(json);
-  Map<String, dynamic> toJson() => _$MarkMessageReadDtoToJson(this);
-}
+part 'update_message_read_dto.g.dart';
 
 @JsonSerializable(
     checked: true,

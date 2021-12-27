@@ -1,58 +1,79 @@
-import 'package:shopping_list_flutter/env/env.dart';
-import 'package:shopping_list_flutter/utils/static_logger.dart';
+import 'package:flutter/foundation.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:socket_io_client/socket_io_client.dart';
 
-import 'connection_notifier.dart';
-import 'incoming/incoming_notifier.dart';
-import 'outgoing/outgoing.dart';
+import 'connection_state.dart';
+import 'incoming/incoming.dart';
+import 'outgoing/outgoing_handlers.dart';
 
-class Connection {
-  Env env;
-  late ConnectionNotifier connectionNotifier;
-  late IncomingNotifier incomingNotifier;
-  late Outgoing outgoingNotifier;
-  late Socket socket;
+import '../../env/env.dart';
+import '../../utils/static_logger.dart';
 
-  Connection(this.env) {
-    connectionNotifier = ConnectionNotifier();
-    incomingNotifier = IncomingNotifier(connectionNotifier);
-    outgoingNotifier = Outgoing(connectionNotifier, incomingNotifier);
-    incomingNotifier.outgoingNotifier = outgoingNotifier;
+final connectionStateProvider =
+    ChangeNotifierProvider.family<Connection, Env>((ref, env) {
+  final conn = Connection(env);
+  final incomingState = ref.read(incomingStateProvider);
+  conn.lateBindCreateSocket(incomingState);
+  return conn;
+});
 
-    socket = io(env.websocketURL, <String, dynamic>{
+class Connection extends ChangeNotifier {
+  final Env _env;
+
+  late ConnectionState _connectionState;
+  late IncomingState _incomingState;
+  late OutgoingHandlers outgoingHandlers;
+  late IncomingHandlers incomingHandlers;
+  late Socket _socket;
+
+  Connection(this._env) {
+    _connectionState = ConnectionState();
+  }
+
+  void lateBindCreateSocket(IncomingState incomingState) {
+    _incomingState = incomingState;
+    outgoingHandlers = OutgoingHandlers(_connectionState, _incomingState);
+    _incomingState.outgoingHandlers = outgoingHandlers;
+    incomingHandlers =
+        IncomingHandlers(_connectionState, _incomingState, outgoingHandlers);
+    createSocket();
+  }
+
+  void createSocket() {
+    _socket = io(_env.websocketURL, <String, dynamic>{
       'transports': ['websocket'],
       'autoConnect': true,
     });
 
-    socket.on('connect', (_) {
-      StaticLogger.append('#3/4 connected: [${connectionNotifier.socketId}]');
+    _socket.on('connect', (_) {
+      StaticLogger.append('#3/4 connected: [${_connectionState.socketId}]');
       // connectionNotifier.notify();
-      outgoingNotifier.sendLogin(env.myMobile);
+      outgoingHandlers.sendLogin(_env.myMobile);
     });
-    socket.on('disconnect', (_) {
+    _socket.on('disconnect', (_) {
       StaticLogger.append(
           'disconnected by server; willGetMessagesOnReconnect=true');
-      connectionNotifier.willGetMessagesOnReconnect = true;
+      _connectionState.willGetMessagesOnReconnect = true;
     });
-    socket.on('fromServer', (_) => {StaticLogger.append(_)});
+    _socket.on('fromServer', (_) => {StaticLogger.append(_)});
 
-    socket.on('user', incomingNotifier.onUser);
-    socket.on('rooms', incomingNotifier.onRooms);
-    socket.on('typing', incomingNotifier.onTyping);
-    socket.on('message', incomingNotifier.onMessage);
-    socket.on('updatedMessageRead', incomingNotifier.onUpdateMessageRead);
-    socket.on('messages', incomingNotifier.onMessages);
-    socket.on('error', incomingNotifier.onServerError);
+    _socket.on('user', incomingHandlers.onUser);
+    _socket.on('rooms', incomingHandlers.onRooms);
+    _socket.on('typing', incomingHandlers.onTyping);
+    _socket.on('message', incomingHandlers.onMessage);
+    _socket.on('updatedMessageRead', incomingHandlers.onUpdateMessageRead);
+    _socket.on('messages', incomingHandlers.onMessages);
+    _socket.on('error', incomingHandlers.onServerError);
 
     StaticLogger.append(
-        '#1/4 handlers hooked to a socket [${connectionNotifier.sConnected}]');
+        '#1/4 handlers hooked to a socket [${_connectionState.sConnected}]');
   }
 
-  void connect() {
+  void connect() async {
     try {
-      socket.connect();
-      StaticLogger.append('#2/4 connecting to [${env.websocketURL}]');
-      connectionNotifier.socket = socket; // notifies
+      _socket.connect();
+      StaticLogger.append('#2/4 connecting to [${_env.websocketURL}]');
+      _connectionState.socket = _socket;
     } catch (e) {
       StaticLogger.append(e.toString());
     }
@@ -60,7 +81,7 @@ class Connection {
 
   void disconnect() {
     try {
-      socket.connect();
+      _socket.connect();
       StaticLogger.append('#4/4 disconnected');
     } catch (e) {
       StaticLogger.append(e.toString());
@@ -72,7 +93,8 @@ class Connection {
     connect();
   }
 
+  @override
   void dispose() {
-    socket.dispose();
+    _socket.dispose();
   }
 }

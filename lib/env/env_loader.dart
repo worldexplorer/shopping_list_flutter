@@ -1,6 +1,7 @@
+import 'dart:io';
+
 import 'package:flutter/services.dart';
 import 'package:mobile_number/mobile_number.dart';
-import 'package:platform_plus/platform_plus.dart';
 import 'package:shopping_list_flutter/utils/static_logger.dart';
 
 import 'env.dart';
@@ -9,14 +10,25 @@ import 'device_emulator_detector.dart';
 
 class EnvLoader {
   // https://blog.codemagic.io/flutter-ui-socket/
-  static Future<Env> load([forceHeroku = true]) async {
+  static Future<Env> load([forceHeroku = false]) async {
     Env ret = forceHeroku ? PROD_HEROKU : DEV_LOCAL;
 
     bool isEmulator = true;
     try {
-      isEmulator = await DeviceEmulatorDetector.detectEmulator();
+      // isEmulator = await DeviceEmulatorDetector.detectEmulator();
+      // StaticLogger.append(
+      //     'EnvLoader:load(): deviceInfo=${DeviceEmulatorDetector.deviceInfo}');
+
+      final env = Platform.environment;
+      final twoColumns =
+          env.entries.map((mapEntry) => '${mapEntry.key}\t\t${mapEntry.value}');
+
       StaticLogger.append(
-          'EnvLoader:load(): deviceInfo=${DeviceEmulatorDetector.deviceInfo}');
+        'EnvLoader:load(): Platform.environment:\n\n$twoColumns\n\n',
+      );
+
+      isEmulator = DeviceEmulatorDetector.isEmulator(env);
+      StaticLogger.append('EnvLoader:load(): isEmulator=${isEmulator}');
     } catch (e) {
       StaticLogger.append(
           'FAILED EnvLoader:load(): DeviceInfo().readDeviceData(): ${e.toString()}');

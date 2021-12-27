@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_styled_toast/flutter_styled_toast.dart';
 
-class NetLog {
+class Popup {
   static popupToast(String msg) {
     final scaffoldKey = GlobalKey<ScaffoldState>();
     showToast(msg,
