@@ -16,21 +16,6 @@ class Menu extends HookConsumerWidget {
 
     return Scaffold(
         backgroundColor: backgroundColor,
-        // https://blog.logrocket.com/flutter-appbar-tutorial/
-        // https://o7planning.org/12851/flutter-appbar
-        // appBar: AppBar(
-        //     leading: IconButton(
-        //       icon: const Icon(
-        //         Icons.arrow_back,
-        //         size: 20,
-        //       ),
-        //       onPressed: () {
-        //         ui.toMenuAndBack();
-        //         Navigator.pop(context);
-        //       },
-        //     ),
-        //     titleSpacing: 0,
-        //     centerTitle: false),
         body: Column(
           mainAxisSize: MainAxisSize.min,
           // mainAxisAlignment: MainAxisAlignment.spaceAround,

@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:shopping_list_flutter/utils/static_logger.dart';
@@ -27,7 +26,7 @@ class Log extends HookWidget {
           style: const TextStyle(
             color: Colors.white,
             // fontWeight: FontWeight.bold,
-            fontSize: 15.0,
+            fontSize: 13.0,
             letterSpacing: 1,
             wordSpacing: 1,
           ),
@@ -35,21 +34,4 @@ class Log extends HookWidget {
       ),
     );
   }
-
-//   return Container(
-//       padding: const EdgeInsets.all(16),
-//       child: const TextField(
-//           keyboardType: TextInputType.multiline,
-//           maxLines: null,
-//           minLines: 13,
-//           enabled: false,
-//           style: TextStyle(color: Colors.white),
-//           decoration: InputDecoration(
-//             border: OutlineInputBorder(),
-//             hintText: 'Debug log here...',
-//             // fillColor: Colors.white,
-//             // filled: true,
-//           )));
-// }
-
 }

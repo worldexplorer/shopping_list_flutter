@@ -1,4 +1,3 @@
-import 'package:fluentui_system_icons/fluentui_system_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -6,7 +5,6 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../hooks/scroll_controller_for_animation.dart';
 import '../network/incoming/incoming_state.dart';
-import '../utils/margin.dart';
 import '../utils/theme.dart';
 import '../utils/ui_notifier.dart';
 import '../widget/flat_text_field.dart';
@@ -57,6 +55,7 @@ class Chat extends HookConsumerWidget {
               pinned: true,
               floating: false,
               // https://stackoverflow.com/questions/50460629/how-to-remove-extra-padding-around-appbar-leading-icon-in-flutter
+              // https://blog.logrocket.com/flutter-appbar-tutorial/
               // https://o7planning.org/12851/flutter-appbar
               leading: IconButton(
                 icon: const Icon(
@@ -80,7 +79,7 @@ class Chat extends HookConsumerWidget {
                   ),
                 ),
                 if (incoming.typing.isNotEmpty) ...[
-                  const YMargin(4),
+                  const SizedBox(width: 4),
                   Text(
                     incoming.typing,
                     style: GoogleFonts.manrope(

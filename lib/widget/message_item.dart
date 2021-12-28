@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shopping_list_flutter/network/incoming/message_dto.dart';
-import 'package:shopping_list_flutter/utils/margin.dart';
 import 'package:shopping_list_flutter/utils/timeago.dart';
 
 class MessageItem extends StatelessWidget {
@@ -22,14 +21,17 @@ class MessageItem extends StatelessWidget {
         crossAxisAlignment:
             isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
         children: [
-          Text(
-            isMe ? 'Me' : message.user_name,
-            style: GoogleFonts.manrope(
-                color: isMe ? Colors.grey : Colors.green,
-                fontSize: 15,
-                fontWeight: FontWeight.bold),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 11),
+            child: Text(
+              isMe ? 'Me' : message.user_name,
+              style: GoogleFonts.manrope(
+                  color: isMe ? Colors.grey : Colors.green,
+                  fontSize: 15,
+                  fontWeight: FontWeight.bold),
+            ),
           ),
-          const YMargin(5),
+          const SizedBox(width: 5),
           Row(
             mainAxisAlignment:
                 isMe ? MainAxisAlignment.end : MainAxisAlignment.start,
@@ -59,7 +61,7 @@ class MessageItem extends StatelessWidget {
                           fontSize: 15,
                         ),
                       ),
-                      const YMargin(3),
+                      const SizedBox(width: 3),
                       Text(
                         timeAgoSinceDate(message.date_created),
                         style: GoogleFonts.manrope(
