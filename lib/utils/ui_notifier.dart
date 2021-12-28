@@ -4,17 +4,21 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 final uiStateProvider = ChangeNotifierProvider((ref) => UiState());
 
 class UiState extends ChangeNotifier {
-  bool _isCollapsed = true;
-  bool get isCollapsed => _isCollapsed;
-  set isCollapsed(bool val) {
-    _isCollapsed = val;
-    notifyListeners();
+  late AnimationController? menuVisibleController;
+
+  void toMenuAndBack() {
+    if (isMenuVisible) {
+      menuVisibleController?.forward();
+    } else {
+      menuVisibleController?.reverse();
+    }
+    isMenuVisible = !isMenuVisible;
   }
 
-  AnimationController? _collapseController;
-  AnimationController? get collapseController => _collapseController;
-  set collapseController(AnimationController? val) {
-    _collapseController = val;
+  bool _isMenuVisible = true;
+  bool get isMenuVisible => _isMenuVisible;
+  set isMenuVisible(bool val) {
+    _isMenuVisible = val;
     notifyListeners();
   }
 }

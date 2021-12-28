@@ -4,13 +4,13 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import 'package:shopping_list_flutter/hooks/scroll_controller_for_animation.dart';
-import 'package:shopping_list_flutter/network/incoming/incoming_state.dart';
-import 'package:shopping_list_flutter/utils/margin.dart';
-import 'package:shopping_list_flutter/utils/static_logger.dart';
-import 'package:shopping_list_flutter/utils/theme.dart';
-import 'package:shopping_list_flutter/utils/ui_notifier.dart';
-import 'package:shopping_list_flutter/widget/flat_text_field.dart';
+import '../hooks/scroll_controller_for_animation.dart';
+import '../network/incoming/incoming_state.dart';
+import '../utils/margin.dart';
+import '../utils/theme.dart';
+import '../utils/ui_notifier.dart';
+import '../widget/flat_text_field.dart';
+import 'views.dart';
 
 class Chat extends HookConsumerWidget {
   const Chat({Key? key}) : super(key: key);
@@ -20,7 +20,8 @@ class Chat extends HookConsumerWidget {
     final ui = ref.watch(uiStateProvider);
     final incoming = ref.watch(incomingStateProvider);
 
-    final _debugExpanded = useState(false);
+    var debugExpanded = useState(false);
+
     final hideFabAnimController = useAnimationController(
         duration: kThemeAnimationDuration, initialValue: 1);
     final scrollController =
@@ -55,6 +56,8 @@ class Chat extends HookConsumerWidget {
           SliverAppBar(
               pinned: true,
               floating: false,
+              // https://stackoverflow.com/questions/50460629/how-to-remove-extra-padding-around-appbar-leading-icon-in-flutter
+              // https://o7planning.org/12851/flutter-appbar
               leading: IconButton(
                 icon: const Icon(
                   // FluentIcons.settings_28_filled,
@@ -62,14 +65,11 @@ class Chat extends HookConsumerWidget {
                   size: 20,
                 ),
                 onPressed: () {
-                  if (ui.isCollapsed) {
-                    ui.collapseController?.forward();
-                  } else {
-                    ui.collapseController?.reverse();
-                  }
-                  ui.isCollapsed = !ui.isCollapsed;
+                  ui.toMenuAndBack();
                 },
               ),
+              titleSpacing: 0,
+              centerTitle: false,
               title: Column(children: [
                 Text(
                   '${incoming.currentRoom.name} (${incoming.currentRoomUsersCsv})',
@@ -95,7 +95,7 @@ class Chat extends HookConsumerWidget {
                 IconButton(
                   icon: const Icon(Icons.search),
                   onPressed: () {
-                    _debugExpanded.value = !_debugExpanded.value;
+                    debugExpanded.value = !debugExpanded.value;
                   },
                 ),
                 // PopSliverToBoxAdapter(upMenuButton(
@@ -110,10 +110,8 @@ class Chat extends HookConsumerWidget {
                 // )),
               ],
               bottom: PreferredSize(
-                preferredSize: Size.fromHeight(_debugExpanded.value ? 300 : 0),
-                child: _debugExpanded.value
-                    ? _buildScrollingText(StaticLogger.dumpAll('\n\n'))
-                    : Container(),
+                preferredSize: Size.fromHeight(debugExpanded.value ? 300 : 0),
+                child: debugExpanded.value ? const Log() : Container(),
               )),
           SliverFillRemaining(
             hasScrollBody: true,
@@ -127,67 +125,13 @@ class Chat extends HookConsumerWidget {
               ),
               Container(
                   height: 50,
-                  margin: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                  // margin: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                  // color: Colors.yellow,
                   child: FlatTextField()),
             ]),
           )
         ],
       ),
     );
-  }
-
-  Widget _buildScrollingText2(String text) {
-    return Container(
-        padding: const EdgeInsets.all(16),
-        child: const TextField(
-            keyboardType: TextInputType.multiline,
-            maxLines: null,
-            minLines: 13,
-            enabled: false,
-            style: TextStyle(color: Colors.white),
-            decoration: InputDecoration(
-              border: OutlineInputBorder(),
-              hintText: 'Debug log here...',
-              // fillColor: Colors.white,
-              // filled: true,
-            )));
-  }
-
-  Widget _buildScrollingText(String text) {
-    return
-        // Column(children: [
-        //   Flexible(child:
-
-        Container(
-      margin: const EdgeInsets.all(15.0),
-      padding: const EdgeInsets.all(3.0),
-      height: 280,
-      decoration: BoxDecoration(
-        border: Border.all(
-          color: Colors.white,
-          width: 1,
-        ),
-      ), // // Column(children: [
-      // // Flexible( child:
-
-      // child: Expanded(
-      child: SingleChildScrollView(
-        scrollDirection: Axis.vertical,
-        child: Text(
-          text,
-          style: const TextStyle(
-            color: Colors.white,
-            // fontWeight: FontWeight.bold,
-            fontSize: 16.0,
-            letterSpacing: 1,
-            wordSpacing: 1,
-          ),
-        ),
-      ),
-      // ),
-    )
-        // )
-        // ])
-        ;
   }
 }

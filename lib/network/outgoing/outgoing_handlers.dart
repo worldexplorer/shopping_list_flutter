@@ -5,8 +5,8 @@ import '../../utils/static_logger.dart';
 import 'edit_message_dto.dart';
 import 'login_dto.dart';
 import 'new_message_dto.dart';
-import './get_messages_dto.dart';
-import './mark_message_read_dto.dart';
+import 'get_messages_dto.dart';
+import 'mark_message_read_dto.dart';
 
 class OutgoingHandlers {
   ConnectionState connectionState;

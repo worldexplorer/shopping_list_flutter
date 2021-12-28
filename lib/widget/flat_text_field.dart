@@ -8,12 +8,11 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'dart:async';
 
 class FlatTextField extends HookConsumerWidget {
-  TextEditingController msgInputCtrl = TextEditingController();
-
   FlatTextField({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final msgInputCtrl = useTextEditingController();
     final incoming = ref.watch(incomingStateProvider);
     final outgoingHandlers = incoming.outgoingHandlers;
 
@@ -29,17 +28,18 @@ class FlatTextField extends HookConsumerWidget {
     }
 
     return Container(
-      decoration: BoxDecoration(
-        color: altColor,
-        borderRadius: BorderRadius.circular(6),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
-          )
-        ],
-      ),
+      // decoration: BoxDecoration(
+      //   color: altColor,
+      //   borderRadius: BorderRadius.circular(6),
+      //   boxShadow: [
+      //     BoxShadow(
+      //       color: Colors.black.withOpacity(0.05),
+      //       blurRadius: 10,
+      //     )
+      //   ],
+      // ),
       child: Container(
+        color: altColor,
         padding: const EdgeInsets.symmetric(horizontal: 10),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -64,7 +64,10 @@ class FlatTextField extends HookConsumerWidget {
                       color: Colors.white.withOpacity(0.6),
                     ),
                     border: InputBorder.none,
-                    contentPadding: const EdgeInsets.all(
+                    contentPadding: const EdgeInsets.fromLTRB(
+                      10.0,
+                      16.0,
+                      16.0,
                       16.0,
                     ),
                   ),

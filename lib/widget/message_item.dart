@@ -17,7 +17,7 @@ class MessageItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 6),
+      padding: const EdgeInsets.fromLTRB(0, 10, 0, 4),
       child: Column(
         crossAxisAlignment:
             isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
@@ -29,35 +29,49 @@ class MessageItem extends StatelessWidget {
                 fontSize: 15,
                 fontWeight: FontWeight.bold),
           ),
-          const YMargin(10),
+          const YMargin(5),
           Row(
             mainAxisAlignment:
                 isMe ? MainAxisAlignment.end : MainAxisAlignment.start,
             children: [
-              Container(
-                decoration: BoxDecoration(
-                  color: (isMe ? Colors.white : Colors.black).withOpacity(0.12),
-                  borderRadius: BorderRadius.circular(7),
-                ),
-                padding: const EdgeInsets.all(10),
-                child: Center(
-                  child: Text(
-                    message.edited ? '* ${message.content}' : message.content,
-                    style: GoogleFonts.poppins(
-                      // NULL_ID__SERVER_SHOULD_ASSIGN
-                      color: Colors.white.withOpacity(isMe ? 1 : 0.8),
-                      fontSize: 15,
-                    ),
+              Flexible(
+                child: Container(
+                  decoration: BoxDecoration(
+                    color:
+                        (isMe ? Colors.white : Colors.black).withOpacity(0.12),
+                    borderRadius: BorderRadius.circular(7),
+                  ),
+                  padding: const EdgeInsets.all(10),
+                  margin: (isMe
+                      ? const EdgeInsets.fromLTRB(40, 0, 0, 0)
+                      : const EdgeInsets.fromLTRB(0, 0, 40, 0)),
+                  child: Column(
+                    // mainAxisAlignment: MainAxisAlignment.end,
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Text(
+                        message.edited
+                            ? '* ${message.content}'
+                            : message.content,
+                        softWrap: true,
+                        style: GoogleFonts.poppins(
+                          color: Colors.white.withOpacity(isMe ? 1 : 0.8),
+                          fontSize: 15,
+                        ),
+                      ),
+                      const YMargin(3),
+                      Text(
+                        timeAgoSinceDate(message.date_created),
+                        style: GoogleFonts.manrope(
+                            color: Colors.grey,
+                            fontSize: 10,
+                            fontWeight: FontWeight.w300),
+                      ),
+                    ],
                   ),
                 ),
               ),
             ],
-          ),
-          const YMargin(3),
-          Text(
-            timeAgoSinceDate(message.date_created),
-            style: GoogleFonts.manrope(
-                color: Colors.grey, fontSize: 10, fontWeight: FontWeight.w300),
           ),
         ],
       ),

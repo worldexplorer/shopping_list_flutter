@@ -6,7 +6,7 @@ import 'package:shopping_list_flutter/views/home.dart';
 import 'env/env.dart';
 import 'env/env_loader.dart';
 import 'network/connection.dart';
-import 'views/menu_dashboard_page.dart';
+import 'views/home.dart';
 
 Future<void> main() async {
   // TODO: move somewhere to let UI draw spinner & NetLog panel
@@ -33,7 +33,7 @@ class MyApp extends ConsumerWidget {
         primarySwatch: Colors.blue,
       ),
       // home: HomeWidget(),
-      home: SafeArea(child: MenuDashboardPage()),
+      home: const SafeArea(child: Home()),
       debugShowCheckedModeBanner: true,
     );
   }
