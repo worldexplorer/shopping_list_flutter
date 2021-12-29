@@ -16,4 +16,8 @@ class StaticLogger {
   static dumpAll([String separator = '\n']) {
     return buffer.join(separator);
   }
+
+  static void clear() {
+    buffer.clear();
+  }
 }

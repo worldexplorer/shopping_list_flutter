@@ -66,7 +66,7 @@ class Home extends HookConsumerWidget {
                 borderRadius: const BorderRadius.all(Radius.circular(40)),
                 elevation: 8,
                 color: backgroundColor,
-                child: const Chat(),
+                child: Chat(),
               ),
             ),
           ),

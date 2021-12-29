@@ -18,5 +18,6 @@ ThemeData theme(BuildContext _) {
   );
 }
 
-Color get bg => Platform.isIOS ? Color(0xff242f3e) : Color(0xff17263c);
+Color get chatBackground =>
+    Platform.isIOS ? Color(0xff242f3e) : Color(0xff17263c);
 Color get altColor => Platform.isIOS ? Color(0xff17263c) : Color(0xff28263c);

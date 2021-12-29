@@ -4,13 +4,15 @@ import 'package:shopping_list_flutter/network/incoming/message_dto.dart';
 import 'package:shopping_list_flutter/utils/timeago.dart';
 
 class MessageItem extends StatelessWidget {
-  final bool isMe;
   MessageDto message;
+  final bool isMe;
+  bool selected;
 
   MessageItem({
     Key? key,
     required this.message,
     this.isMe = false,
+    this.selected = false,
   }) : super(key: key);
 
   @override
@@ -22,7 +24,7 @@ class MessageItem extends StatelessWidget {
             isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 11),
+            padding: const EdgeInsets.symmetric(horizontal: 10),
             child: Text(
               isMe ? 'Me' : message.user_name,
               style: GoogleFonts.manrope(
@@ -31,7 +33,7 @@ class MessageItem extends StatelessWidget {
                   fontWeight: FontWeight.bold),
             ),
           ),
-          const SizedBox(width: 5),
+          const SizedBox(width: 6),
           Row(
             mainAxisAlignment:
                 isMe ? MainAxisAlignment.end : MainAxisAlignment.start,

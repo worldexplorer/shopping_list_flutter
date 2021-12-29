@@ -49,7 +49,7 @@ class Router extends ChangeNotifier {
       page: Page.Log,
       title: "Log",
       path: '/log',
-      widget: (BuildContext context) => const Log(),
+      widget: (BuildContext context) => Log(),
       isSelectedInMenu: false,
       isVisibleInMenu: true);
 
