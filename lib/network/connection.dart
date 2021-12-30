@@ -32,6 +32,7 @@ class Connection extends ChangeNotifier {
 
   void lateBindCreateSocket(IncomingState incomingState) {
     _incomingState = incomingState;
+    _incomingState.connection = this;
     outgoingHandlers = OutgoingHandlers(_connectionState, _incomingState);
     _incomingState.outgoingHandlers = outgoingHandlers;
     incomingHandlers =

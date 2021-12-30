@@ -6,6 +6,7 @@ import 'package:shopping_list_flutter/views/home.dart';
 import 'env/env.dart';
 import 'env/env_loader.dart';
 import 'network/connection.dart';
+import 'utils/routes.dart';
 import 'views/home.dart';
 
 Future<void> main() async {
@@ -27,6 +28,8 @@ class MyApp extends ConsumerWidget {
     final connection = ref.watch(connectionStateProvider(env));
     connection.connect(); // went to background; will notify listeners
 
+    final router = ref.watch(routerProvider);
+
     return MaterialApp(
       title: 'Shopping List',
       theme: ThemeData(
@@ -35,6 +38,7 @@ class MyApp extends ConsumerWidget {
       // home: HomeWidget(),
       home: const SafeArea(child: Home()),
       debugShowCheckedModeBanner: true,
+      routes: router.widgetByNamedRoute,
     );
   }
 }

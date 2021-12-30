@@ -36,10 +36,10 @@ class _ScrollControllerForAnimationHookState
         case ScrollDirection.forward:
           // State has the "widget" property
           // HookState has the "hook" property
-          hook.animationController.forward();
+          hook.animationController.reverse();
           break;
         case ScrollDirection.reverse:
-          hook.animationController.reverse();
+          hook.animationController.forward();
           break;
         case ScrollDirection.idle:
           break;

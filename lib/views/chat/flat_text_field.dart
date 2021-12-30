@@ -8,7 +8,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'dart:async';
 
 class FlatTextField extends HookConsumerWidget {
-  FlatTextField({Key? key}) : super(key: key);
+  const FlatTextField({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -27,64 +27,74 @@ class FlatTextField extends HookConsumerWidget {
       msgInputCtrl.clear();
     }
 
-    return Container(
-      // decoration: BoxDecoration(
-      //   color: altColor,
-      //   borderRadius: BorderRadius.circular(6),
-      //   boxShadow: [
-      //     BoxShadow(
-      //       color: Colors.black.withOpacity(0.05),
-      //       blurRadius: 10,
-      //     )
-      //   ],
-      // ),
-      child: Container(
-        color: altColor,
-        padding: const EdgeInsets.symmetric(horizontal: 10),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          mainAxisSize: MainAxisSize.max,
-          children: [
-            //prefix ?? SizedBox(width: 0, height: 0,),
-            Expanded(
-              child: TextField(
-                  // onChanged: (String text) {
-                  //   outgoing.sendTyping(true);
-                  //   if (debounce.value.isActive ?? false) debounce.cancel();
-                  //   debounce = Timer(const Duration(milliseconds: 2000), () {
-                  //     outgoing.sendTyping(false);
-                  //   });
-                  // },
-                  textInputAction: TextInputAction.send,
-                  maxLines: 6,
-                  onSubmitted: (txt) => sendMessageFromInput,
-                  controller: msgInputCtrl,
-                  decoration: InputDecoration(
-                    hintText: "Enter Message...",
-                    hintStyle: TextStyle(
-                      color: Colors.white.withOpacity(0.6),
-                    ),
-                    border: InputBorder.none,
-                    contentPadding: const EdgeInsets.fromLTRB(
-                      0.0,
-                      16.0,
-                      0.0,
-                      16.0,
-                    ),
+    return
+        // Container(
+        // decoration: BoxDecoration(
+        //   color: altColor,
+        //   borderRadius: BorderRadius.circular(6),
+        //   boxShadow: [
+        //     BoxShadow(
+        //       color: Colors.black.withOpacity(0.05),
+        //       blurRadius: 10,
+        //     )
+        //   ],
+        // ),
+        // child:
+        Container(
+      color: altColor,
+      padding: const EdgeInsets.symmetric(horizontal: 10),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.max,
+        children: [
+          const Icon(
+            Icons.add_outlined,
+            color: Colors.green,
+          ),
+          const SizedBox(width: 10),
+          //prefix ?? SizedBox(width: 0, height: 0,),
+          // https://stackoverflow.com/questions/57803737/flutter-renderflex-children-have-non-zero-flex-but-incoming-height-constraints
+          Expanded(
+            child: TextField(
+                // onChanged: (String text) {
+                //   outgoing.sendTyping(true);
+                //   if (debounce.value.isActive ?? false) debounce.cancel();
+                //   debounce = Timer(const Duration(milliseconds: 2000), () {
+                //     outgoing.sendTyping(false);
+                //   });
+                // },
+                textInputAction: TextInputAction.newline,
+                keyboardType: TextInputType.multiline,
+                minLines: 1,
+                maxLines: 12,
+                onSubmitted: (txt) => sendMessageFromInput,
+                controller: msgInputCtrl,
+                decoration: InputDecoration(
+                  hintText: "Enter Message...",
+                  hintStyle: TextStyle(
+                    color: Colors.white.withOpacity(0.6),
                   ),
-                  style: const TextStyle(color: Colors.white)),
+                  border: InputBorder.none,
+                  contentPadding: const EdgeInsets.fromLTRB(
+                    0.0,
+                    16.0,
+                    0.0,
+                    16.0,
+                  ),
+                ),
+                style: const TextStyle(color: Colors.white)),
+          ),
+          const SizedBox(width: 5),
+          IconButton(
+            icon: const Icon(
+              FluentIcons.send_28_filled,
+              size: 24.0,
+              color: Colors.green,
             ),
-
-            IconButton(
-              icon: const Icon(
-                FluentIcons.send_28_filled,
-                size: 24.0,
-                color: Colors.green,
-              ),
-              onPressed: sendMessageFromInput,
-            ),
-          ],
-        ),
+            onPressed: sendMessageFromInput,
+          ),
+        ],
+        // ),
       ),
     );
   }

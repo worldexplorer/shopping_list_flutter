@@ -11,8 +11,8 @@ import 'chat_messages.dart';
 import 'flat_text_field.dart';
 import '../views.dart';
 
-class Chat extends HookConsumerWidget {
-  Chat({Key? key}) : super(key: key);
+class ChatWrapperSlivers extends HookConsumerWidget {
+  const ChatWrapperSlivers({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -118,13 +118,17 @@ class Chat extends HookConsumerWidget {
               )),
           SliverFillRemaining(
             hasScrollBody: true,
-            child: Column(children: [
-              const Flexible(child: ChatMessages()),
-              Container(
-                  height: 50,
-                  // margin: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-                  // color: Colors.yellow,
-                  child: FlatTextField()),
+            child: Column(mainAxisSize: MainAxisSize.max, children: const [
+              Expanded(child: ChatMessages()),
+              // Container(
+              // height: 50,
+              // margin: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+              // color: Colors.yellow,
+              // child: const
+              // Flexible(child:
+              FlatTextField()
+              // )
+              // ),
             ]),
           )
         ],

@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import '../connection.dart';
 
 import 'message_dto.dart';
 import 'room_dto.dart';
@@ -15,6 +16,7 @@ final incomingStateProvider =
 
 class IncomingState extends ChangeNotifier {
   late OutgoingHandlers outgoingHandlers;
+  late Connection connection;
 
   UserDto? _user;
   UserDto get user => _user!;

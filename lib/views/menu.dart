@@ -36,26 +36,38 @@ class Menu extends HookConsumerWidget {
                 mainAxisSize: MainAxisSize.min,
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: createMenuItems(router.visibleMenuItems)),
+                children: createMenuItems(router.visibleMenuItems, context)),
           ],
         ));
   }
 
-  List<Widget> createMenuItems(List<RouteItem> routeItems) {
-    final rendered = routeItems.map(createMenuItemfromRouteItem).toList();
+  List<Widget> createMenuItems(
+      List<MenuItem> routeItems, BuildContext context) {
+    final rendered =
+        routeItems.map((x) => createMenuItemFromRouteItem(x, context)).toList();
     List<Widget> ret = [];
-    rendered.forEach((routeItem) {
+    for (var routeItem in rendered) {
       ret.add(routeItem);
-      ret.add(SizedBox(height: 30));
-    });
+      ret.add(const SizedBox(height: 30));
+    }
     return ret;
   }
 
-  Widget createMenuItemfromRouteItem(RouteItem routeItem) {
+  Widget createMenuItemFromRouteItem(MenuItem routeItem, BuildContext context) {
     return GestureDetector(
       onTap: () {
         StaticLogger.append('CLICKED ${routeItem.title}');
-        // BlocProvider.of<NavigationBloc>(context).add(NavigationEvents.DashboardClickedEvent);
+        if (routeItem is RouteMenuItem) {
+          RouteMenuItem routeMenuItem = routeItem;
+          Navigator.pushNamed(
+            context,
+            routeMenuItem.path,
+          );
+        }
+        if (routeItem is ActionMenuItem) {
+          ActionMenuItem actionMenuItem = routeItem;
+          actionMenuItem.action();
+        }
       },
       child: Text(routeItem.title,
           style: TextStyle(

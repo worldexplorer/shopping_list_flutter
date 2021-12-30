@@ -5,8 +5,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:shopping_list_flutter/utils/ui_notifier.dart';
 
-import 'chat/chat.dart';
-import 'menu.dart';
+import 'views.dart';
 
 class Home extends HookConsumerWidget {
   const Home({Key? key}) : super(key: key);
@@ -21,7 +20,7 @@ class Home extends HookConsumerWidget {
       screenWidth.value = widthAfterRebuild;
     }, [widthAfterRebuild]);
 
-    final duration = useState(const Duration(milliseconds: 300));
+    final duration = useState(const Duration(milliseconds: 200));
     final menuVisibleController =
         useAnimationController(duration: duration.value);
 
@@ -47,7 +46,7 @@ class Home extends HookConsumerWidget {
               child: const Align(
                 alignment: Alignment.centerLeft,
                 child: Padding(
-                  padding: EdgeInsets.only(left: 16.0),
+                  padding: EdgeInsets.only(left: 25.0),
                   child: Menu(),
                 ),
               ),
@@ -57,7 +56,7 @@ class Home extends HookConsumerWidget {
             duration: duration.value,
             top: 0,
             bottom: 0,
-            left: ui.isMenuVisible ? 0 : 0.6 * screenWidth.value,
+            left: ui.isMenuVisible ? 0 : 0.4 * screenWidth.value,
             right: ui.isMenuVisible ? 0 : -0.2 * screenWidth.value,
             child: ScaleTransition(
               scale: scaleAnimation.value,
@@ -69,7 +68,8 @@ class Home extends HookConsumerWidget {
                 child: IgnorePointer(
                   // https://stackoverflow.com/questions/50600747/flutter-ignore-touch-events-on-a-widget
                   ignoring: !ui.isMenuVisible,
-                  child: Chat(),
+                  child: const ChatWrapperSlivers(),
+                  // child: const ChatWrapperAppbar(),
                 ),
               ),
             ),

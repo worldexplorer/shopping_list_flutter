@@ -21,4 +21,11 @@ class UiState extends ChangeNotifier {
     _isMenuVisible = val;
     notifyListeners();
   }
+
+  int _refreshCounter = 0;
+  int get refreshCounter => _refreshCounter;
+  void incrementRefreshCounter() {
+    _refreshCounter++;
+    notifyListeners();
+  }
 }

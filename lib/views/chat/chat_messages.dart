@@ -3,6 +3,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:shopping_list_flutter/utils/static_logger.dart';
+import 'package:shopping_list_flutter/utils/ui_notifier.dart';
 import 'package:shopping_list_flutter/widget/context_menu.dart';
 import 'package:shopping_list_flutter/views/chat/message_item.dart';
 
@@ -32,7 +33,7 @@ class ChatMessages extends HookConsumerWidget {
       itemBuilder: (BuildContext context, int index) {
         final msgItem = incoming.getMessageItems[index];
         Widget dismissibleMsgItem =
-            makeDismissible(context, incoming.getMessageItems, index);
+            makeDismissible(context, ref, incoming.getMessageItems, index);
         Widget ret = addContextMenu(context, dismissibleMsgItem, msgItem,
             messagesSelected, tapGlobalPosition);
         return ret;
@@ -40,7 +41,10 @@ class ChatMessages extends HookConsumerWidget {
     );
   }
 
-  Widget makeDismissible(BuildContext context, List<MessageItem> items, index) {
+  Widget makeDismissible(
+      BuildContext context, WidgetRef ref, List<MessageItem> items, index) {
+    final ui = ref.watch(uiStateProvider);
+
     final TextStyle archiveTextStyle = GoogleFonts.poppins(
       color: Colors.white.withOpacity(0.8),
       fontSize: 18,
@@ -62,7 +66,7 @@ class ChatMessages extends HookConsumerWidget {
             Text('Archive', style: archiveTextStyle),
             const SizedBox(width: 10),
             const Icon(
-              Icons.clear,
+              Icons.delete_outline_rounded,
               color: Colors.white,
             ),
           ]),
@@ -73,25 +77,30 @@ class ChatMessages extends HookConsumerWidget {
               content: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const SizedBox(width: 10),
               Text(
                 'Message archived',
                 style: snackBarDismissedTextStyle,
               ),
-              Row(mainAxisSize: MainAxisSize.min, children: [
-                Text('Undo', style: archiveTextStyle),
-                const SizedBox(width: 10),
-                IconButton(
-                  icon: const Icon(
-                    Icons.undo,
-                    color: Colors.white,
-                  ),
-                  onPressed: () {
-                    items.insert(index, msgItem);
-                  },
-                ),
-                const SizedBox(width: 10),
-              ]),
+              const SizedBox(width: 15),
+              items[index] != msgItem
+                  ? Row(mainAxisSize: MainAxisSize.min, children: [
+                      IconButton(
+                        icon: const Icon(
+                          Icons.undo_rounded,
+                          color: Colors.white,
+                        ),
+                        onPressed: () {
+                          if (items[index] != msgItem) {
+                            items.insert(index, msgItem);
+                            ui.incrementRefreshCounter();
+                          }
+                        },
+                      ),
+                      const SizedBox(width: 10),
+                      Text('Undo', style: archiveTextStyle),
+                      const SizedBox(width: 5),
+                    ])
+                  : Text('Message restored', style: archiveTextStyle),
               const SizedBox(width: 10),
             ],
           )));

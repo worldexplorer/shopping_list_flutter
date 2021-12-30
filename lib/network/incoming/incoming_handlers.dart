@@ -125,9 +125,18 @@ class IncomingHandlers {
       incomingState.messageItemsById[msg.id] = widget;
       incomingState.messageItems.insert(0, widget);
     } else {
-      StaticLogger.append('      EDITED $msig: ' +
-          '[${prevMsg.content}] => [${msg.content}]' +
-          ', edited[${msg.edited}]');
+      String changes = '';
+      if (prevMsg.content != msg.content) {
+        changes += '[${prevMsg.content}] => [${msg.content}] ';
+      }
+      if (prevMsg.edited != msg.edited) {
+        changes += 'edited[${msg.edited}]';
+      }
+      if (changes == '') {
+        StaticLogger.append('      NOT_CHANGED $msig');
+      } else {
+        StaticLogger.append('      EDITED $msig: $changes');
+      }
       incomingState.messagesById[msg.id] = msg;
 
       var widget = incomingState.messageItemsById[msg.id];
@@ -142,7 +151,7 @@ class IncomingHandlers {
   }
 
   void onMessages(data) {
-    StaticLogger.append('   > MESSAGES [$data]');
+    StaticLogger.append('   > MESSAGES [SEE_BELOW]');
     int i = 1;
     int total = 0;
 
@@ -166,7 +175,7 @@ class IncomingHandlers {
       }
     } catch (e) {
       StaticLogger.append(
-          '      FAILED onMessages($i/$total): ${e.toString()}');
+          '   > MESSAGES FAILED onMessages($i/$total): ${e.toString()}');
     }
   }
 
