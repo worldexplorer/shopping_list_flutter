@@ -56,6 +56,7 @@ class FlatTextField extends HookConsumerWidget {
                   //   });
                   // },
                   textInputAction: TextInputAction.send,
+                  maxLines: 6,
                   onSubmitted: (txt) => sendMessageFromInput,
                   controller: msgInputCtrl,
                   decoration: InputDecoration(
@@ -65,9 +66,9 @@ class FlatTextField extends HookConsumerWidget {
                     ),
                     border: InputBorder.none,
                     contentPadding: const EdgeInsets.fromLTRB(
-                      6.0,
+                      0.0,
                       16.0,
-                      10.0,
+                      0.0,
                       16.0,
                     ),
                   ),

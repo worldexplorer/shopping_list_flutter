@@ -1,4 +1,4 @@
-export 'chat.dart';
+export 'chat/chat.dart';
 export 'home.dart';
 export 'log.dart';
 export 'menu.dart';

@@ -70,7 +70,7 @@ showPopupMenu({
 }
 
 // TODO: convert to a new HOOK, move tapGlobalPosition to a local variable
-Widget addContextMenu<T extends Widget>({
+Widget wrapWithContextMenu<T extends Widget>({
   required T child,
   required BuildContext context,
   required List<CtxMenuItem> items,
@@ -81,6 +81,7 @@ Widget addContextMenu<T extends Widget>({
   required Function() onClosed,
 }) {
   return GestureDetector(
+    behavior: HitTestBehavior.translucent,
     onTap: onItemTap(),
     onLongPressDown: (LongPressDownDetails details) {
       tapGlobalPosition.value = details.globalPosition;

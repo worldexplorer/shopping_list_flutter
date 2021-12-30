@@ -5,7 +5,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:shopping_list_flutter/utils/ui_notifier.dart';
 
-import 'chat.dart';
+import 'chat/chat.dart';
 import 'menu.dart';
 
 class Home extends HookConsumerWidget {
@@ -66,7 +66,11 @@ class Home extends HookConsumerWidget {
                 borderRadius: const BorderRadius.all(Radius.circular(40)),
                 elevation: 8,
                 color: backgroundColor,
-                child: Chat(),
+                child: IgnorePointer(
+                  // https://stackoverflow.com/questions/50600747/flutter-ignore-touch-events-on-a-widget
+                  ignoring: !ui.isMenuVisible,
+                  child: Chat(),
+                ),
               ),
             ),
           ),

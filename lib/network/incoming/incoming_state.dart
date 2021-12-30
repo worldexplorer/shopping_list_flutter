@@ -8,16 +8,13 @@ import '../common/user_dto.dart';
 import '../outgoing/outgoing_handlers.dart';
 
 import '../../utils/static_logger.dart';
-import '../../widget/message_item.dart';
+import '../../views/chat/message_item.dart';
 
 final incomingStateProvider =
-//  ChangeNotifierProvider.family<IncomingState, OutgoingHandlers>(
-//     (ref, outgoingHandlers) => IncomingState(outgoingHandlers));
     ChangeNotifierProvider<IncomingState>((ref) => IncomingState());
 
 class IncomingState extends ChangeNotifier {
   late OutgoingHandlers outgoingHandlers;
-  // IncomingState(this.outgoingHandlers);
 
   UserDto? _user;
   UserDto get user => _user!;
@@ -39,7 +36,7 @@ class IncomingState extends ChangeNotifier {
   final Map<int, MessageDto> messagesById = <int, MessageDto>{};
   final Map<int, MessageItem> messageItemsById = <int, MessageItem>{};
   // Iterable<MessageItem> get getMessageItems => _messageItemsById.values;
-  final List<MessageItem> messageItems = <MessageItem>[];
+  final List<MessageItem> messageItems = [];
   List<MessageItem> get getMessageItems => messageItems;
 
   final Map<int, RoomDto> roomsById = <int, RoomDto>{};

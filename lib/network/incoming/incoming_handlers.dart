@@ -4,7 +4,7 @@ import '../common/user_dto.dart';
 import '../outgoing/outgoing_handlers.dart';
 
 import '../../utils/static_logger.dart';
-import '../../widget/message_item.dart';
+import '../../views/chat/message_item.dart';
 
 import '../connection_state.dart';
 import 'incoming_state.dart';

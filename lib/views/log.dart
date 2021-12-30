@@ -43,7 +43,7 @@ class Log extends HookWidget {
       ),
       child: SingleChildScrollView(
         scrollDirection: Axis.vertical,
-        child: addContextMenu(
+        child: wrapWithContextMenu(
             child: Text(
               text,
               style: GoogleFonts.poppins(
