@@ -18,12 +18,14 @@ class NewMessageDto {
   int room;
   int user;
   String content;
+  int? replyto_id;
   NewPurchaseDto? purchase;
 
   NewMessageDto({
     required this.room,
     required this.user,
     required this.content,
+    this.replyto_id,
     this.purchase,
   });
 

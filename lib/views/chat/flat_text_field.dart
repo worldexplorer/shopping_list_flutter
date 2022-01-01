@@ -30,7 +30,8 @@ class FlatTextField extends HookConsumerWidget {
             ui.isEditingMessageId, ui.msgInputCtrl.text);
         ui.isEditingMessageId = 0;
       } else {
-        outgoingHandlers.sendMessage(ui.msgInputCtrl.text);
+        outgoingHandlers.sendMessage(
+            ui.msgInputCtrl.text, ui.isReplyingToMessageId);
       }
       ui.msgInputCtrl.clear();
     }

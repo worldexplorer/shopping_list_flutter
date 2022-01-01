@@ -1,12 +1,11 @@
 import 'package:flutter/foundation.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import '../connection.dart';
 
+import '../connection.dart';
+import '../outgoing/outgoing_handlers.dart';
 import 'message_dto.dart';
 import 'room_dto.dart';
-
-import '../common/user_dto.dart';
-import '../outgoing/outgoing_handlers.dart';
+import 'user_dto.dart';
 
 import '../../utils/static_logger.dart';
 import '../../views/chat/message_item.dart';
@@ -35,11 +34,75 @@ class IncomingState extends ChangeNotifier {
     notifyListeners();
   }
 
+  final Map<int, MessageDto> messagesUnreadById = <int, MessageDto>{};
+  List<int> getOnlyUnreadMessages() {
+    final List<MessageDto> all = messagesUnreadById.values.toList();
+    final List<MessageDto> unread =
+        all.where((x) => !x.persons_read.contains(userId)).toList();
+    final List<int> unreadMsgIds = unread.map((y) => y.id).toList();
+    return unreadMsgIds;
+  }
+
   final Map<int, MessageDto> messagesById = <int, MessageDto>{};
   final Map<int, MessageItem> messageItemsById = <int, MessageItem>{};
   // Iterable<MessageItem> get getMessageItems => _messageItemsById.values;
   final List<MessageItem> messageItems = [];
   List<MessageItem> get getMessageItems => messageItems;
+
+  clearAllMessages() {
+    messagesUnreadById.clear();
+    messagesById.clear();
+    messageItemsById.clear();
+    messageItems.clear();
+    notifyListeners();
+  }
+
+  String removeMessageFromMessagesUnreadById(int msgId) {
+    var log = '';
+
+    if (messagesUnreadById.containsKey(msgId)) {
+      messagesUnreadById.remove(msgId);
+      log += ' REMOVED from messagesUnreadById;';
+    } else {
+      log += ' NOT_FOUND_IN messagesUnreadById;';
+    }
+
+    return log;
+  }
+
+  String removeMessageFromAllMaps(int msgId) {
+    var log = '';
+
+    if (messagesById.containsKey(msgId)) {
+      messagesById.remove(msgId);
+      log += ' REMOVED from messagesById;';
+    } else {
+      log += ' NOT_FOUND_IN messagesById;';
+    }
+
+    if (messagesUnreadById.containsKey(msgId)) {
+      messagesUnreadById.remove(msgId);
+      log += ' REMOVED from messagesUnreadById;';
+    } else {
+      log += ' NOT_FOUND_IN messagesUnreadById;';
+    }
+
+    if (messageItemsById.containsKey(msgId)) {
+      messageItemsById.remove(msgId);
+      log += ' REMOVED from messageItemsById;';
+    } else {
+      log += ' NOT_FOUND_IN messageItemsById;';
+    }
+
+    final indexFound = messageItems.indexWhere((x) => x.message.id == msgId);
+    if (indexFound >= 0) {
+      messageItems.removeAt(indexFound);
+      log += ' REMOVED from messageItems;';
+    } else {
+      log += ' NOT_FOUND_IN messageItems;';
+    }
+    return log;
+  }
 
   final Map<int, RoomDto> roomsById = <int, RoomDto>{};
   List<RoomDto> get rooms => roomsById.values.toList();

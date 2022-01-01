@@ -5,10 +5,10 @@ import 'dart:core';
 
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:shopping_list_flutter/network/incoming/incoming.dart';
 
-import '../views/views.dart';
-import 'ui_notifier.dart';
+import 'views.dart';
+import '../utils/ui_notifier.dart';
+import '../../network/incoming/incoming.dart';
 
 final routerProvider = ChangeNotifierProvider<Router>((ref) => Router(ref));
 
@@ -90,6 +90,7 @@ class Router extends ChangeNotifier {
         title: 'Reconnect',
         action: () {
           final incoming = ref.watch(incomingStateProvider);
+          incoming.clearAllMessages();
           final connection = incoming.connection;
           connection.reconnect();
         },
@@ -101,6 +102,7 @@ class Router extends ChangeNotifier {
         title: 'Get Messages',
         action: () {
           final incoming = ref.watch(incomingStateProvider);
+          // incoming.clearAllMessages();
           incoming.outgoingHandlers.sendGetMessages(incoming.currentRoomId);
         },
         isSelectedInMenu: false,

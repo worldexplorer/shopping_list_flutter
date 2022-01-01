@@ -1,32 +1,30 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'mark_message_read_dto.dart';
+part of 'archived_messages_dto.dart';
 
 // **************************************************************************
 // JsonSerializableGenerator
 // **************************************************************************
 
-MarkMessagesReadDto _$MarkMessagesReadDtoFromJson(Map<String, dynamic> json) =>
+ArchivedMessagesDto _$ArchivedMessagesDtoFromJson(Map<String, dynamic> json) =>
     $checkedCreate(
-      'MarkMessagesReadDto',
+      'ArchivedMessagesDto',
       json,
       ($checkedConvert) {
         $checkKeys(
           json,
-          allowedKeys: const ['messageIds', 'user'],
+          allowedKeys: const ['messageIds'],
         );
-        final val = MarkMessagesReadDto(
+        final val = ArchivedMessagesDto(
           messageIds: $checkedConvert('messageIds',
               (v) => (v as List<dynamic>).map((e) => e as int).toList()),
-          user: $checkedConvert('user', (v) => v as int),
         );
         return val;
       },
     );
 
-Map<String, dynamic> _$MarkMessagesReadDtoToJson(
-        MarkMessagesReadDto instance) =>
+Map<String, dynamic> _$ArchivedMessagesDtoToJson(
+        ArchivedMessagesDto instance) =>
     <String, dynamic>{
       'messageIds': instance.messageIds,
-      'user': instance.user,
     };

@@ -10,6 +10,7 @@ Map<String, dynamic> _$GetMessagesDtoToJson(GetMessagesDto instance) =>
     <String, dynamic>{
       'room': instance.room,
       'fromMessageId': instance.fromMessageId,
+      'archived': instance.archived,
       'deviceTimezoneOffsetMinutes': instance.deviceTimezoneOffsetMinutes,
       'currentDeviceTime': instance.currentDeviceTime.toIso8601String(),
     };

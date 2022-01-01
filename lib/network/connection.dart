@@ -62,7 +62,9 @@ class Connection extends ChangeNotifier {
     _socket.on('rooms', incomingHandlers.onRooms);
     _socket.on('typing', incomingHandlers.onTyping);
     _socket.on('message', incomingHandlers.onMessage);
-    _socket.on('updatedMessageRead', incomingHandlers.onUpdateMessageRead);
+    _socket.on('updatedMessagesRead', incomingHandlers.onMessagesReadUpdated);
+    _socket.on('archivedMessages', incomingHandlers.onArchivedMessages);
+    _socket.on('deletedMessages', incomingHandlers.onDeletedMessages);
     _socket.on('messages', incomingHandlers.onMessages);
     _socket.on('error', incomingHandlers.onServerError);
 
@@ -91,7 +93,9 @@ class Connection extends ChangeNotifier {
 
   void reconnect() {
     disconnect();
+    _connectionState.willGetMessagesOnReconnect = true;
     connect();
+    outgoingHandlers.sendLogin(_env.myMobile);
   }
 
   @override

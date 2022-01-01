@@ -6,7 +6,7 @@ import 'package:shopping_list_flutter/views/home.dart';
 import 'env/env.dart';
 import 'env/env_loader.dart';
 import 'network/connection.dart';
-import 'utils/routes.dart';
+import 'views/router.dart';
 import 'views/home.dart';
 
 Future<void> main() async {

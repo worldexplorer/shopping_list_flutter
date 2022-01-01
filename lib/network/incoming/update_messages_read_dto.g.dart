@@ -1,10 +1,39 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'update_message_read_dto.dart';
+part of 'update_messages_read_dto.dart';
 
 // **************************************************************************
 // JsonSerializableGenerator
 // **************************************************************************
+
+UpdatedMessagesReadDto _$UpdatedMessagesReadDtoFromJson(
+        Map<String, dynamic> json) =>
+    $checkedCreate(
+      'UpdatedMessagesReadDto',
+      json,
+      ($checkedConvert) {
+        $checkKeys(
+          json,
+          allowedKeys: const ['messagesUpdated'],
+        );
+        final val = UpdatedMessagesReadDto(
+          messagesUpdated: $checkedConvert(
+              'messagesUpdated',
+              (v) => (v as List<dynamic>)
+                  .map((e) =>
+                      UpdatedMessageReadDto.fromJson(e as Map<String, dynamic>))
+                  .toList()),
+        );
+        return val;
+      },
+    );
+
+Map<String, dynamic> _$UpdatedMessagesReadDtoToJson(
+        UpdatedMessagesReadDto instance) =>
+    <String, dynamic>{
+      'messagesUpdated':
+          instance.messagesUpdated.map((e) => e.toJson()).toList(),
+    };
 
 UpdatedMessageReadDto _$UpdatedMessageReadDtoFromJson(
         Map<String, dynamic> json) =>

@@ -39,4 +39,6 @@ Color get chatMessageReply => Color.fromRGBO(
       0.5,
     );
 
+Color get menuBackgroundColor => Color(0xFF4A4A58);
+
 Color get altColor => Platform.isIOS ? Color(0xff17263c) : Color(0xff28263c);

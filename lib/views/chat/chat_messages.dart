@@ -3,6 +3,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+
 import 'package:shopping_list_flutter/utils/static_logger.dart';
 import 'package:shopping_list_flutter/utils/ui_notifier.dart';
 import 'package:shopping_list_flutter/views/chat/message_item.dart';
@@ -17,8 +18,9 @@ class ChatMessages extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final ui = ref.watch(uiStateProvider);
-    final incoming = ref.watch(incomingStateProvider);
+    final incomingState = ref.watch(incomingStateProvider);
+
+    incomingState.outgoingHandlers.sendMarkMessagesRead();
 
     final tapGlobalPosition = useState(const Offset(0, 0));
 
@@ -30,13 +32,13 @@ class ChatMessages extends HookConsumerWidget {
     return ListView.builder(
       controller: scrollController,
       reverse: true,
-      itemCount: incoming.getMessageItems.length,
+      itemCount: incomingState.getMessageItems.length,
       itemBuilder: (BuildContext context, int index) {
-        final msgItem = incoming.getMessageItems[index];
+        final msgItem = incomingState.getMessageItems[index];
         Widget dismissibleMsgItem =
-            makeDismissible(context, ref, incoming.getMessageItems, index);
-        Widget ret = addLongTapSelection(dismissibleMsgItem, msgItem,
-            ui.messagesSelected, ui, context, tapGlobalPosition);
+            makeDismissible(context, ref, incomingState.getMessageItems, index);
+        Widget ret = addLongTapSelection(
+            dismissibleMsgItem, msgItem, ref, context, tapGlobalPosition);
         return ret;
       },
     );
@@ -45,6 +47,7 @@ class ChatMessages extends HookConsumerWidget {
   Widget makeDismissible(
       BuildContext context, WidgetRef ref, List<MessageItem> items, index) {
     final ui = ref.watch(uiStateProvider);
+    final incoming = ref.watch(incomingStateProvider);
 
     final TextStyle dismissibleTextStyle = GoogleFonts.poppins(
       color: Colors.white.withOpacity(0.8),
@@ -97,6 +100,13 @@ class ChatMessages extends HookConsumerWidget {
                   ),
                 ],
               )));
+
+              ui.isReplyingToMessageId = msgItem.message.id;
+
+              // HACK to reset ui.isReplyingToMessageId = NULL
+              ui.messagesSelected.addAll({msgItem.message.id: msgItem});
+              msgItem.selected = true;
+
               ui.rebuild();
               //TODO popup soft keyboard to reply
               return false;
@@ -107,6 +117,9 @@ class ChatMessages extends HookConsumerWidget {
           switch (direction) {
             case DismissDirection.startToEnd:
               items.removeAt(index);
+              incoming.outgoingHandlers.sendArchiveMessages(
+                  [msgItem.message.id], incoming.userId, true);
+
               ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                   content: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -124,6 +137,9 @@ class ChatMessages extends HookConsumerWidget {
                               color: Colors.white,
                             ),
                             onPressed: () {
+                              incoming.outgoingHandlers.sendArchiveMessages(
+                                  [msgItem.message.id], incoming.userId, false);
+
                               if (items[index] != msgItem) {
                                 items.insert(index, msgItem);
                                 ui.rebuild();
@@ -147,11 +163,13 @@ class ChatMessages extends HookConsumerWidget {
   Widget addLongTapSelection(
     Widget dismissibleMsgItem,
     MessageItem msgItem,
-    Map<int, MessageItem> messagesSelected,
-    UiState ui,
+    WidgetRef ref,
     BuildContext context,
     ValueNotifier<Offset> tapGlobalPosition,
   ) {
+    final ui = ref.watch(uiStateProvider);
+    final messagesSelected = ui.messagesSelected;
+
     final inSelectionMode = messagesSelected.isNotEmpty;
     return GestureDetector(
       behavior: HitTestBehavior.translucent,
@@ -165,6 +183,7 @@ class ChatMessages extends HookConsumerWidget {
           if (ui.msgInputCtrl.text == msgItem.message.content) {
             ui.msgInputCtrl.text = '';
           }
+          ui.isReplyingToMessageId = null;
         } else {
           if (messagesSelected.isNotEmpty) {
             messagesSelected.addAll({msgItem.message.id: msgItem});
@@ -207,7 +226,7 @@ class ChatMessages extends HookConsumerWidget {
         ui.rebuild();
 
         if (!msgItem.isMe) {
-          await addPopupMenu(context, tapGlobalPosition);
+          await addPopupMenu(msgItem, context, ref, tapGlobalPosition);
         }
       },
       child: Container(
@@ -218,37 +237,50 @@ class ChatMessages extends HookConsumerWidget {
   }
 
   addPopupMenu(
+    MessageItem msgItem,
     BuildContext context,
+    WidgetRef ref,
     ValueNotifier<Offset> tapGlobalPosition,
   ) {
+    final incoming = ref.watch(incomingStateProvider);
+    final ui = ref.watch(uiStateProvider);
+    final messagesSelected = ui.messagesSelected;
+
+    final suffix =
+        messagesSelected.length > 1 ? ' (${messagesSelected.length})' : '';
+
     final editCtx = CtxMenuItem(
-      'Edit',
+      'Edit$suffix',
       () {
-        StaticLogger.append('Edit');
+        StaticLogger.append('Edit$suffix');
       },
     );
     final archiveCtx = CtxMenuItem(
-      'Archive',
+      'Archive$suffix',
       () {
-        StaticLogger.append('Archive');
+        StaticLogger.append('Archive$suffix');
+        incoming.outgoingHandlers
+            .sendArchiveMessages([msgItem.message.id], incoming.userId, true);
       },
     );
     final replyCtx = CtxMenuItem(
-      'Reply',
+      'Reply$suffix',
       () {
-        StaticLogger.append('Reply');
+        StaticLogger.append('Reply$suffix');
       },
     );
     final forwardCtx = CtxMenuItem(
-      'Forward',
+      'Forward$suffix',
       () {
-        StaticLogger.append('Forward');
+        StaticLogger.append('Forward$suffix');
       },
     );
     final deleteCtx = CtxMenuItem(
-      'Delete',
+      'Delete$suffix',
       () {
-        StaticLogger.append('Delete');
+        StaticLogger.append('Delete$suffix');
+        incoming.outgoingHandlers
+            .sendDeleteMessages([msgItem.message.id], incoming.userId);
       },
     );
 

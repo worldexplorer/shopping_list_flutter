@@ -2,6 +2,8 @@ import '../common/typing_dto.dart';
 import '../connection_state.dart';
 import '../incoming/incoming_state.dart';
 import '../../utils/static_logger.dart';
+import 'archive_messages_dto.dart';
+import 'delete_messages_dto.dart';
 import 'edit_message_dto.dart';
 import 'login_dto.dart';
 import 'new_message_dto.dart';
@@ -40,18 +42,19 @@ class OutgoingHandlers {
         ).toJson());
   }
 
-  sendMessage(String msg) {
-    sendTyping(false);
-
+  sendMessage(String msg, int? isReplyingToMessageId) {
     if (!connectionState.socketConnected) {
       StaticLogger.append('sendMessage($msg): ${connectionState.socketId}');
       return;
     }
 
+    sendTyping(false);
+
     final json = NewMessageDto(
-      content: msg,
       room: incomingState.currentRoomId,
       user: incomingState.userId,
+      content: msg,
+      replyto_id: isReplyingToMessageId,
       purchase: null,
     ).toJson();
     connectionState.socket.emit("newMessage", json);
@@ -59,12 +62,12 @@ class OutgoingHandlers {
   }
 
   sendEditMessage(int messageId, String msg) {
-    sendTyping(false);
-
     if (!connectionState.socketConnected) {
       StaticLogger.append('sendEditMessage($msg): ${connectionState.socketId}');
       return;
     }
+
+    sendTyping(false);
 
     final json = EditMessageDto(
       id: messageId,
@@ -75,24 +78,71 @@ class OutgoingHandlers {
     StaticLogger.append('<< EDIT_MESSAGE [$json]');
   }
 
-  sendMarkMessageRead(int messageId, int userId) {
-    sendTyping(false);
-
-    if (!connectionState.socketConnected) {
-      StaticLogger.append(
-          'sendEditMessage($messageId): ${connectionState.socketId}');
+  sendMarkMessagesRead() {
+    if (incomingState.messagesUnreadById.isEmpty) {
       return;
     }
 
-    final json = MarkMessageReadDto(
-      message: messageId,
+    final unreadMsgIds = incomingState.getOnlyUnreadMessages();
+    if (unreadMsgIds.isEmpty) {
+      StaticLogger.append(
+          '-- MARK_MESSAGE_READ all messages already marked READ:'
+          ' unreadMsgIds[0] while messagesUnreadById[${incomingState.messagesUnreadById.length}]'
+          ' for userId[${incomingState.userId}]');
+      return;
+    }
+
+    _sendMarkMessagesRead(unreadMsgIds, incomingState.userId);
+  }
+
+  _sendMarkMessagesRead(List<int> messageIds, int userId) {
+    if (!connectionState.socketConnected) {
+      StaticLogger.append(
+          'sendMarkMessagesRead($messageIds): ${connectionState.socketId}');
+      return;
+    }
+
+    final json = MarkMessagesReadDto(
+      messageIds: messageIds,
       user: userId,
     ).toJson();
-    connectionState.socket.emit("markMessageRead", json);
+    connectionState.socket.emit("markMessagesRead", json);
     StaticLogger.append('<< MARK_MESSAGE_READ [$json]');
   }
 
-  sendGetMessages(int roomId, [int fromMessageId = 0]) {
+  sendArchiveMessages(List<int> messageIds, int userId,
+      [bool archived = true]) {
+    if (!connectionState.socketConnected) {
+      StaticLogger.append(
+          'sendArchiveMessages($messageIds): ${connectionState.socketId}');
+      return;
+    }
+
+    final json = ArchiveMessagesDto(
+      messageIds: messageIds,
+      archived: archived,
+      user: userId,
+    ).toJson();
+    connectionState.socket.emit("archiveMessages", json);
+    StaticLogger.append('<< ARCHIVE_MESSAGES [$json]');
+  }
+
+  sendDeleteMessages(List<int> messageIds, int userId) {
+    if (!connectionState.socketConnected) {
+      StaticLogger.append(
+          'sendDeleteMessages($messageIds): ${connectionState.socketId}');
+      return;
+    }
+
+    final json = DeleteMessagesDto(
+      messageIds: messageIds,
+      user: userId,
+    ).toJson();
+    connectionState.socket.emit("deleteMessages", json);
+    StaticLogger.append('<< DELETE_MESSAGES [$json]');
+  }
+
+  sendGetMessages(int roomId, [int fromMessageId = 0, bool archived = false]) {
     if (!connectionState.socketConnected) {
       StaticLogger.append(
           'sendRoomChange($roomId): ${connectionState.socketId}');
@@ -101,6 +151,7 @@ class OutgoingHandlers {
     final json = GetMessagesDto(
       room: roomId,
       fromMessageId: fromMessageId,
+      archived: archived,
       deviceTimezoneOffsetMinutes: 180,
     ).toJson();
     connectionState.socket.emit("getMessages", json);

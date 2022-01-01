@@ -3,7 +3,7 @@
 // $ flutter pub run build_runner watch
 
 import 'package:json_annotation/json_annotation.dart';
-import 'package:shopping_list_flutter/network/common/user_dto.dart';
+import 'package:shopping_list_flutter/network/incoming/user_dto.dart';
 
 part 'room_dto.g.dart';
 

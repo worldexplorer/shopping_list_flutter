@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:shopping_list_flutter/utils/routes.dart';
-import 'package:shopping_list_flutter/utils/static_logger.dart';
-import 'package:shopping_list_flutter/utils/ui_notifier.dart';
 
-const Color backgroundColor = Color(0xFF4A4A58);
+import 'router.dart';
+
+import '../utils/theme.dart';
+import '../utils/static_logger.dart';
+import '../utils/ui_notifier.dart';
 
 class Menu extends HookConsumerWidget {
   const Menu({Key? key}) : super(key: key);
@@ -15,7 +16,7 @@ class Menu extends HookConsumerWidget {
     final ui = ref.watch(uiStateProvider);
 
     return Scaffold(
-        backgroundColor: backgroundColor,
+        backgroundColor: menuBackgroundColor,
         body: Column(
           mainAxisSize: MainAxisSize.min,
           // mainAxisAlignment: MainAxisAlignment.spaceAround,

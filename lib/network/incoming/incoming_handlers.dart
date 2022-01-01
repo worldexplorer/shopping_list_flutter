@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
 import '../common/typing_dto.dart';
-import '../common/user_dto.dart';
+import 'archived_messages_dto.dart';
+import 'user_dto.dart';
 
 import '../outgoing/outgoing_handlers.dart';
 
@@ -9,10 +10,11 @@ import '../../utils/static_logger.dart';
 import '../../views/chat/message_item.dart';
 
 import '../connection_state.dart';
+import 'deleted_messages_dto.dart';
 import 'incoming_state.dart';
 import 'message_dto.dart';
 import 'room_dto.dart';
-import 'update_message_read_dto.dart';
+import 'update_messages_read_dto.dart';
 import 'messages_dto.dart';
 import 'rooms_dto.dart';
 
@@ -104,8 +106,6 @@ class IncomingHandlers {
 
       bool rebuildUi = _messageAddOrEdit(msg, msig);
 
-      outgoingHandlers.sendMarkMessageRead(msg.id, incomingState.userId);
-
       if (rebuildUi) {
         incomingState.notifyListeners();
       }
@@ -115,21 +115,26 @@ class IncomingHandlers {
   }
 
   bool _messageAddOrEdit(MessageDto msg, String msig) {
-    bool changed = false;
+    bool addedOrChanged = false;
 
     final prevMsg = incomingState.messagesById[msg.id];
     if (prevMsg == null) {
       final widget = MessageItem(
-        key: const Key('aaa'),
+        key: Key(msg.id.toString()),
         isMe: incomingState.isMyUserId(msg.user),
         message: msg,
       );
 
       incomingState.messagesById[msg.id] = msg;
+      if (!msg.persons_read.contains(incomingState.userId)) {
+        incomingState.messagesUnreadById[msg.id] = msg;
+      }
+
       incomingState.messageItemsById[msg.id] = widget;
       incomingState.messageItems.insert(0, widget);
 
-      changed = true;
+      addedOrChanged = true;
+      StaticLogger.append('      ADDED $msig');
     } else {
       String changes = '';
       if (prevMsg.content != msg.content) {
@@ -138,7 +143,7 @@ class IncomingHandlers {
       if (prevMsg.edited != msg.edited) {
         changes += 'edited[${msg.edited}] ';
       }
-      if (prevMsg.purchase != msg.purchase) {
+      if (prevMsg.purchase?.name != msg.purchase?.name) {
         String prevPurchase = prevMsg.purchase?.name ?? 'NONE';
         String purchase = msg.purchase?.name ?? 'NONE';
         changes += 'purchase[$prevPurchase]=>[$purchase] ';
@@ -147,7 +152,7 @@ class IncomingHandlers {
         StaticLogger.append('      NOT_CHANGED $msig');
       } else {
         StaticLogger.append('      EDITED $msig: $changes');
-        changed = true;
+        addedOrChanged = true;
       }
       incomingState.messagesById[msg.id] = msg;
 
@@ -158,7 +163,7 @@ class IncomingHandlers {
       }
     }
 
-    return changed;
+    return addedOrChanged;
   }
 
   void onMessages(data) {
@@ -169,7 +174,8 @@ class IncomingHandlers {
     try {
       MessagesDto msgs = MessagesDto.fromJson(data);
 
-      var changed = false;
+      int addedOrChangedCounter = 0;
+
       i = 1;
       total = msgs.messages.length;
 
@@ -178,10 +184,13 @@ class IncomingHandlers {
         MessageDto msg = msgs.messages[i - 1];
         final msig = ' onMessages($counter): ${msg.user_name}: ${msg.content}';
 
-        changed &= _messageAddOrEdit(msg, msig);
+        final addedOrChanged = _messageAddOrEdit(msg, msig);
+        if (addedOrChanged) {
+          addedOrChangedCounter++;
+        }
       }
 
-      if (changed) {
+      if (addedOrChangedCounter > 0) {
         incomingState.notifyListeners();
       }
     } catch (e) {
@@ -190,26 +199,127 @@ class IncomingHandlers {
     }
   }
 
-  void onUpdateMessageRead(data) {
-    StaticLogger.append('> UPDATE_MESSAGE_READ [$data]');
-    try {
-      UpdatedMessageReadDto msg = UpdatedMessageReadDto.fromJson(data);
-      final msig = ' onUpdateMessageRead(): ${msg.id}: ${msg.persons_read}';
+  void onMessagesReadUpdated(data) {
+    StaticLogger.append('> MESSAGES_READ_UPDATED [$data]');
+    int messagesRead = 0;
+    int i = 1;
+    int total = 0;
 
-      final MessageDto? existingMsg = incomingState.messagesById[msg.id];
-      if (existingMsg == null) {
-        throw 'messagesById[msg.id] NOT FOUND';
-      } else {
-        StaticLogger.append(
-            '      MESSAGE_READ_UPDATED $msig: [$existingMsg] => [$msg]');
+    try {
+      UpdatedMessagesReadDto msgsRead = UpdatedMessagesReadDto.fromJson(data);
+
+      i = 1;
+      total = msgsRead.messagesUpdated.length;
+
+      for (; i <= total; i++) {
+        final counter = '$i/$total';
+        UpdatedMessageReadDto msg = msgsRead.messagesUpdated[i - 1];
+
+        final msgId = msg.id;
+        final msig =
+            ' onMessagesReadUpdated($counter): $msgId}: ${msg.persons_read}';
+
+        final MessageDto? existingMsg = incomingState.messagesById[msgId];
+        if (existingMsg == null) {
+          StaticLogger.append('      $msig: messagesById[$msgId] NOT FOUND');
+          continue;
+          throw 'messagesById[msg.id] NOT FOUND';
+        }
+
+        final log = incomingState.removeMessageFromMessagesUnreadById(msgId);
+
+        StaticLogger.append('      MESSAGE_READ_UPDATED $msig: '
+            '[${existingMsg.persons_read}] => [${msg.persons_read}]'
+            ' $log');
         existingMsg.persons_read = msg.persons_read;
-        // no need to find widget in messageItems and re-insert a new instance
       }
 
-      incomingState.notifyListeners();
+      if (msgsRead.messagesUpdated.isNotEmpty) {
+        incomingState.notifyListeners();
+      }
     } catch (e) {
       StaticLogger.append(
-          '      FAILED onUpdateMessageRead(): ${e.toString()}');
+          '      FAILED onMessagesReadUpdated(): ${e.toString()}');
+    }
+  }
+
+  void onArchivedMessages(data) {
+    StaticLogger.append('> ARCHIVED_MESSAGES [$data]');
+    int messagesArchived = 0;
+    int i = 1;
+    int total = 0;
+
+    try {
+      ArchivedMessagesDto msgsArchived = ArchivedMessagesDto.fromJson(data);
+
+      i = 1;
+      total = msgsArchived.messageIds.length;
+
+      for (; i <= total; i++) {
+        final counter = '$i/$total';
+        int msgId = msgsArchived.messageIds[i - 1];
+        final msig = ' onArchivedMessages($counter): $msgId';
+
+        final MessageDto? existingMsg = incomingState.messagesById[msgId];
+        if (existingMsg == null) {
+          StaticLogger.append('      $msig: messagesById[$msgId] NOT FOUND');
+          continue;
+        }
+
+        final log = incomingState.removeMessageFromAllMaps(msgId);
+        if (log != '') {
+          messagesArchived++;
+        }
+
+        StaticLogger.append('      ARCHIVED_MESSAGE $msig: $log');
+      }
+
+      if (messagesArchived > 0) {
+        incomingState.notifyListeners();
+      }
+    } catch (e) {
+      StaticLogger.append(
+          '      FAILED onArchivedMessages($i/$total): ${e.toString()}');
+    }
+  }
+
+  void onDeletedMessages(data) {
+    StaticLogger.append('> DELETED_MESSAGES [$data]');
+    int messagesDeleted = 0;
+    int i = 1;
+    int total = 0;
+
+    try {
+      DeletedMessagesDto msgsDeleted = DeletedMessagesDto.fromJson(data);
+
+      i = 1;
+      total = msgsDeleted.messageIds.length;
+
+      for (; i <= total; i++) {
+        final counter = '$i/$total';
+        int msgId = msgsDeleted.messageIds[i - 1];
+        final msig = ' onDeletedMessages($counter): $msgId';
+
+        final MessageDto? existingMsg = incomingState.messagesById[msgId];
+        if (existingMsg == null) {
+          StaticLogger.append('      $msig: messagesById[$msgId] NOT FOUND');
+          continue;
+        }
+
+        final log = incomingState.removeMessageFromAllMaps(msgId);
+        if (log != '') {
+          messagesDeleted++;
+        }
+
+        StaticLogger.append('      DELETED_MESSAGE $msig: $log');
+      }
+
+      if (messagesDeleted > 0) {
+        incomingState.notifyListeners();
+      }
+    } catch (e) {
+      StaticLogger.append(
+          '      FAILED onDeletedMessages($i/$total): ${e.toString()}');
     }
   }
 

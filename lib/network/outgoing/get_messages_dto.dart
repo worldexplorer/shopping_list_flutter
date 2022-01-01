@@ -16,12 +16,14 @@ part 'get_messages_dto.g.dart';
 class GetMessagesDto {
   int room;
   int fromMessageId;
+  bool archived;
   int deviceTimezoneOffsetMinutes;
   late DateTime currentDeviceTime;
 
   GetMessagesDto(
       {required this.room,
       required this.fromMessageId,
+      required this.archived,
       required this.deviceTimezoneOffsetMinutes}) {
     currentDeviceTime = DateTime.now();
   }

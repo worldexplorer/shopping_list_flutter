@@ -1,21 +1,21 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'mark_message_read_dto.dart';
+part of 'delete_messages_dto.dart';
 
 // **************************************************************************
 // JsonSerializableGenerator
 // **************************************************************************
 
-MarkMessagesReadDto _$MarkMessagesReadDtoFromJson(Map<String, dynamic> json) =>
+DeleteMessagesDto _$DeleteMessagesDtoFromJson(Map<String, dynamic> json) =>
     $checkedCreate(
-      'MarkMessagesReadDto',
+      'DeleteMessagesDto',
       json,
       ($checkedConvert) {
         $checkKeys(
           json,
           allowedKeys: const ['messageIds', 'user'],
         );
-        final val = MarkMessagesReadDto(
+        final val = DeleteMessagesDto(
           messageIds: $checkedConvert('messageIds',
               (v) => (v as List<dynamic>).map((e) => e as int).toList()),
           user: $checkedConvert('user', (v) => v as int),
@@ -24,8 +24,7 @@ MarkMessagesReadDto _$MarkMessagesReadDtoFromJson(Map<String, dynamic> json) =>
       },
     );
 
-Map<String, dynamic> _$MarkMessagesReadDtoToJson(
-        MarkMessagesReadDto instance) =>
+Map<String, dynamic> _$DeleteMessagesDtoToJson(DeleteMessagesDto instance) =>
     <String, dynamic>{
       'messageIds': instance.messageIds,
       'user': instance.user,

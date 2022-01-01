@@ -4,7 +4,7 @@
 
 import 'package:json_annotation/json_annotation.dart';
 
-part 'update_message_read_dto.g.dart';
+part 'delete_messages_dto.g.dart';
 
 @JsonSerializable(
     checked: true,
@@ -13,13 +13,13 @@ part 'update_message_read_dto.g.dart';
     explicitToJson: true,
     disallowUnrecognizedKeys: true,
     includeIfNull: true)
-class UpdatedMessageReadDto {
-  int id;
-  List<int> persons_read;
+class DeleteMessagesDto {
+  List<int> messageIds;
+  int user;
 
-  UpdatedMessageReadDto({required this.id, required this.persons_read});
+  DeleteMessagesDto({required this.messageIds, required this.user});
 
-  factory UpdatedMessageReadDto.fromJson(Map<String, dynamic> json) =>
-      _$UpdatedMessageReadDtoFromJson(json);
-  Map<String, dynamic> toJson() => _$UpdatedMessageReadDtoToJson(this);
+  factory DeleteMessagesDto.fromJson(Map<String, dynamic> json) =>
+      _$DeleteMessagesDtoFromJson(json);
+  Map<String, dynamic> toJson() => _$DeleteMessagesDtoToJson(this);
 }

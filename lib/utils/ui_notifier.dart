@@ -9,6 +9,7 @@ class UiState extends ChangeNotifier {
 
   final msgInputCtrl = TextEditingController();
   int isEditingMessageId = 0;
+  int? isReplyingToMessageId;
 
   final messagesSelected = <int, MessageItem>{};
 
