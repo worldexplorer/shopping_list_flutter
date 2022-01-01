@@ -111,7 +111,7 @@ class Router extends ChangeNotifier {
         title: 'Refresh',
         action: () {
           final ui = ref.watch(uiStateProvider);
-          ui.incrementRefreshCounter();
+          ui.rebuild();
           refresh.title = 'Refresh (${ui.refreshCounter})';
         },
         isSelectedInMenu: false,

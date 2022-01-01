@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:shopping_list_flutter/utils/static_logger.dart';
 import 'package:shopping_list_flutter/utils/ui_notifier.dart';
-import 'package:shopping_list_flutter/widget/context_menu.dart';
 import 'package:shopping_list_flutter/views/chat/message_item.dart';
+import 'package:shopping_list_flutter/widget/context_menu.dart';
 
 import '../../hooks/scroll_controller_for_animation.dart';
 import '../../network/incoming/incoming_state.dart';
@@ -16,10 +17,10 @@ class ChatMessages extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final ui = ref.watch(uiStateProvider);
     final incoming = ref.watch(incomingStateProvider);
 
     final tapGlobalPosition = useState(const Offset(0, 0));
-    final messagesSelected = useState<Map<int, MessageItem>>({});
 
     final hideFabAnimController = useAnimationController(
         duration: kThemeAnimationDuration, initialValue: 1);
@@ -34,8 +35,8 @@ class ChatMessages extends HookConsumerWidget {
         final msgItem = incoming.getMessageItems[index];
         Widget dismissibleMsgItem =
             makeDismissible(context, ref, incoming.getMessageItems, index);
-        Widget ret = addContextMenu(context, dismissibleMsgItem, msgItem,
-            messagesSelected, tapGlobalPosition);
+        Widget ret = addLongTapSelection(dismissibleMsgItem, msgItem,
+            ui.messagesSelected, ui, context, tapGlobalPosition);
         return ret;
       },
     );
@@ -45,7 +46,7 @@ class ChatMessages extends HookConsumerWidget {
       BuildContext context, WidgetRef ref, List<MessageItem> items, index) {
     final ui = ref.watch(uiStateProvider);
 
-    final TextStyle archiveTextStyle = GoogleFonts.poppins(
+    final TextStyle dismissibleTextStyle = GoogleFonts.poppins(
       color: Colors.white.withOpacity(0.8),
       fontSize: 18,
     );
@@ -59,125 +60,201 @@ class ChatMessages extends HookConsumerWidget {
     return Dismissible(
         // Each Dismissible must contain a Key. Keys allow Flutter to uniquely identify widgets.
         key: Key(msgItem.message.id.toString()),
-        background: Container(
-          color: chatMessageDismiss,
+        secondaryBackground: Container(
+          color: chatMessageReply,
           padding: const EdgeInsets.symmetric(horizontal: 10),
           child: Row(mainAxisAlignment: MainAxisAlignment.end, children: [
-            Text('Archive', style: archiveTextStyle),
+            Text('Reply', style: dismissibleTextStyle),
             const SizedBox(width: 10),
             const Icon(
-              Icons.delete_outline_rounded,
+              Icons.reply_outlined,
               color: Colors.white,
             ),
           ]),
         ),
+        background: Container(
+          color: chatMessageDismiss,
+          padding: const EdgeInsets.symmetric(horizontal: 10),
+          child: Row(mainAxisAlignment: MainAxisAlignment.start, children: [
+            const Icon(
+              Icons.delete_outline_rounded,
+              color: Colors.white,
+            ),
+            const SizedBox(width: 10),
+            Text('Archive', style: dismissibleTextStyle),
+          ]),
+        ),
+        confirmDismiss: (direction) async {
+          switch (direction) {
+            case DismissDirection.endToStart:
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                  content: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Floating REPLY_MESSAGE bar here',
+                    style: snackBarDismissedTextStyle,
+                  ),
+                ],
+              )));
+              ui.rebuild();
+              //TODO popup soft keyboard to reply
+              return false;
+          }
+          return true;
+        },
         onDismissed: (direction) {
-          items.removeAt(index);
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-              content: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'Message archived',
-                style: snackBarDismissedTextStyle,
-              ),
-              const SizedBox(width: 15),
-              items[index] != msgItem
-                  ? Row(mainAxisSize: MainAxisSize.min, children: [
-                      IconButton(
-                        icon: const Icon(
-                          Icons.undo_rounded,
-                          color: Colors.white,
-                        ),
-                        onPressed: () {
-                          if (items[index] != msgItem) {
-                            items.insert(index, msgItem);
-                            ui.incrementRefreshCounter();
-                          }
-                        },
-                      ),
-                      const SizedBox(width: 10),
-                      Text('Undo', style: archiveTextStyle),
-                      const SizedBox(width: 5),
-                    ])
-                  : Text('Message restored', style: archiveTextStyle),
-              const SizedBox(width: 10),
-            ],
-          )));
+          switch (direction) {
+            case DismissDirection.startToEnd:
+              items.removeAt(index);
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                  content: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    'Message archived',
+                    style: snackBarDismissedTextStyle,
+                  ),
+                  const SizedBox(width: 40),
+                  items[index] != msgItem
+                      ? Row(mainAxisSize: MainAxisSize.min, children: [
+                          IconButton(
+                            icon: const Icon(
+                              Icons.undo_rounded,
+                              color: Colors.white,
+                            ),
+                            onPressed: () {
+                              if (items[index] != msgItem) {
+                                items.insert(index, msgItem);
+                                ui.rebuild();
+                              }
+                            },
+                          ),
+                          const SizedBox(width: 10),
+                          Text('Undo', style: dismissibleTextStyle),
+                          const SizedBox(width: 5),
+                        ])
+                      : Text('Message restored', style: dismissibleTextStyle),
+                ],
+              )));
+              ui.rebuild();
+              break;
+          }
         },
         child: msgItem);
   }
 
-  Widget addContextMenu(
-    BuildContext context,
+  Widget addLongTapSelection(
     Widget dismissibleMsgItem,
     MessageItem msgItem,
-    ValueNotifier<Map<int, MessageItem>> messagesSelected,
+    Map<int, MessageItem> messagesSelected,
+    UiState ui,
+    BuildContext context,
     ValueNotifier<Offset> tapGlobalPosition,
   ) {
-    final TextStyle ctxMenuItemTextStyle = GoogleFonts.poppins(
-      color: Colors.white.withOpacity(0.8),
-      fontSize: 15,
-    );
+    final inSelectionMode = messagesSelected.isNotEmpty;
+    return GestureDetector(
+      behavior: HitTestBehavior.translucent,
+      onTapDown: (TapDownDetails details) {
+        tapGlobalPosition.value = details.globalPosition;
+      },
+      onTapUp: (TapUpDetails details) {
+        if (msgItem.selected) {
+          messagesSelected.remove(msgItem.message.id);
+          msgItem.selected = false;
+          if (ui.msgInputCtrl.text == msgItem.message.content) {
+            ui.msgInputCtrl.text = '';
+          }
+        } else {
+          if (messagesSelected.isNotEmpty) {
+            messagesSelected.addAll({msgItem.message.id: msgItem});
+            msgItem.selected = true;
+          }
+        }
+        ui.rebuild();
+      },
+      onLongPress: () async {
+        HapticFeedback.vibrate();
 
+        MessageItem? singlePrevSelected = messagesSelected.length == 1
+            ? messagesSelected.values.toList()[0]
+            : null;
+
+        for (var eachSelected in messagesSelected.values) {
+          eachSelected.selected = false;
+          if (ui.msgInputCtrl.text == eachSelected.message.content) {
+            ui.msgInputCtrl.text = '';
+          }
+        }
+        messagesSelected.clear();
+
+        if (singlePrevSelected == msgItem) {
+          ui.rebuild();
+          return;
+        }
+
+        if (msgItem.isMe &&
+            messagesSelected.isEmpty &&
+            ui.msgInputCtrl.text == '') {
+          ui.msgInputCtrl.text = msgItem.message.content;
+          ui.isEditingMessageId = msgItem.message.id;
+          // TODO: open soft keyboard
+        }
+
+        messagesSelected.addAll({msgItem.message.id: msgItem});
+        msgItem.selected = true;
+
+        ui.rebuild();
+
+        if (!msgItem.isMe) {
+          await addPopupMenu(context, tapGlobalPosition);
+        }
+      },
+      child: Container(
+          padding: EdgeInsets.fromLTRB(inSelectionMode ? 45 : 16, 16, 16, 16),
+          color: msgItem.selected ? chatMessageSelected : Colors.transparent,
+          child: dismissibleMsgItem),
+    );
+  }
+
+  addPopupMenu(
+    BuildContext context,
+    ValueNotifier<Offset> tapGlobalPosition,
+  ) {
     final editCtx = CtxMenuItem(
       'Edit',
       () {
-        StaticLogger.clear();
+        StaticLogger.append('Edit');
       },
     );
     final archiveCtx = CtxMenuItem(
       'Archive',
       () {
-        StaticLogger.clear();
+        StaticLogger.append('Archive');
       },
     );
     final replyCtx = CtxMenuItem(
       'Reply',
       () {
-        StaticLogger.clear();
+        StaticLogger.append('Reply');
       },
     );
     final forwardCtx = CtxMenuItem(
       'Forward',
       () {
-        StaticLogger.clear();
+        StaticLogger.append('Forward');
       },
     );
     final deleteCtx = CtxMenuItem(
       'Delete',
       () {
-        StaticLogger.clear();
+        StaticLogger.append('Delete');
       },
     );
 
-    final inSelectionMode = messagesSelected.value.isNotEmpty;
-    return wrapWithContextMenu(
-        child: Container(
-            padding: EdgeInsets.fromLTRB(inSelectionMode ? 45 : 16, 16, 16, 16),
-            color: msgItem.selected ? chatMessageSelected : Colors.transparent,
-            child: dismissibleMsgItem),
+    showPopupMenu(
+        offset: tapGlobalPosition.value,
         context: context,
-        tapGlobalPosition: tapGlobalPosition,
-        items: [editCtx, archiveCtx, replyCtx, forwardCtx, deleteCtx],
-        textStyle: ctxMenuItemTextStyle,
-        onItemTap: () {
-          if (!inSelectionMode) {
-            return;
-          }
-
-          if (msgItem.selected) {
-            messagesSelected.value.remove(msgItem.message.id);
-            msgItem.selected = false;
-          } else {
-            messagesSelected.value.addAll({msgItem.message.id: msgItem});
-            msgItem.selected = true;
-          }
-        },
-        onOpened: () {
-          messagesSelected.value.addAll({msgItem.message.id: msgItem});
-          msgItem.selected = true;
-        },
-        onClosed: () {});
+        ctxItems: [editCtx, archiveCtx, replyCtx, forwardCtx, deleteCtx]);
   }
 }

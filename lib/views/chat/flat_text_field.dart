@@ -7,12 +7,14 @@ import 'package:shopping_list_flutter/utils/theme.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'dart:async';
 
+import 'package:shopping_list_flutter/utils/ui_notifier.dart';
+
 class FlatTextField extends HookConsumerWidget {
   const FlatTextField({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final msgInputCtrl = useTextEditingController();
+    final ui = ref.watch(uiStateProvider);
     final incoming = ref.watch(incomingStateProvider);
     final outgoingHandlers = incoming.outgoingHandlers;
 
@@ -20,11 +22,17 @@ class FlatTextField extends HookConsumerWidget {
     // var debounce = useState(Timer); // TODO: use river_pod
 
     sendMessageFromInput() {
-      if (msgInputCtrl.text.isEmpty) {
+      if (ui.msgInputCtrl.text.isEmpty) {
         return;
       }
-      outgoingHandlers.sendMessage(msgInputCtrl.text);
-      msgInputCtrl.clear();
+      if (ui.isEditingMessageId > 0) {
+        outgoingHandlers.sendEditMessage(
+            ui.isEditingMessageId, ui.msgInputCtrl.text);
+        ui.isEditingMessageId = 0;
+      } else {
+        outgoingHandlers.sendMessage(ui.msgInputCtrl.text);
+      }
+      ui.msgInputCtrl.clear();
     }
 
     return
@@ -68,7 +76,7 @@ class FlatTextField extends HookConsumerWidget {
                 minLines: 1,
                 maxLines: 12,
                 onSubmitted: (txt) => sendMessageFromInput,
-                controller: msgInputCtrl,
+                controller: ui.msgInputCtrl,
                 decoration: InputDecoration(
                   hintText: "Enter Message...",
                   hintStyle: TextStyle(

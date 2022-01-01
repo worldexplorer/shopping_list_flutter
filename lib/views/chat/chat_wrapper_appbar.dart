@@ -9,7 +9,6 @@ import '../../utils/theme.dart';
 import '../../utils/ui_notifier.dart';
 import 'chat_messages.dart';
 import 'flat_text_field.dart';
-import '../views.dart';
 
 class ChatWrapperAppbar extends HookConsumerWidget {
   const ChatWrapperAppbar({Key? key}) : super(key: key);
@@ -106,16 +105,18 @@ class ChatWrapperAppbar extends HookConsumerWidget {
       ),
       body: Column(children: [
         const Expanded(child: ChatMessages()),
-        Container(
-            // height: 50,
-            // margin: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-            // color: Colors.yellow,
-            child: Row(
+        // Container(
+        //     // height: 50,
+        //     // margin: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+        //     // color: Colors.yellow,
+        //     child:
+        Row(
           children: const [
             // https://stackoverflow.com/questions/57803737/flutter-renderflex-children-have-non-zero-flex-but-incoming-height-constraints
             Flexible(child: FlatTextField()),
           ],
-        )),
+          // )
+        ),
       ]),
     );
   }

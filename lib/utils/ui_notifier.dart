@@ -1,10 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:shopping_list_flutter/views/chat/message_item.dart';
 
 final uiStateProvider = ChangeNotifierProvider((ref) => UiState());
 
 class UiState extends ChangeNotifier {
   late AnimationController? menuVisibleController;
+
+  final msgInputCtrl = TextEditingController();
+  int isEditingMessageId = 0;
+
+  final messagesSelected = <int, MessageItem>{};
 
   void toMenuAndBack() {
     if (isMenuVisible) {
@@ -24,7 +30,7 @@ class UiState extends ChangeNotifier {
 
   int _refreshCounter = 0;
   int get refreshCounter => _refreshCounter;
-  void incrementRefreshCounter() {
+  void rebuild() {
     _refreshCounter++;
     notifyListeners();
   }

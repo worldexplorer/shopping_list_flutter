@@ -13,7 +13,8 @@ Future<void> main() async {
   // TODO: move somewhere to let UI draw spinner & NetLog panel
   final env = await EnvLoader.load();
   runApp(ProviderScope(
-      observers: [ProviderChangedLogger()], child: MyApp(env: env)));
+      // observers: [ProviderChangedLogger()],
+      child: MyApp(env: env)));
 }
 
 class MyApp extends ConsumerWidget {

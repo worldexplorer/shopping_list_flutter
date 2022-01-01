@@ -32,5 +32,11 @@ Color get chatMessageDismiss => Color.fromRGBO(
       Colors.red.blue,
       0.5,
     );
+Color get chatMessageReply => Color.fromRGBO(
+      Colors.green.red,
+      Colors.green.green,
+      Colors.green.blue,
+      0.5,
+    );
 
 Color get altColor => Platform.isIOS ? Color(0xff17263c) : Color(0xff28263c);

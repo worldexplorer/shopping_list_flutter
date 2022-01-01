@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 import '../common/typing_dto.dart';
 import '../common/user_dto.dart';
 
@@ -8,7 +10,6 @@ import '../../views/chat/message_item.dart';
 
 import '../connection_state.dart';
 import 'incoming_state.dart';
-
 import 'message_dto.dart';
 import 'room_dto.dart';
 import 'update_message_read_dto.dart';
@@ -16,7 +17,7 @@ import 'messages_dto.dart';
 import 'rooms_dto.dart';
 
 class IncomingHandlers {
-  ConnectionState connectionState;
+  ConnectionState1 connectionState;
   IncomingState incomingState;
   OutgoingHandlers outgoingHandlers;
 
@@ -101,11 +102,13 @@ class IncomingHandlers {
       MessageDto msg = MessageDto.fromJson(data);
       final msig = ' onMessage(): ${msg.user_name}: ${msg.content}';
 
-      _messageAddOrEdit(msg, msig);
+      bool rebuildUi = _messageAddOrEdit(msg, msig);
 
       outgoingHandlers.sendMarkMessageRead(msg.id, incomingState.userId);
 
-      incomingState.notifyListeners();
+      if (rebuildUi) {
+        incomingState.notifyListeners();
+      }
     } catch (e) {
       StaticLogger.append('      FAILED onMessage(): ${e.toString()}');
     }
@@ -117,6 +120,7 @@ class IncomingHandlers {
     final prevMsg = incomingState.messagesById[msg.id];
     if (prevMsg == null) {
       final widget = MessageItem(
+        key: const Key('aaa'),
         isMe: incomingState.isMyUserId(msg.user),
         message: msg,
       );
@@ -124,27 +128,34 @@ class IncomingHandlers {
       incomingState.messagesById[msg.id] = msg;
       incomingState.messageItemsById[msg.id] = widget;
       incomingState.messageItems.insert(0, widget);
+
+      changed = true;
     } else {
       String changes = '';
       if (prevMsg.content != msg.content) {
-        changes += '[${prevMsg.content}] => [${msg.content}] ';
+        changes += '[${prevMsg.content}]=>[${msg.content}] ';
       }
       if (prevMsg.edited != msg.edited) {
-        changes += 'edited[${msg.edited}]';
+        changes += 'edited[${msg.edited}] ';
+      }
+      if (prevMsg.purchase != msg.purchase) {
+        String prevPurchase = prevMsg.purchase?.name ?? 'NONE';
+        String purchase = msg.purchase?.name ?? 'NONE';
+        changes += 'purchase[$prevPurchase]=>[$purchase] ';
       }
       if (changes == '') {
         StaticLogger.append('      NOT_CHANGED $msig');
       } else {
         StaticLogger.append('      EDITED $msig: $changes');
+        changed = true;
       }
       incomingState.messagesById[msg.id] = msg;
 
       var widget = incomingState.messageItemsById[msg.id];
       if (widget != null) {
-        widget.message =
-            msg; // no need to find widget in messageItems and re-insert a new instance
+        // no need to find widget in messageItems and re-insert a new instance
+        widget.message = msg;
       }
-      changed = true;
     }
 
     return changed;

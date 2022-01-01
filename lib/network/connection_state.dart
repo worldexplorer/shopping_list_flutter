@@ -1,7 +1,7 @@
 // import 'package:flutter/foundation.dart';
 import 'package:socket_io_client/socket_io_client.dart';
 
-class ConnectionState
+class ConnectionState1
 // extends ChangeNotifier
 {
   // bool _receiving = false;

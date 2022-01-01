@@ -1,36 +1,36 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class CtxMenuItem {
-//  T value;
   String title;
-  // bool enabled;
+  bool enabled = true;
   Function() onTap;
   // TextStyle? textStyle;
   // Icon? icon;
 
   CtxMenuItem(
-    // this.value,
     this.title,
-    // this.enabled,
     this.onTap,
     // this.textStyle,
     // this.icon,
   );
 }
 
+final TextStyle ctxMenuItemTextStyle = GoogleFonts.poppins(
+  color: Colors.white.withOpacity(0.8),
+  fontSize: 15,
+);
+
 // https://stackoverflow.com/questions/50758121/how-dynamically-create-and-show-a-popup-menu-in-flutter
 showPopupMenu({
   required Offset offset,
   required BuildContext context,
   required List<CtxMenuItem> ctxItems,
-  required TextStyle textStyle,
-  required Function() onClosed,
+  TextStyle? textStyle,
+  Function()? onClosed,
   // [Function(T valueTapped)? valueTapped]
 }) async {
-  HapticFeedback.vibrate();
-
   final screenSize = MediaQuery.of(context).size;
   await showMenu(
     color: Colors.blue,
@@ -47,7 +47,7 @@ showPopupMenu({
         .map((x) => PopupMenuItem(
               // value: x.value,
               child: Text(x.title),
-              textStyle: textStyle,
+              textStyle: textStyle ?? ctxMenuItemTextStyle,
               // enabled: x.enabled,
               onTap: () {
                 // debugPrint('itemCallback(${x.title}:${x.value})');
@@ -65,7 +65,9 @@ showPopupMenu({
       debugPrint('valueCallback($value)');
       //valueTapped?.(value);
     }
-    onClosed();
+    if (onClosed != null) {
+      onClosed();
+    }
   });
 }
 
@@ -74,20 +76,22 @@ Widget wrapWithContextMenu<T extends Widget>({
   required T child,
   required BuildContext context,
   required List<CtxMenuItem> items,
-  required TextStyle textStyle,
   required ValueNotifier<Offset> tapGlobalPosition,
-  required Function() onItemTap,
-  required Function() onOpened,
-  required Function() onClosed,
+  Function(TapUpDetails details)? onItemTapUp,
+  TextStyle? textStyle,
+  Function()? onOpened,
+  Function()? onClosed,
 }) {
   return GestureDetector(
     behavior: HitTestBehavior.translucent,
-    onTap: onItemTap(),
+    onTapUp: onItemTapUp,
     onLongPressDown: (LongPressDownDetails details) {
       tapGlobalPosition.value = details.globalPosition;
     },
     onLongPress: () async {
-      onOpened();
+      if (onOpened != null) {
+        onOpened();
+      }
       await showPopupMenu(
           offset: tapGlobalPosition.value,
           context: context,
