@@ -20,6 +20,15 @@ class Purchase extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    double totalQnty = 0;
+    double totalPrice = 0;
+    double totalWeight = 0;
+    for (var purItem in purchase.purItems) {
+      totalQnty += purItem.qnty ?? 0.0;
+      totalPrice += purItem.qnty ?? 0.0;
+      totalWeight += purItem.qnty ?? 0.0;
+    }
+
     return Column(
         // mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -50,7 +59,7 @@ class Purchase extends HookConsumerWidget {
                         decoration: textInputDecoration,
                         margin: const EdgeInsets.fromLTRB(0, 0, 10, 10),
                         padding: const EdgeInsets.all(10),
-                        child: Text('14 pcs', style: purchaseStyle))
+                        child: Text(totalQnty.toString(), style: purchaseStyle))
                     : const SizedBox(),
                 purchase.show_price == 1
                     ? Container(
@@ -59,7 +68,8 @@ class Purchase extends HookConsumerWidget {
                         decoration: textInputDecoration,
                         margin: const EdgeInsets.fromLTRB(0, 0, 10, 10),
                         padding: const EdgeInsets.all(10),
-                        child: Text('1,244.90 pyb', style: purchaseStyle))
+                        child:
+                            Text(totalPrice.toString(), style: purchaseStyle))
                     : const SizedBox(),
                 purchase.show_weight == 1
                     ? Container(
@@ -68,7 +78,8 @@ class Purchase extends HookConsumerWidget {
                         decoration: textInputDecoration,
                         margin: const EdgeInsets.fromLTRB(0, 0, 10, 10),
                         padding: const EdgeInsets.all(10),
-                        child: Text('8.90 kg', style: purchaseStyle))
+                        child:
+                            Text(totalWeight.toString(), style: purchaseStyle))
                     : const SizedBox(),
               ]),
 

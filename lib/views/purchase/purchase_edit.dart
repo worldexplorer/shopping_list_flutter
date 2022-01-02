@@ -69,9 +69,16 @@ class PurchaseEdit extends HookConsumerWidget {
                       HapticFeedback.vibrate();
                     }),
               ]),
+          const SizedBox(width: 15),
+
+          // ...purchase.purItems.map((x) => PurchaseItemEdit(
+          //       purchase: purchase,
+          //       purItem: x,
+          //       isMe: isMe,
+          //     )),
+
           ListView.builder(
             shrinkWrap: true,
-            padding: const EdgeInsets.symmetric(vertical: 15),
             itemCount: purchase.purItems.length,
             itemBuilder: (BuildContext context, int index) {
               final purItem = purchase.purItems[index];
@@ -83,6 +90,7 @@ class PurchaseEdit extends HookConsumerWidget {
               // return Text(purItem.name, softWrap: true, style: purchaseStyle);
             },
           ),
+
           Row(
               mainAxisSize: MainAxisSize.max,
               mainAxisAlignment: MainAxisAlignment.start,
@@ -101,6 +109,7 @@ class PurchaseEdit extends HookConsumerWidget {
                 const Text('Add Product...',
                     style: TextStyle(color: Colors.white))
               ]),
+          const SizedBox(width: 15),
           const Divider(height: 4, thickness: 1, indent: 3),
           toggle('Show Groups', purchase.show_pgroup, (int newValue) {
             purchase.show_pgroup = newValue;
