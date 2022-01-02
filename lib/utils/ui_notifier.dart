@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:shopping_list_flutter/views/chat/message_item.dart';
+
+import '../../views/chat/message_item.dart';
 
 final uiStateProvider = ChangeNotifierProvider((ref) => UiState());
 
@@ -12,6 +13,11 @@ class UiState extends ChangeNotifier {
   int? isReplyingToMessageId;
 
   final messagesSelected = <int, MessageItem>{};
+
+  bool isSingleSelected(int messageId) {
+    return messagesSelected.length == 1 &&
+        messagesSelected.keys.toList()[0] == messageId;
+  }
 
   void toMenuAndBack() {
     if (isMenuVisible) {

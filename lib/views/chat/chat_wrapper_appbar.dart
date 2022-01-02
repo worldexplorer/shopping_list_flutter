@@ -8,7 +8,7 @@ import '../../network/incoming/incoming_state.dart';
 import '../../utils/theme.dart';
 import '../../utils/ui_notifier.dart';
 import 'chat_messages.dart';
-import 'flat_text_field.dart';
+import 'message_input.dart';
 
 class ChatWrapperAppbar extends HookConsumerWidget {
   const ChatWrapperAppbar({Key? key}) : super(key: key);
@@ -113,7 +113,7 @@ class ChatWrapperAppbar extends HookConsumerWidget {
         Row(
           children: const [
             // https://stackoverflow.com/questions/57803737/flutter-renderflex-children-have-non-zero-flex-but-incoming-height-constraints
-            Flexible(child: FlatTextField()),
+            Flexible(child: MessageInput()),
           ],
           // )
         ),

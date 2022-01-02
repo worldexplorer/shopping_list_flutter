@@ -4,20 +4,20 @@ import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import 'package:shopping_list_flutter/utils/static_logger.dart';
-import 'package:shopping_list_flutter/utils/ui_notifier.dart';
-import 'package:shopping_list_flutter/views/chat/message_item.dart';
-import 'package:shopping_list_flutter/widget/context_menu.dart';
-
+import '../../utils/theme.dart';
+import '../../utils/static_logger.dart';
+import '../../utils/ui_notifier.dart';
+import '../../views/chat/message_item.dart';
+import '../../widget/context_menu.dart';
 import '../../hooks/scroll_controller_for_animation.dart';
 import '../../network/incoming/incoming_state.dart';
-import '../../utils/theme.dart';
 
 class ChatMessages extends HookConsumerWidget {
   const ChatMessages({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final ui = ref.watch(uiStateProvider); // REFRESH ON PURCHASE SAVED
     final incomingState = ref.watch(incomingStateProvider);
 
     incomingState.outgoingHandlers.sendMarkMessagesRead();
@@ -34,7 +34,7 @@ class ChatMessages extends HookConsumerWidget {
       reverse: true,
       itemCount: incomingState.getMessageItems.length,
       itemBuilder: (BuildContext context, int index) {
-        final msgItem = incomingState.getMessageItems[index];
+        final MessageItem msgItem = incomingState.getMessageItems[index];
         Widget dismissibleMsgItem =
             makeDismissible(context, ref, incomingState.getMessageItems, index);
         Widget ret = addLongTapSelection(
@@ -225,7 +225,7 @@ class ChatMessages extends HookConsumerWidget {
 
         ui.rebuild();
 
-        if (!msgItem.isMe) {
+        if (!msgItem.isMe && msgItem.message.purchase == null) {
           await addPopupMenu(msgItem, context, ref, tapGlobalPosition);
         }
       },

@@ -8,7 +8,7 @@ import '../../network/incoming/incoming_state.dart';
 import '../../utils/theme.dart';
 import '../../utils/ui_notifier.dart';
 import 'chat_messages.dart';
-import 'flat_text_field.dart';
+import 'message_input.dart';
 import '../views.dart';
 
 class ChatWrapperSlivers extends HookConsumerWidget {
@@ -126,7 +126,7 @@ class ChatWrapperSlivers extends HookConsumerWidget {
               // color: Colors.yellow,
               // child: const
               // Flexible(child:
-              FlatTextField()
+              MessageInput()
               // )
               // ),
             ]),

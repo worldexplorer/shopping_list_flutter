@@ -4,6 +4,8 @@
 
 import 'package:json_annotation/json_annotation.dart';
 
+import 'pur_item_dto.dart';
+
 part 'purchase_dto.g.dart';
 
 @JsonSerializable(
@@ -35,6 +37,8 @@ class PurchaseDto {
   double? price_total;
   double? weight_total;
 
+  List<PurItemDto> purItems;
+
   PurchaseDto({
     required this.id,
     required this.date_created,
@@ -52,6 +56,7 @@ class PurchaseDto {
     this.person_purchased_name,
     this.price_total,
     this.weight_total,
+    required this.purItems,
   });
 
   factory PurchaseDto.fromJson(Map<String, dynamic> json) =>

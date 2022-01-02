@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shopping_list_flutter/network/incoming/pur_item_dto.dart';
 
 import '../common/typing_dto.dart';
 import 'archived_messages_dto.dart';
@@ -135,6 +136,26 @@ class IncomingHandlers {
 
       addedOrChanged = true;
       StaticLogger.append('      ADDED $msig');
+
+      var purchase = '';
+      if (msg.purchase != null) {
+        final pur = msg.purchase!;
+        purchase += '${pur.name} puritems[${pur.purItems.length}]';
+        purchase += pur.purItems.map((PurItemDto x) {
+          final qnty =
+              (x.punit_fpoint ?? false) ? x.qnty : (x.qnty ?? 0).round();
+          return '${x.name}'
+              '\t\t${qnty} ${x.punit_brief}'
+              '\t\tqnty:${x.qnty}'
+              '\t\tpunit:${x.punit_name}(${x.punit_id})'
+              '\t\t\t${x.pgroup_name}(${x.pgroup_id})'
+              '\t\t${x.product_name}(${x.product_id})';
+        }).join('\n\t\t\t\t');
+      }
+
+      if (purchase != '') {
+        StaticLogger.append('          PURCHASE $purchase');
+      }
     } else {
       String changes = '';
       if (prevMsg.content != msg.content) {

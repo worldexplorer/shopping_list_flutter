@@ -42,3 +42,33 @@ Color get chatMessageReply => Color.fromRGBO(
 Color get menuBackgroundColor => Color(0xFF4A4A58);
 
 Color get altColor => Platform.isIOS ? Color(0xff17263c) : Color(0xff28263c);
+
+TextStyle purchaseStyle = const TextStyle(color: Colors.white);
+
+TextStyle textInputStyle = const TextStyle(color: Colors.white);
+
+TextStyle textInputHintStyle = TextStyle(
+  color: Colors.white.withOpacity(0.6),
+);
+
+BoxDecoration textInputDecoration = BoxDecoration(
+  color: altColor,
+  borderRadius: BorderRadius.circular(6),
+  boxShadow: [
+    BoxShadow(
+      color: Colors.black.withOpacity(0.05),
+      blurRadius: 10,
+    )
+  ],
+);
+
+EdgeInsets textInputPadding = const EdgeInsets.fromLTRB(
+  10.0,
+  0,
+  10.0,
+  0,
+);
+
+const double qntyColumnWidth = 80;
+const double priceColumnWidth = 80;
+const double weightColumnWidth = 75;

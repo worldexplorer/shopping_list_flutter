@@ -28,7 +28,8 @@ PurchaseDto _$PurchaseDtoFromJson(Map<String, dynamic> json) => $checkedCreate(
             'person_purchased',
             'person_purchased_name',
             'price_total',
-            'weight_total'
+            'weight_total',
+            'purItems'
           ],
         );
         final val = PurchaseDto(
@@ -55,6 +56,11 @@ PurchaseDto _$PurchaseDtoFromJson(Map<String, dynamic> json) => $checkedCreate(
               $checkedConvert('price_total', (v) => (v as num?)?.toDouble()),
           weight_total:
               $checkedConvert('weight_total', (v) => (v as num?)?.toDouble()),
+          purItems: $checkedConvert(
+              'purItems',
+              (v) => (v as List<dynamic>)
+                  .map((e) => PurItemDto.fromJson(e as Map<String, dynamic>))
+                  .toList()),
         );
         return val;
       },
@@ -78,4 +84,5 @@ Map<String, dynamic> _$PurchaseDtoToJson(PurchaseDto instance) =>
       'person_purchased_name': instance.person_purchased_name,
       'price_total': instance.price_total,
       'weight_total': instance.weight_total,
+      'purItems': instance.purItems.map((e) => e.toJson()).toList(),
     };

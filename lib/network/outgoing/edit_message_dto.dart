@@ -3,7 +3,7 @@
 // $ flutter pub run build_runner watch
 
 import 'package:json_annotation/json_annotation.dart';
-import '../common/purchase_dto.dart';
+import '../incoming/purchase_dto.dart';
 
 part 'edit_message_dto.g.dart';
 
