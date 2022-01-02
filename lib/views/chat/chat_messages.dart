@@ -6,7 +6,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../utils/theme.dart';
 import '../../utils/static_logger.dart';
-import '../../utils/ui_notifier.dart';
+import '../../utils/ui_state.dart';
 import '../../views/chat/message_item.dart';
 import '../../widget/context_menu.dart';
 import '../../hooks/scroll_controller_for_animation.dart';
@@ -18,9 +18,9 @@ class ChatMessages extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final ui = ref.watch(uiStateProvider); // REFRESH ON PURCHASE SAVED
-    final incomingState = ref.watch(incomingStateProvider);
+    final incoming = ref.watch(incomingStateProvider);
 
-    incomingState.outgoingHandlers.sendMarkMessagesRead();
+    incoming.outgoingHandlers.sendMarkMessagesRead();
 
     final tapGlobalPosition = useState(const Offset(0, 0));
 
@@ -32,11 +32,11 @@ class ChatMessages extends HookConsumerWidget {
     return ListView.builder(
       controller: scrollController,
       reverse: true,
-      itemCount: incomingState.getMessageItems.length,
+      itemCount: incoming.getMessageItems.length,
       itemBuilder: (BuildContext context, int index) {
-        final MessageItem msgItem = incomingState.getMessageItems[index];
+        final MessageItem msgItem = incoming.getMessageItems[index];
         Widget dismissibleMsgItem =
-            makeDismissible(context, ref, incomingState.getMessageItems, index);
+            makeDismissible(context, ref, incoming.getMessageItems, index);
         Widget ret = addLongTapSelection(
             dismissibleMsgItem, msgItem, ref, context, tapGlobalPosition);
         return ret;

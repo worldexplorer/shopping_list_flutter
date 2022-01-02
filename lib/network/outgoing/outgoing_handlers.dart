@@ -11,7 +11,7 @@ import 'get_messages_dto.dart';
 import 'mark_message_read_dto.dart';
 
 class OutgoingHandlers {
-  ConnectionState1 connectionState;
+  ConnectionState connectionState;
   IncomingState incomingState;
 
   OutgoingHandlers(this.connectionState, this.incomingState);

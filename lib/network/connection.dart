@@ -20,14 +20,14 @@ final connectionStateProvider =
 class Connection extends ChangeNotifier {
   final Env _env;
 
-  late ConnectionState1 _connectionState;
+  late ConnectionState _connectionState;
   late IncomingState _incomingState;
   late OutgoingHandlers outgoingHandlers;
   late IncomingHandlers incomingHandlers;
   late Socket _socket;
 
   Connection(this._env) {
-    _connectionState = ConnectionState1();
+    _connectionState = ConnectionState();
   }
 
   void lateBindCreateSocket(IncomingState incomingState) {

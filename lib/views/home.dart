@@ -7,7 +7,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../utils/theme.dart';
-import '../utils/ui_notifier.dart';
+import '../utils/ui_state.dart';
 
 import 'views.dart';
 
@@ -60,33 +60,33 @@ class Home extends HookConsumerWidget {
             duration: duration.value,
             top: 0,
             bottom: 0,
-            left: ui.isMenuVisible ? 0 : min(140, 0.4 * screenWidth.value),
+            left: ui.isMenuVisible ? 0 : min(160, 0.4 * screenWidth.value),
             right: ui.isMenuVisible ? 0 : -0.2 * screenWidth.value,
             child: ScaleTransition(
               scale: scaleAnimation.value,
               child: Material(
                 animationDuration: duration.value,
                 borderRadius: const BorderRadius.all(Radius.circular(40)),
-                elevation: 8,
+                // elevation: 8,
                 color: menuBackgroundColor,
                 child: IgnorePointer(
                   // https://stackoverflow.com/questions/50600747/flutter-ignore-touch-events-on-a-widget
                   ignoring: !ui.isMenuVisible,
-                  child: GestureDetector(
-                    // onHorizontalDragDown: (DragDownDetails details) {
-                    onTap: () {
-                      if (!ui.isMenuVisible) {
-                        return;
-                      }
-                      if (menuVisibleController.isAnimating) {
-                        return;
-                      }
-                      // menuVisibleController.reverse();
-                      ui.toMenuAndBack();
-                    },
-                    child: const ChatWrapperSlivers(),
-                    // child: const ChatWrapperAppbar(),
-                  ),
+                  // child: GestureDetector(
+                  //   // onHorizontalDragDown: (DragDownDetails details) {
+                  //   onTap: () {
+                  //     if (!ui.isMenuVisible) {
+                  //       return;
+                  //     }
+                  //     if (menuVisibleController.isAnimating) {
+                  //       return;
+                  //     }
+                  //     // menuVisibleController.reverse();
+                  //     ui.toMenuAndBack();
+                  //   },
+                  child: const ChatWrapperSlivers(),
+                  // child: const ChatWrapperAppbar(),
+                  // ),
                 ),
               ),
             ),

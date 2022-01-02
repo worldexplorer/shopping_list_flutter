@@ -1,9 +1,12 @@
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../connection.dart';
 import '../outgoing/outgoing_handlers.dart';
 import 'message_dto.dart';
+import 'pur_item_dto.dart';
+import 'purchase_dto.dart';
 import 'room_dto.dart';
 import 'user_dto.dart';
 
@@ -48,6 +51,78 @@ class IncomingState extends ChangeNotifier {
   // Iterable<MessageItem> get getMessageItems => _messageItemsById.values;
   final List<MessageItem> messageItems = [];
   List<MessageItem> get getMessageItems => messageItems;
+
+  bool messageAddOrEdit(MessageDto msg, String msig) {
+    bool addedOrChanged = false;
+
+    final prevMsg = messagesById[msg.id];
+    if (prevMsg == null) {
+      final widget = MessageItem(
+        key: Key(msg.id.toString()),
+        isMe: isMyUserId(msg.user),
+        message: msg,
+      );
+
+      messagesById[msg.id] = msg;
+      if (!msg.persons_read.contains(userId)) {
+        messagesUnreadById[msg.id] = msg;
+      }
+
+      messageItemsById[msg.id] = widget;
+      messageItems.insert(0, widget);
+
+      addedOrChanged = true;
+      StaticLogger.append('      ADDED $msig');
+
+      var purchase = '';
+      if (msg.purchase != null) {
+        final pur = msg.purchase!;
+        purchase += '${pur.name} puritems[${pur.purItems.length}]';
+        purchase += pur.purItems.map((PurItemDto x) {
+          final qnty =
+              (x.punit_fpoint ?? false) ? x.qnty : (x.qnty ?? 0).round();
+          return '${x.name}'
+              '\t\t${qnty} ${x.punit_brief}'
+              '\t\tqnty:${x.qnty}'
+              '\t\tpunit:${x.punit_name}(${x.punit_id})'
+              '\t\t\t${x.pgroup_name}(${x.pgroup_id})'
+              '\t\t${x.product_name}(${x.product_id})';
+        }).join('\n\t\t\t\t');
+      }
+
+      if (purchase != '') {
+        StaticLogger.append('          PURCHASE $purchase');
+      }
+    } else {
+      String changes = '';
+      if (prevMsg.content != msg.content) {
+        changes += '[${prevMsg.content}]=>[${msg.content}] ';
+      }
+      if (prevMsg.edited != msg.edited) {
+        changes += 'edited[${msg.edited}] ';
+      }
+      if (prevMsg.purchase?.name != msg.purchase?.name) {
+        String prevPurchase = prevMsg.purchase?.name ?? 'NONE';
+        String purchase = msg.purchase?.name ?? 'NONE';
+        changes += 'purchase[$prevPurchase]=>[$purchase] ';
+      }
+      if (changes == '') {
+        StaticLogger.append('      NOT_CHANGED $msig');
+      } else {
+        StaticLogger.append('      EDITED $msig: $changes');
+        addedOrChanged = true;
+      }
+      messagesById[msg.id] = msg;
+
+      var widget = messageItemsById[msg.id];
+      if (widget != null) {
+        // no need to find widget in messageItems and re-insert a new instance
+        widget.message = msg;
+      }
+    }
+
+    return addedOrChanged;
+  }
 
   clearAllMessages() {
     messagesUnreadById.clear();
@@ -102,6 +177,60 @@ class IncomingState extends ChangeNotifier {
       log += ' NOT_FOUND_IN messageItems;';
     }
     return log;
+  }
+
+  MessageItem? _newPurchaseItem;
+  MessageItem? get newPurchaseItem => _newPurchaseItem;
+  set newPurchaseItem(MessageItem? val) {
+    _newPurchaseItem = val;
+    notifyListeners();
+  }
+
+  addEmptyPurchase() {
+    final newPurchase = PurchaseDto(
+      id: 0,
+      date_created: DateTime.now(),
+      date_updated: DateTime.now(),
+      name: '',
+      room: currentRoomId,
+      message: 0,
+      show_pgroup: 0,
+      show_price: 1,
+      show_qnty: 1,
+      show_weight: 0,
+      person_created: userId,
+      person_created_name: userName,
+      person_purchased: null,
+      person_purchased_name: null,
+      price_total: null,
+      weight_total: null,
+      purItems: [PurItemDto(id: 0, name: '')],
+    );
+
+    final newMessage = MessageDto(
+      id: 0,
+      date_created: DateTime.now(),
+      date_updated: DateTime.now(),
+      content: '',
+      edited: false,
+      replyto_id: null,
+      forwardfrom_id: null,
+      persons_sent: [],
+      persons_read: [],
+      room: currentRoomId,
+      user: userId,
+      user_name: userName,
+      purchaseId: 0,
+      purchase: newPurchase,
+    );
+
+    final widget = MessageItem(
+      key: Key(newMessage.id.toString()),
+      isMe: true,
+      message: newMessage,
+    );
+
+    newPurchaseItem = widget;
   }
 
   final Map<int, RoomDto> roomsById = <int, RoomDto>{};

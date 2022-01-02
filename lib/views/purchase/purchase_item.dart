@@ -5,6 +5,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '../../network/incoming/pur_item_dto.dart';
 import '../../network/incoming/purchase_dto.dart';
 import '../../utils/theme.dart';
+import '../../utils/ui_state.dart';
 
 class PurchaseItem extends HookConsumerWidget {
   PurchaseDto purchase;
@@ -20,6 +21,7 @@ class PurchaseItem extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final ui = ref.watch(uiStateProvider);
     final ValueNotifier<bool> bought = useState(false);
 
     final qntyInputCtrl = useTextEditingController();
@@ -52,13 +54,14 @@ class PurchaseItem extends HookConsumerWidget {
                 ? Container(
                     width: qntyColumnWidth,
                     decoration: textInputDecoration,
-                    margin: const EdgeInsets.fromLTRB(0, 0, 10, 10),
+                    margin: const EdgeInsets.fromLTRB(10, 0, 10, 5),
                     child: TextField(
                         // textInputAction: TextInputAction.newline,
                         keyboardType: TextInputType.number,
                         minLines: 1,
                         maxLines: 1,
                         controller: qntyInputCtrl,
+                        onChanged: (String text) => ui.rebuild(),
                         decoration: InputDecoration(
                           hintText: 'Quantity',
                           hintStyle: textInputHintStyle,
@@ -71,13 +74,14 @@ class PurchaseItem extends HookConsumerWidget {
                 ? Container(
                     width: priceColumnWidth,
                     decoration: textInputDecoration,
-                    margin: const EdgeInsets.fromLTRB(0, 0, 10, 10),
+                    margin: const EdgeInsets.fromLTRB(10, 0, 10, 5),
                     child: TextField(
                         // textInputAction: TextInputAction.newline,
                         keyboardType: TextInputType.number,
                         minLines: 1,
                         maxLines: 1,
                         controller: priceInputCtrl,
+                        onChanged: (String text) => ui.rebuild(),
                         decoration: InputDecoration(
                           hintText: 'Price',
                           hintStyle: textInputHintStyle,
@@ -90,13 +94,14 @@ class PurchaseItem extends HookConsumerWidget {
                 ? Container(
                     width: weightColumnWidth,
                     decoration: textInputDecoration,
-                    margin: const EdgeInsets.fromLTRB(0, 0, 10, 10),
+                    margin: const EdgeInsets.fromLTRB(10, 0, 10, 5),
                     child: TextField(
                         // textInputAction: TextInputAction.newline,
                         keyboardType: TextInputType.number,
                         minLines: 1,
                         maxLines: 1,
                         controller: weightInputCtrl,
+                        onChanged: (String text) => ui.rebuild(),
                         decoration: InputDecoration(
                           hintText: 'Weight',
                           hintStyle: textInputHintStyle,

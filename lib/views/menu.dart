@@ -5,7 +5,7 @@ import 'router.dart';
 
 import '../utils/theme.dart';
 import '../utils/static_logger.dart';
-import '../utils/ui_notifier.dart';
+import '../utils/ui_state.dart';
 
 class Menu extends HookConsumerWidget {
   const Menu({Key? key}) : super(key: key);

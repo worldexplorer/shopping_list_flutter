@@ -4,7 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:shopping_list_flutter/utils/static_logger.dart';
-import 'package:shopping_list_flutter/utils/ui_notifier.dart';
+import 'package:shopping_list_flutter/utils/ui_state.dart';
 import 'package:shopping_list_flutter/widget/context_menu.dart';
 
 class Log extends HookConsumerWidget {

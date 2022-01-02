@@ -5,7 +5,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '../../network/incoming/pur_item_dto.dart';
 import '../../network/incoming/purchase_dto.dart';
 import '../../utils/theme.dart';
-import '../../utils/ui_notifier.dart';
+import '../../utils/ui_state.dart';
 
 class PurchaseItemEdit extends HookConsumerWidget {
   PurchaseDto purchase;

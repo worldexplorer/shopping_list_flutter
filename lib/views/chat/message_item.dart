@@ -6,7 +6,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '../../network/incoming/incoming_state.dart';
 import '../../network/incoming/message_dto.dart';
 import '../../utils/timeago.dart';
-import '../../utils/ui_notifier.dart';
+import '../../utils/ui_state.dart';
 import '../../views/purchase/purchase.dart';
 import '../../views/purchase/purchase_edit.dart';
 
@@ -28,7 +28,7 @@ class MessageItem extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final incoming = ref.watch(incomingStateProvider);
 
-    final personReadStatus =
+    final String personReadStatus =
         '${message.persons_read.length} / ${incoming.currentRoom.users.length}';
 
     final int personsUnread =
@@ -37,22 +37,26 @@ class MessageItem extends ConsumerWidget {
 
     final ui = ref.watch(uiStateProvider);
     final inEditMode = ui.isSingleSelected(message.id);
+    final editingNewPurchase =
+        incoming.newPurchaseItem != null && incoming.newPurchaseItem == this;
 
     return Column(
       crossAxisAlignment:
           isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
       children: [
         const SizedBox(height: 6),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 10),
-          child: Text(
-            isMe ? 'Me' : message.user_name,
-            style: GoogleFonts.manrope(
-                color: isMe ? Colors.grey : Colors.green,
-                fontSize: 15,
-                fontWeight: FontWeight.bold),
-          ),
-        ),
+        !editingNewPurchase
+            ? Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                child: Text(
+                  isMe ? 'Me' : message.user_name,
+                  style: GoogleFonts.manrope(
+                      color: isMe ? Colors.grey : Colors.green,
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold),
+                ),
+              )
+            : const SizedBox(height: 10),
         const SizedBox(height: 2),
         Row(
           mainAxisAlignment:
@@ -66,15 +70,17 @@ class MessageItem extends ConsumerWidget {
                 ),
                 padding: const EdgeInsets.fromLTRB(10, 6, 10, 5),
                 margin: (isMe
-                    ? const EdgeInsets.fromLTRB(40, 0, 0, 0)
-                    : const EdgeInsets.fromLTRB(0, 0, 40, 0)),
+                    ? EdgeInsets.fromLTRB(
+                        (message.purchase == null ? 40 : 0), 0, 0, 0)
+                    : EdgeInsets.fromLTRB(
+                        0, 0, (message.purchase == null ? 40 : 0), 0)),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment:
                       isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
                   children: [
                     message.purchase != null
-                        ? inEditMode
+                        ? inEditMode || editingNewPurchase
                             ? PurchaseEdit(
                                 purchase: message.purchase!,
                                 messageId: message.id,
@@ -92,45 +98,8 @@ class MessageItem extends ConsumerWidget {
                               fontSize: 15,
                             ),
                           ),
-                    const SizedBox(height: 3),
-                    Row(
-                      mainAxisSize: MainAxisSize.min,
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        allParticipantsReceived
-                            ? const Icon(Icons.check_circle_rounded,
-                                color: Colors.grey, size: 15)
-                            : const Icon(Icons.check_outlined,
-                                color: Colors.grey, size: 15),
-                        const SizedBox(width: 5),
-                        Text(
-                          personReadStatus,
-                          style: GoogleFonts.poppins(
-                            color: Colors.grey.withOpacity(isMe ? 1 : 0.8),
-                            fontSize: 10,
-                          ),
-                        ),
-                        const SizedBox(width: 15),
-                        Text(
-                          message.edited ? 'edited' : '',
-                          style: GoogleFonts.poppins(
-                              color: Colors.yellowAccent
-                                  .withOpacity(isMe ? 1 : 0.8),
-                              fontSize: 10,
-                              fontStyle: FontStyle.italic),
-                        ),
-                        const SizedBox(width: 10),
-                        Text(
-                          message.edited
-                              ? timeAgoSinceDate(message.date_updated)
-                              : timeAgoSinceDate(message.date_created),
-                          style: GoogleFonts.manrope(
-                              color: Colors.grey,
-                              fontSize: 10,
-                              fontWeight: FontWeight.w300),
-                        ),
-                      ],
-                    ),
+                    ...messageStatus(editingNewPurchase,
+                        allParticipantsReceived, personReadStatus),
                   ],
                 ),
               ),
@@ -140,5 +109,53 @@ class MessageItem extends ConsumerWidget {
         const SizedBox(height: 2),
       ],
     );
+  }
+
+  List<Widget> messageStatus(bool editingNewPurchase,
+      bool allParticipantsReceived, String personReadStatus) {
+    if (editingNewPurchase) {
+      return [];
+    } else {
+      return [
+        const SizedBox(height: 3),
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            allParticipantsReceived
+                ? const Icon(Icons.check_circle_rounded,
+                    color: Colors.grey, size: 15)
+                : const Icon(Icons.check_outlined,
+                    color: Colors.grey, size: 15),
+            const SizedBox(width: 5),
+            Text(
+              personReadStatus,
+              style: GoogleFonts.poppins(
+                color: Colors.grey.withOpacity(isMe ? 1 : 0.8),
+                fontSize: 10,
+              ),
+            ),
+            const SizedBox(width: 15),
+            Text(
+              message.edited ? 'edited' : '',
+              style: GoogleFonts.poppins(
+                  color: Colors.yellowAccent.withOpacity(isMe ? 1 : 0.8),
+                  fontSize: 10,
+                  fontStyle: FontStyle.italic),
+            ),
+            const SizedBox(width: 10),
+            Text(
+              message.edited
+                  ? timeAgoSinceDate(message.date_updated)
+                  : timeAgoSinceDate(message.date_created),
+              style: GoogleFonts.manrope(
+                  color: Colors.grey,
+                  fontSize: 10,
+                  fontWeight: FontWeight.w300),
+            ),
+          ],
+        )
+      ];
+    }
   }
 }

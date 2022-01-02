@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'views.dart';
-import '../utils/ui_notifier.dart';
+import '../utils/ui_state.dart';
 import '../../network/incoming/incoming.dart';
 
 final routerProvider = ChangeNotifierProvider<Router>((ref) => Router(ref));

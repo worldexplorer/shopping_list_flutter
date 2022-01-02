@@ -2,11 +2,11 @@ import 'package:fluentui_system_icons/fluentui_system_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import 'package:flutter_hooks/flutter_hooks.dart';
-import 'dart:async';
+// import 'package:flutter_hooks/flutter_hooks.dart';
+// import 'dart:async';
 
 import '../../utils/theme.dart';
-import '../../utils/ui_notifier.dart';
+import '../../utils/ui_state.dart';
 import '../../network/incoming/incoming.dart';
 
 class MessageInput extends HookConsumerWidget {
@@ -36,32 +36,30 @@ class MessageInput extends HookConsumerWidget {
       ui.msgInputCtrl.clear();
     }
 
-    return
-        // Container(
-        // decoration: BoxDecoration(
-        //   color: altColor,
-        //   borderRadius: BorderRadius.circular(6),
-        //   boxShadow: [
-        //     BoxShadow(
-        //       color: Colors.black.withOpacity(0.05),
-        //       blurRadius: 10,
-        //     )
-        //   ],
-        // ),
-        // child:
-        Container(
+    return Container(
+      // decoration: BoxDecoration(
+      //   color: altColor,
+      //   borderRadius: BorderRadius.circular(6),
+      //   boxShadow: [
+      //     BoxShadow(
+      //       color: Colors.black.withOpacity(0.05),
+      //       blurRadius: 10,
+      //     )
+      //   ],
+      // ),
       color: altColor,
       padding: const EdgeInsets.symmetric(horizontal: 10),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         mainAxisSize: MainAxisSize.max,
         children: [
-          const Icon(
-            Icons.add_outlined,
-            color: Colors.green,
-          ),
+          IconButton(
+              icon: const Icon(
+                Icons.add_outlined,
+                color: Colors.green,
+              ),
+              onPressed: () => incoming.addEmptyPurchase()),
           const SizedBox(width: 10),
-          //prefix ?? SizedBox(width: 0, height: 0,),
           // https://stackoverflow.com/questions/57803737/flutter-renderflex-children-have-non-zero-flex-but-incoming-height-constraints
           Expanded(
             child: TextField(
@@ -103,7 +101,6 @@ class MessageInput extends HookConsumerWidget {
             onPressed: sendMessageFromInput,
           ),
         ],
-        // ),
       ),
     );
   }

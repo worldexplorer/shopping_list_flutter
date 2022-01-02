@@ -57,7 +57,7 @@ class Purchase extends HookConsumerWidget {
                         width: qntyColumnWidth,
                         height: 40,
                         decoration: textInputDecoration,
-                        margin: const EdgeInsets.fromLTRB(0, 0, 10, 10),
+                        margin: const EdgeInsets.fromLTRB(10, 0, 10, 5),
                         padding: const EdgeInsets.all(10),
                         child: Text(totalQnty.toString(), style: purchaseStyle))
                     : const SizedBox(),
@@ -66,7 +66,7 @@ class Purchase extends HookConsumerWidget {
                         width: priceColumnWidth,
                         height: 40,
                         decoration: textInputDecoration,
-                        margin: const EdgeInsets.fromLTRB(0, 0, 10, 10),
+                        margin: const EdgeInsets.fromLTRB(10, 0, 10, 5),
                         padding: const EdgeInsets.all(10),
                         child:
                             Text(totalPrice.toString(), style: purchaseStyle))
@@ -76,7 +76,7 @@ class Purchase extends HookConsumerWidget {
                         width: weightColumnWidth,
                         height: 40,
                         decoration: textInputDecoration,
-                        margin: const EdgeInsets.fromLTRB(0, 0, 10, 10),
+                        margin: const EdgeInsets.fromLTRB(10, 0, 10, 5),
                         padding: const EdgeInsets.all(10),
                         child:
                             Text(totalWeight.toString(), style: purchaseStyle))

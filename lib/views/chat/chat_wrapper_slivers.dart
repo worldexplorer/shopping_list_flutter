@@ -6,7 +6,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '../../hooks/scroll_controller_for_animation.dart';
 import '../../network/incoming/incoming_state.dart';
 import '../../utils/theme.dart';
-import '../../utils/ui_notifier.dart';
+import '../../utils/ui_state.dart';
 import 'chat_messages.dart';
 import 'message_input.dart';
 import '../views.dart';
@@ -28,29 +28,24 @@ class ChatWrapperSlivers extends HookConsumerWidget {
 
     return Scaffold(
       backgroundColor: chatBackground,
-      floatingActionButton: FadeTransition(
-        opacity: hideFabAnimController,
-        child: ScaleTransition(
-          scale: hideFabAnimController,
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(0, 0, 0, 80),
-            child: FloatingActionButton.small(
-              // label: const Text(
-              //   '+',
-              //   // style: Theme.of(context).textTheme.headline4,
-              // ),
-              child: const Icon(
-                Icons.arrow_drop_down,
-                size: 28,
-              ),
-              onPressed: () {
-                // scrollController.sc
-              },
-            ),
-          ),
-        ),
-      ),
-      // floatingActionButtonLocation: FloatingActionButtonLocation.miniEndFloat,
+      // floatingActionButton: FadeTransition(
+      //   opacity: hideFabAnimController,
+      //   child: ScaleTransition(
+      //     scale: hideFabAnimController,
+      //     child: Padding(
+      //       padding: const EdgeInsets.fromLTRB(0, 0, 0, 80),
+      //       child: FloatingActionButton.small(
+      //         child: const Icon(
+      //           Icons.arrow_drop_down,
+      //           size: 28,
+      //         ),
+      //         onPressed: () {
+      //           // scrollController.sc
+      //         },
+      //       ),
+      //     ),
+      //   ),
+      // ),
       body: CustomScrollView(
         controller: scrollController,
         slivers: <Widget>[
@@ -62,7 +57,6 @@ class ChatWrapperSlivers extends HookConsumerWidget {
               // https://o7planning.org/12851/flutter-appbar
               leading: IconButton(
                 icon: const Icon(
-                  // FluentIcons.settings_28_filled,
                   Icons.more_vert,
                   size: 20,
                 ),
@@ -100,16 +94,6 @@ class ChatWrapperSlivers extends HookConsumerWidget {
                     debugExpanded.value = !debugExpanded.value;
                   },
                 ),
-                // PopSliverToBoxAdapter(upMenuButton(
-                //   child: Icon(Icons.more_vert),
-                //   itemBuilder: (BuildContext context) {
-                //     return <PopupMenuEntry>[
-                //       const PopupMenuItem(
-                //         child: Text('Not implemented'),
-                //       )
-                //     ];
-                //   },
-                // )),
               ],
               bottom: PreferredSize(
                 preferredSize: Size.fromHeight(debugExpanded.value ? 400 : 0),
@@ -118,17 +102,11 @@ class ChatWrapperSlivers extends HookConsumerWidget {
               )),
           SliverFillRemaining(
             hasScrollBody: true,
-            child: Column(mainAxisSize: MainAxisSize.max, children: const [
-              Expanded(child: ChatMessages()),
-              // Container(
-              // height: 50,
-              // margin: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-              // color: Colors.yellow,
-              // child: const
-              // Flexible(child:
-              MessageInput()
-              // )
-              // ),
+            child: Column(mainAxisSize: MainAxisSize.max, children: [
+              const Expanded(child: ChatMessages()),
+              incoming.newPurchaseItem != null
+                  ? incoming.newPurchaseItem!
+                  : const MessageInput()
             ]),
           )
         ],

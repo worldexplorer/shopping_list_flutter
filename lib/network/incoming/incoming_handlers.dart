@@ -1,15 +1,8 @@
-import 'package:flutter/material.dart';
-import 'package:shopping_list_flutter/network/incoming/pur_item_dto.dart';
-
 import '../common/typing_dto.dart';
 import 'archived_messages_dto.dart';
 import 'user_dto.dart';
-
 import '../outgoing/outgoing_handlers.dart';
-
 import '../../utils/static_logger.dart';
-import '../../views/chat/message_item.dart';
-
 import '../connection_state.dart';
 import 'deleted_messages_dto.dart';
 import 'incoming_state.dart';
@@ -20,7 +13,7 @@ import 'messages_dto.dart';
 import 'rooms_dto.dart';
 
 class IncomingHandlers {
-  ConnectionState1 connectionState;
+  ConnectionState connectionState;
   IncomingState incomingState;
   OutgoingHandlers outgoingHandlers;
 
@@ -105,7 +98,7 @@ class IncomingHandlers {
       MessageDto msg = MessageDto.fromJson(data);
       final msig = ' onMessage(): ${msg.user_name}: ${msg.content}';
 
-      bool rebuildUi = _messageAddOrEdit(msg, msig);
+      bool rebuildUi = incomingState.messageAddOrEdit(msg, msig);
 
       if (rebuildUi) {
         incomingState.notifyListeners();
@@ -113,78 +106,6 @@ class IncomingHandlers {
     } catch (e) {
       StaticLogger.append('      FAILED onMessage(): ${e.toString()}');
     }
-  }
-
-  bool _messageAddOrEdit(MessageDto msg, String msig) {
-    bool addedOrChanged = false;
-
-    final prevMsg = incomingState.messagesById[msg.id];
-    if (prevMsg == null) {
-      final widget = MessageItem(
-        key: Key(msg.id.toString()),
-        isMe: incomingState.isMyUserId(msg.user),
-        message: msg,
-      );
-
-      incomingState.messagesById[msg.id] = msg;
-      if (!msg.persons_read.contains(incomingState.userId)) {
-        incomingState.messagesUnreadById[msg.id] = msg;
-      }
-
-      incomingState.messageItemsById[msg.id] = widget;
-      incomingState.messageItems.insert(0, widget);
-
-      addedOrChanged = true;
-      StaticLogger.append('      ADDED $msig');
-
-      var purchase = '';
-      if (msg.purchase != null) {
-        final pur = msg.purchase!;
-        purchase += '${pur.name} puritems[${pur.purItems.length}]';
-        purchase += pur.purItems.map((PurItemDto x) {
-          final qnty =
-              (x.punit_fpoint ?? false) ? x.qnty : (x.qnty ?? 0).round();
-          return '${x.name}'
-              '\t\t${qnty} ${x.punit_brief}'
-              '\t\tqnty:${x.qnty}'
-              '\t\tpunit:${x.punit_name}(${x.punit_id})'
-              '\t\t\t${x.pgroup_name}(${x.pgroup_id})'
-              '\t\t${x.product_name}(${x.product_id})';
-        }).join('\n\t\t\t\t');
-      }
-
-      if (purchase != '') {
-        StaticLogger.append('          PURCHASE $purchase');
-      }
-    } else {
-      String changes = '';
-      if (prevMsg.content != msg.content) {
-        changes += '[${prevMsg.content}]=>[${msg.content}] ';
-      }
-      if (prevMsg.edited != msg.edited) {
-        changes += 'edited[${msg.edited}] ';
-      }
-      if (prevMsg.purchase?.name != msg.purchase?.name) {
-        String prevPurchase = prevMsg.purchase?.name ?? 'NONE';
-        String purchase = msg.purchase?.name ?? 'NONE';
-        changes += 'purchase[$prevPurchase]=>[$purchase] ';
-      }
-      if (changes == '') {
-        StaticLogger.append('      NOT_CHANGED $msig');
-      } else {
-        StaticLogger.append('      EDITED $msig: $changes');
-        addedOrChanged = true;
-      }
-      incomingState.messagesById[msg.id] = msg;
-
-      var widget = incomingState.messageItemsById[msg.id];
-      if (widget != null) {
-        // no need to find widget in messageItems and re-insert a new instance
-        widget.message = msg;
-      }
-    }
-
-    return addedOrChanged;
   }
 
   void onMessages(data) {
@@ -205,7 +126,7 @@ class IncomingHandlers {
         MessageDto msg = msgs.messages[i - 1];
         final msig = ' onMessages($counter): ${msg.user_name}: ${msg.content}';
 
-        final addedOrChanged = _messageAddOrEdit(msg, msig);
+        final addedOrChanged = incomingState.messageAddOrEdit(msg, msig);
         if (addedOrChanged) {
           addedOrChangedCounter++;
         }
@@ -238,7 +159,7 @@ class IncomingHandlers {
 
         final msgId = msg.id;
         final msig =
-            ' onMessagesReadUpdated($counter): $msgId}: ${msg.persons_read}';
+            ' onMessagesReadUpdated($counter): $msgId: ${msg.persons_read}';
 
         final MessageDto? existingMsg = incomingState.messagesById[msgId];
         if (existingMsg == null) {
