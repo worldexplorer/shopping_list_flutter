@@ -30,6 +30,11 @@ class PurItemDto {
   String? punit_brief;
   bool? punit_fpoint;
 
+  bool bought = false;
+  double? bought_qnty;
+  double? bought_price;
+  double? bought_weight;
+
   PurItemDto({
     required this.id,
     // required this.date_created,
@@ -45,6 +50,10 @@ class PurItemDto {
     this.punit_name,
     this.punit_brief,
     this.punit_fpoint,
+    // this.bought,
+    this.bought_qnty,
+    this.bought_price,
+    this.bought_weight,
   });
 
   factory PurItemDto.fromJson(Map<String, dynamic> json) =>

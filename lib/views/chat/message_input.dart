@@ -48,7 +48,7 @@ class MessageInput extends HookConsumerWidget {
       //   ],
       // ),
       color: altColor,
-      padding: const EdgeInsets.symmetric(horizontal: 10),
+      padding: const EdgeInsets.fromLTRB(5, 0, 10, 0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         mainAxisSize: MainAxisSize.max,

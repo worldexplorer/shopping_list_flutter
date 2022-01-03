@@ -25,14 +25,15 @@ class PurchaseItemEdit extends HookConsumerWidget {
 
     final nameInputCtrl = useTextEditingController();
     nameInputCtrl.text = purItem.name;
-    final ValueNotifier<num> qnty = useState(purItem.qnty ?? 0);
 
     return Row(
       mainAxisSize: MainAxisSize.max,
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
         GestureDetector(
-            child: const Icon(Icons.drag_handle, color: Colors.blue, size: 20)),
+            child: purchase.purItems.length > 1
+                ? const Icon(Icons.drag_handle, color: Colors.blue, size: 20)
+                : const SizedBox(width: 20)),
         const SizedBox(width: 10),
         Flexible(
             child: Container(
@@ -44,8 +45,12 @@ class PurchaseItemEdit extends HookConsumerWidget {
                     minLines: 1,
                     maxLines: 3,
                     controller: nameInputCtrl,
+                    onChanged: (String text) {
+                      purItem.name = text;
+                      // ui.rebuild();
+                    },
                     decoration: InputDecoration(
-                      hintText: 'Enter Product to Purchase...',
+                      hintText: 'Product to Purchase...',
                       hintStyle: textInputHintStyle,
                       // border: InputBorder.none,
                       contentPadding: textInputPadding,

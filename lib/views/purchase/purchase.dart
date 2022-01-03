@@ -24,9 +24,9 @@ class Purchase extends HookConsumerWidget {
     double totalPrice = 0;
     double totalWeight = 0;
     for (var purItem in purchase.purItems) {
-      totalQnty += purItem.qnty ?? 0.0;
-      totalPrice += purItem.qnty ?? 0.0;
-      totalWeight += purItem.qnty ?? 0.0;
+      totalQnty += purItem.bought_qnty ?? 0.0;
+      totalPrice += purItem.bought_price ?? 0.0;
+      totalWeight += purItem.bought_weight ?? 0.0;
     }
 
     return Column(

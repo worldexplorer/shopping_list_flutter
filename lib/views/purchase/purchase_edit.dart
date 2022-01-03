@@ -34,6 +34,20 @@ class PurchaseEdit extends HookConsumerWidget {
     final titleInputCtrl = useTextEditingController();
     titleInputCtrl.text = purchase.name;
 
+    final widthAfterRebuild = MediaQuery.of(context).size.width;
+
+    const wideEnough = 600;
+    String btnLabelAddProduct =
+        widthAfterRebuild > wideEnough ? 'Add Product...' : 'Add';
+
+    String btnLabelCancelPurchase = 'Cancel';
+    if (widthAfterRebuild > wideEnough) {
+      btnLabelCancelPurchase +=
+          (incoming.newPurchaseItem != null ? ' Purchase' : ' Editing');
+    }
+
+    double addCancelSpace = (widthAfterRebuild > wideEnough) ? 50 : 20;
+
     return Column(
         mainAxisSize: MainAxisSize.max,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -52,8 +66,12 @@ class PurchaseEdit extends HookConsumerWidget {
                             minLines: 1,
                             maxLines: 3,
                             controller: titleInputCtrl,
+                            onChanged: (String text) {
+                              purchase.name = text;
+                              // ui.rebuild();
+                            },
                             decoration: InputDecoration(
-                              hintText: 'Enter Purchase title...',
+                              hintText: 'Store name...',
                               hintStyle: textInputHintStyle,
                               // border: InputBorder.none,
                               contentPadding: textInputPadding,
@@ -78,25 +96,27 @@ class PurchaseEdit extends HookConsumerWidget {
                     }),
               ]),
 
-          // ...purchase.purItems.map((x) => PurchaseItemEdit(
-          //       purchase: purchase,
-          //       purItem: x,
-          //       isMe: isMe,
-          //     )),
-
-          ListView.builder(
-            shrinkWrap: true,
-            itemCount: purchase.purItems.length,
-            itemBuilder: (BuildContext context, int index) {
-              final purItem = purchase.purItems[index];
-              return PurchaseItemEdit(
+          ...purchase.purItems.map((x) => PurchaseItemEdit(
+                key: Key(DateTime.now().microsecond.toString()),
                 purchase: purchase,
-                purItem: purItem,
+                purItem: x,
                 isMe: isMe,
-              );
-              // return Text(purItem.name, softWrap: true, style: purchaseStyle);
-            },
-          ),
+              )),
+
+          // ListView.builder(
+          //   shrinkWrap: true,
+          //   itemCount: purchase.purItems.length,
+          //   itemBuilder: (BuildContext context, int index) {
+          //     final purItem = purchase.purItems[index];
+          //     return PurchaseItemEdit(
+          //       key: Key(DateTime.now().microsecond.toString()),
+          //       purchase: purchase,
+          //       purItem: purItem,
+          //       isMe: isMe,
+          //     );
+          //     // return Text(purItem.name, softWrap: true, style: purchaseStyle);
+          //   },
+          // ),
 
           const SizedBox(height: 5),
 
@@ -115,9 +135,9 @@ class PurchaseEdit extends HookConsumerWidget {
                           const Icon(Icons.add_circle_outline,
                               size: 24, color: Colors.white),
                           const SizedBox(width: 10),
-                          Text('Add Product...', style: purchaseStyle)
+                          Text(btnLabelAddProduct, style: purchaseStyle)
                         ]))),
-                const SizedBox(width: 50),
+                SizedBox(width: addCancelSpace),
                 ElevatedButton(
                   onPressed: () {
                     if (incoming.newPurchaseItem != null) {
@@ -135,12 +155,7 @@ class PurchaseEdit extends HookConsumerWidget {
                   child: Row(children: [
                     const Icon(Icons.clear, size: 24, color: Colors.white),
                     const SizedBox(width: 10),
-                    Text(
-                        'Cancel ' +
-                            (incoming.newPurchaseItem != null
-                                ? 'Purchase'
-                                : 'Editing'),
-                        style: purchaseStyle),
+                    Text(btnLabelCancelPurchase, style: purchaseStyle),
                   ]),
                 ),
                 const SizedBox(width: 10),
@@ -163,7 +178,7 @@ class PurchaseEdit extends HookConsumerWidget {
           if (settingsExpanded.value)
             Container(
                 alignment: Alignment.topRight,
-                child: Container(
+                child: SizedBox(
                     width: 200,
                     child: Column(
                         mainAxisSize: MainAxisSize.min,
@@ -200,7 +215,7 @@ class PurchaseEdit extends HookConsumerWidget {
           value: value == 0 ? false : true,
           onChanged: (newValue) {
             onChange(newValue ? 1 : 0);
-            // ui.rebuild();
+            ui.rebuild();
           },
         ),
         const SizedBox(width: 3),
@@ -208,7 +223,7 @@ class PurchaseEdit extends HookConsumerWidget {
             child: GestureDetector(
           onTapDown: (TapDownDetails details) {
             onChange(value == 0 ? 1 : 0);
-            // ui.rebuild();
+            ui.rebuild();
           },
           child: Text(title, style: purchaseStyle),
         )),

@@ -22,95 +22,89 @@ class PurchaseItem extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final ui = ref.watch(uiStateProvider);
-    final ValueNotifier<bool> bought = useState(false);
 
     final qntyInputCtrl = useTextEditingController();
+    qntyInputCtrl.text = purItem.bought_qnty?.toString() ?? '';
+
     final priceInputCtrl = useTextEditingController();
+    priceInputCtrl.text = purItem.bought_price?.toString() ?? '';
+
     final weightInputCtrl = useTextEditingController();
+    weightInputCtrl.text = purItem.bought_weight?.toString() ?? '';
 
     return GestureDetector(
-        onTapDown: (TapDownDetails details) => bought.value = !bought.value,
+        onTapDown: (TapDownDetails details) {
+          purItem.bought = !purItem.bought;
+          ui.rebuild();
+        },
         child: Row(
           // mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            bought.value == true
+            purItem.bought == true
                 ? IconButton(
-                    onPressed: () => bought.value = !bought.value,
+                    onPressed: () => purItem.bought = !purItem.bought,
                     icon: const Icon(
                       Icons.check_circle,
                       color: Colors.lightGreenAccent,
                       size: 20,
                     ))
                 : IconButton(
-                    onPressed: () => bought.value = !bought.value,
+                    onPressed: () => purItem.bought = !purItem.bought,
                     icon: const Icon(Icons.check_circle_outline_rounded,
                         color: Colors.grey, size: 20)),
             const SizedBox(width: 3),
             Expanded(
                 child:
                     Text(purItem.name, softWrap: true, style: purchaseStyle)),
-            purchase.show_qnty == 1
-                ? Container(
-                    width: qntyColumnWidth,
-                    decoration: textInputDecoration,
-                    margin: const EdgeInsets.fromLTRB(10, 0, 10, 5),
-                    child: TextField(
-                        // textInputAction: TextInputAction.newline,
-                        keyboardType: TextInputType.number,
-                        minLines: 1,
-                        maxLines: 1,
-                        controller: qntyInputCtrl,
-                        onChanged: (String text) => ui.rebuild(),
-                        decoration: InputDecoration(
-                          hintText: 'Quantity',
-                          hintStyle: textInputHintStyle,
-                          // border: InputBorder.none,
-                          contentPadding: textInputPadding,
-                        ),
-                        style: textInputStyle))
-                : const SizedBox(),
-            purchase.show_price == 1
-                ? Container(
-                    width: priceColumnWidth,
-                    decoration: textInputDecoration,
-                    margin: const EdgeInsets.fromLTRB(10, 0, 10, 5),
-                    child: TextField(
-                        // textInputAction: TextInputAction.newline,
-                        keyboardType: TextInputType.number,
-                        minLines: 1,
-                        maxLines: 1,
-                        controller: priceInputCtrl,
-                        onChanged: (String text) => ui.rebuild(),
-                        decoration: InputDecoration(
-                          hintText: 'Price',
-                          hintStyle: textInputHintStyle,
-                          // border: InputBorder.none,
-                          contentPadding: textInputPadding,
-                        ),
-                        style: textInputStyle))
-                : const SizedBox(),
-            purchase.show_weight == 1
-                ? Container(
-                    width: weightColumnWidth,
-                    decoration: textInputDecoration,
-                    margin: const EdgeInsets.fromLTRB(10, 0, 10, 5),
-                    child: TextField(
-                        // textInputAction: TextInputAction.newline,
-                        keyboardType: TextInputType.number,
-                        minLines: 1,
-                        maxLines: 1,
-                        controller: weightInputCtrl,
-                        onChanged: (String text) => ui.rebuild(),
-                        decoration: InputDecoration(
-                          hintText: 'Weight',
-                          hintStyle: textInputHintStyle,
-                          // border: InputBorder.none,
-                          contentPadding: textInputPadding,
-                        ),
-                        style: textInputStyle))
-                : const SizedBox(),
+            optionalNumberInput(
+                purchase.show_qnty, qntyColumnWidth, qntyInputCtrl,
+                (newDouble) {
+              purItem.bought_qnty = newDouble;
+            }, 'Quantity', ui),
+            optionalNumberInput(
+                purchase.show_price, priceColumnWidth, priceInputCtrl,
+                (newDouble) {
+              purItem.bought_price = newDouble;
+            }, 'Price', ui),
+            optionalNumberInput(
+                purchase.show_weight, weightColumnWidth, weightInputCtrl,
+                (newDouble) {
+              purItem.bought_weight = newDouble;
+            }, 'Weight', ui),
           ],
         ));
+  }
+
+  optionalNumberInput(
+      int showNumberInput,
+      double width,
+      TextEditingController textInputCtrl,
+      Function(double newDouble) setField,
+      String hintText,
+      UiState ui) {
+    return showNumberInput == 1
+        ? Container(
+            width: width,
+            decoration: textInputDecoration,
+            margin: const EdgeInsets.fromLTRB(10, 0, 10, 5),
+            child: TextField(
+                // textInputAction: TextInputAction.newline,
+                keyboardType: TextInputType.number,
+                minLines: 1,
+                maxLines: 1,
+                controller: textInputCtrl,
+                onChanged: (String text) {
+                  setField(double.parse(text));
+                  ui.rebuild();
+                },
+                decoration: InputDecoration(
+                  hintText: hintText,
+                  hintStyle: textInputHintStyle,
+                  // border: InputBorder.none,
+                  contentPadding: textInputPadding,
+                ),
+                style: textInputStyle))
+        : const SizedBox();
   }
 }

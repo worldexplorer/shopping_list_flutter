@@ -186,8 +186,14 @@ class ChatMessages extends HookConsumerWidget {
           ui.isReplyingToMessageId = null;
         } else {
           if (messagesSelected.isNotEmpty) {
-            messagesSelected.addAll({msgItem.message.id: msgItem});
-            msgItem.selected = true;
+            final first = messagesSelected.values.toList()[0];
+            if (first.message.purchaseId != null) {
+              messagesSelected.remove(first.message.id);
+              first.selected = false;
+            } else {
+              messagesSelected.addAll({msgItem.message.id: msgItem});
+              msgItem.selected = true;
+            }
           }
         }
         ui.rebuild();
@@ -230,7 +236,12 @@ class ChatMessages extends HookConsumerWidget {
         }
       },
       child: Container(
-          padding: EdgeInsets.fromLTRB(inSelectionMode ? 45 : 16, 16, 16, 16),
+          padding: const EdgeInsets.fromLTRB(
+              //inSelectionMode ? 45 :
+              16,
+              16,
+              16,
+              16),
           color: msgItem.selected ? chatMessageSelected : Colors.transparent,
           child: dismissibleMsgItem),
     );

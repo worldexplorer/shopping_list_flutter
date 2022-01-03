@@ -24,7 +24,11 @@ PurItemDto _$PurItemDtoFromJson(Map<String, dynamic> json) => $checkedCreate(
             'punit_id',
             'punit_name',
             'punit_brief',
-            'punit_fpoint'
+            'punit_fpoint',
+            'bought',
+            'bought_qnty',
+            'bought_price',
+            'bought_weight'
           ],
         );
         final val = PurItemDto(
@@ -40,7 +44,14 @@ PurItemDto _$PurItemDtoFromJson(Map<String, dynamic> json) => $checkedCreate(
           punit_name: $checkedConvert('punit_name', (v) => v as String?),
           punit_brief: $checkedConvert('punit_brief', (v) => v as String?),
           punit_fpoint: $checkedConvert('punit_fpoint', (v) => v as bool?),
+          bought_qnty:
+              $checkedConvert('bought_qnty', (v) => (v as num?)?.toDouble()),
+          bought_price:
+              $checkedConvert('bought_price', (v) => (v as num?)?.toDouble()),
+          bought_weight:
+              $checkedConvert('bought_weight', (v) => (v as num?)?.toDouble()),
         );
+        $checkedConvert('bought', (v) => val.bought = v as bool);
         return val;
       },
     );
@@ -59,4 +70,8 @@ Map<String, dynamic> _$PurItemDtoToJson(PurItemDto instance) =>
       'punit_name': instance.punit_name,
       'punit_brief': instance.punit_brief,
       'punit_fpoint': instance.punit_fpoint,
+      'bought': instance.bought,
+      'bought_qnty': instance.bought_qnty,
+      'bought_price': instance.bought_price,
+      'bought_weight': instance.bought_weight,
     };
