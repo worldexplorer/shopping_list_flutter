@@ -18,12 +18,17 @@ class UserDto {
   String name;
   String email;
   String phone;
+  String username;
+  String color;
 
-  UserDto(
-      {required this.id,
-      required this.name,
-      required this.email,
-      required this.phone});
+  UserDto({
+    required this.id,
+    required this.name,
+    required this.email,
+    required this.phone,
+    required this.username,
+    required this.color,
+  });
 
   factory UserDto.fromJson(Map<String, dynamic> json) =>
       _$UserDtoFromJson(json);

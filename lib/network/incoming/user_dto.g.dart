@@ -12,13 +12,22 @@ UserDto _$UserDtoFromJson(Map<String, dynamic> json) => $checkedCreate(
       ($checkedConvert) {
         $checkKeys(
           json,
-          allowedKeys: const ['id', 'name', 'email', 'phone'],
+          allowedKeys: const [
+            'id',
+            'name',
+            'email',
+            'phone',
+            'username',
+            'color'
+          ],
         );
         final val = UserDto(
           id: $checkedConvert('id', (v) => v as int),
           name: $checkedConvert('name', (v) => v as String),
           email: $checkedConvert('email', (v) => v as String),
           phone: $checkedConvert('phone', (v) => v as String),
+          username: $checkedConvert('username', (v) => v as String),
+          color: $checkedConvert('color', (v) => v as String),
         );
         return val;
       },
@@ -29,4 +38,6 @@ Map<String, dynamic> _$UserDtoToJson(UserDto instance) => <String, dynamic>{
       'name': instance.name,
       'email': instance.email,
       'phone': instance.phone,
+      'username': instance.username,
+      'color': instance.color,
     };

@@ -82,17 +82,27 @@ class PurchaseEdit extends HookConsumerWidget {
                     enableFeedback: true,
                     autofocus: true,
                     onPressed: () {
-                      if (incoming.newPurchaseItem == null) {
-                        ui.messagesSelected.remove(purchase.message);
-                        ui.rebuild();
+                      if (purchase.id == 0) {
+                        incoming.outgoingHandlers.sendNewPurchase(
+                            purchase, ui.isReplyingToMessageId);
+                        //TODO: move to incomingHandlers.onPurchaseCreated
+                        incoming.newPurchaseItem = null;
+                      } else {
+                        try {
+                          incoming.outgoingHandlers.sendEditPurchase(purchase);
 
-                        final indexFound = incoming.messageItems
-                            .indexWhere((x) => x.message.id == messageId);
-                        incoming.messageItems[indexFound].selected = false;
+                          //TODO: move to incomingHandlers.onPurchaseEdited
+                          ui.messagesSelected.remove(purchase.message);
+
+                          final indexFound = incoming.messageItems
+                              .indexWhere((x) => x.message.id == messageId);
+                          incoming.messageItems[indexFound].selected = false;
+                          ui.rebuild();
+                        } catch (e) {
+                          StaticLogger.append(
+                              'SavePurchase(): ERROR deselecting an existing Purchase: ${e.toString()}');
+                        }
                       }
-                      StaticLogger.append(
-                          'SavePurchase(): TODO: serialize to server');
-                      HapticFeedback.vibrate();
                     }),
               ]),
 
@@ -128,7 +138,8 @@ class PurchaseEdit extends HookConsumerWidget {
                 Expanded(
                     child: ElevatedButton(
                         onPressed: () {
-                          purchase.purItems.add(PurItemDto(id: 0, name: ''));
+                          purchase.purItems
+                              .add(PurItemDto(id: 0, bought: false, name: ''));
                           ui.rebuild();
                         },
                         child: Row(children: [
@@ -186,19 +197,19 @@ class PurchaseEdit extends HookConsumerWidget {
                         children: [
                           const Divider(height: 4, thickness: 1, indent: 3),
                           toggle('Show Groups', purchase.show_pgroup,
-                              (int newValue) {
+                              (bool newValue) {
                             purchase.show_pgroup = newValue;
                           }, ui),
                           toggle('Show Total', purchase.show_price,
-                              (int newValue) {
+                              (bool newValue) {
                             purchase.show_price = newValue;
                           }, ui),
                           toggle('Show Quantity', purchase.show_qnty,
-                              (int newValue) {
+                              (bool newValue) {
                             purchase.show_qnty = newValue;
                           }, ui),
                           toggle('Show Weight', purchase.show_weight,
-                              (int newValue) {
+                              (bool newValue) {
                             purchase.show_weight = newValue;
                           }, ui)
                         ]))),
@@ -206,15 +217,15 @@ class PurchaseEdit extends HookConsumerWidget {
   }
 
   Widget toggle(
-      String title, int value, Function(int newValue) onChange, UiState ui) {
+      String title, bool value, Function(bool newValue) onChange, UiState ui) {
     return Row(
       mainAxisSize: MainAxisSize.min,
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
         Switch(
-          value: value == 0 ? false : true,
+          value: value,
           onChanged: (newValue) {
-            onChange(newValue ? 1 : 0);
+            onChange(newValue);
             ui.rebuild();
           },
         ),
@@ -222,7 +233,7 @@ class PurchaseEdit extends HookConsumerWidget {
         Expanded(
             child: GestureDetector(
           onTapDown: (TapDownDetails details) {
-            onChange(value == 0 ? 1 : 0);
+            onChange(!value);
             ui.rebuild();
           },
           child: Text(title, style: purchaseStyle),

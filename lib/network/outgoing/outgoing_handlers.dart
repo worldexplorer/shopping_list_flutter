@@ -1,3 +1,5 @@
+import 'package:shopping_list_flutter/network/incoming/purchase_dto.dart';
+
 import '../common/typing_dto.dart';
 import '../connection_state.dart';
 import '../incoming/incoming_state.dart';
@@ -9,6 +11,7 @@ import 'login_dto.dart';
 import 'new_message_dto.dart';
 import 'get_messages_dto.dart';
 import 'mark_message_read_dto.dart';
+import 'new_purchase_dto.dart';
 
 class OutgoingHandlers {
   ConnectionState connectionState;
@@ -156,5 +159,44 @@ class OutgoingHandlers {
     ).toJson();
     connectionState.socket.emit("getMessages", json);
     StaticLogger.append('<< GET_MESSAGES [$json]');
+  }
+
+  void sendNewPurchase(PurchaseDto purchase, isReplyingToMessageId) {
+    if (!connectionState.socketConnected) {
+      StaticLogger.append(
+          'sendNewPurchase(${purchase.room}): ${connectionState.socketId}');
+      return;
+    }
+    final json = NewPurchaseDto(
+      name: purchase.name,
+      room: purchase.room,
+      message: purchase.message,
+      show_pgroup: purchase.show_pgroup,
+      show_price: purchase.show_price,
+      show_qnty: purchase.show_qnty,
+      show_weight: purchase.show_weight,
+      copiedfrom_id: purchase.copiedfrom_id,
+      person_created: purchase.person_created,
+      person_created_name: purchase.person_created_name,
+      persons_can_edit: purchase.persons_can_edit,
+      purchased: purchase.purchased,
+      person_purchased_name: purchase.person_purchased_name,
+      price_total: purchase.price_total,
+      weight_total: purchase.weight_total,
+      purItems: purchase.purItems,
+    ).toJson();
+    connectionState.socket.emit("newPurchase", json);
+    StaticLogger.append('<< NEW_PURCHASE [$json]');
+  }
+
+  void sendEditPurchase(PurchaseDto purchase) {
+    if (!connectionState.socketConnected) {
+      StaticLogger.append(
+          'sendEditPurchase${purchase.room}): ${connectionState.socketId}');
+      return;
+    }
+    final json = purchase.toJson();
+    connectionState.socket.emit("editPurchase", json);
+    StaticLogger.append('<< EDIT_PURCHASE [$json]');
   }
 }

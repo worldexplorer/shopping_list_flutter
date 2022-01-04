@@ -52,35 +52,11 @@ class Purchase extends HookConsumerWidget {
               children: [
                 Text('Total:', style: purchaseStyle),
                 const SizedBox(width: 30),
-                purchase.show_qnty == 1
-                    ? Container(
-                        width: qntyColumnWidth,
-                        height: 40,
-                        decoration: textInputDecoration,
-                        margin: const EdgeInsets.fromLTRB(10, 0, 10, 5),
-                        padding: const EdgeInsets.all(10),
-                        child: Text(totalQnty.toString(), style: purchaseStyle))
-                    : const SizedBox(),
-                purchase.show_price == 1
-                    ? Container(
-                        width: priceColumnWidth,
-                        height: 40,
-                        decoration: textInputDecoration,
-                        margin: const EdgeInsets.fromLTRB(10, 0, 10, 5),
-                        padding: const EdgeInsets.all(10),
-                        child:
-                            Text(totalPrice.toString(), style: purchaseStyle))
-                    : const SizedBox(),
-                purchase.show_weight == 1
-                    ? Container(
-                        width: weightColumnWidth,
-                        height: 40,
-                        decoration: textInputDecoration,
-                        margin: const EdgeInsets.fromLTRB(10, 0, 10, 5),
-                        padding: const EdgeInsets.all(10),
-                        child:
-                            Text(totalWeight.toString(), style: purchaseStyle))
-                    : const SizedBox(),
+                optionalTotal(purchase.show_qnty, qntyColumnWidth, totalQnty),
+                optionalTotal(
+                    purchase.show_price, priceColumnWidth, totalPrice),
+                optionalTotal(
+                    purchase.show_weight, weightColumnWidth, totalWeight),
               ]),
 
           // ListView.builder(
@@ -98,5 +74,17 @@ class Purchase extends HookConsumerWidget {
           //   },
           // ),
         ]);
+  }
+
+  optionalTotal(bool show, double columnWidth, double value) {
+    return show
+        ? Container(
+            width: columnWidth,
+            height: 40,
+            decoration: textInputDecoration,
+            margin: const EdgeInsets.fromLTRB(10, 0, 10, 5),
+            padding: const EdgeInsets.all(10),
+            child: Text(value.toString(), style: purchaseStyle))
+        : const SizedBox();
   }
 }

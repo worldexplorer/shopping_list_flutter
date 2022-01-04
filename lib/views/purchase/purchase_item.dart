@@ -77,13 +77,13 @@ class PurchaseItem extends HookConsumerWidget {
   }
 
   optionalNumberInput(
-      int showNumberInput,
+      bool showNumberInput,
       double width,
       TextEditingController textInputCtrl,
       Function(double newDouble) setField,
       String hintText,
       UiState ui) {
-    return showNumberInput == 1
+    return showNumberInput
         ? Container(
             width: width,
             decoration: textInputDecoration,

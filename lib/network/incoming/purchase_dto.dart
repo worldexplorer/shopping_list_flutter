@@ -24,13 +24,17 @@ class PurchaseDto {
   int room;
   int message;
 
-  int show_pgroup;
-  int show_price;
-  int show_qnty;
-  int show_weight;
+  bool show_pgroup;
+  bool show_price;
+  bool show_qnty;
+  bool show_weight;
+
+  int? copiedfrom_id;
 
   int person_created;
   String person_created_name;
+  List<int> persons_can_edit;
+  bool purchased;
   int? person_purchased;
   String? person_purchased_name;
 
@@ -50,8 +54,11 @@ class PurchaseDto {
     required this.show_price,
     required this.show_qnty,
     required this.show_weight,
+    required this.copiedfrom_id,
     required this.person_created,
     required this.person_created_name,
+    required this.persons_can_edit,
+    required this.purchased,
     this.person_purchased,
     this.person_purchased_name,
     this.price_total,
