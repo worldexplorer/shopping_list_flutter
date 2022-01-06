@@ -62,6 +62,7 @@ BoxDecoration textInputDecoration = BoxDecoration(
   ],
 );
 
+EdgeInsets textInputMargin = const EdgeInsets.fromLTRB(10, 0, 10, 5);
 EdgeInsets textInputPadding = const EdgeInsets.fromLTRB(
   10.0,
   0,

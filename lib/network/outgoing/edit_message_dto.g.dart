@@ -13,16 +13,12 @@ EditMessageDto _$EditMessageDtoFromJson(Map<String, dynamic> json) =>
       ($checkedConvert) {
         $checkKeys(
           json,
-          allowedKeys: const ['id', 'content', 'purchase'],
+          allowedKeys: const ['id', 'room', 'content'],
         );
         final val = EditMessageDto(
           id: $checkedConvert('id', (v) => v as int),
+          room: $checkedConvert('room', (v) => v as int),
           content: $checkedConvert('content', (v) => v as String),
-          purchase: $checkedConvert(
-              'purchase',
-              (v) => v == null
-                  ? null
-                  : PurchaseDto.fromJson(v as Map<String, dynamic>)),
         );
         return val;
       },
@@ -31,6 +27,6 @@ EditMessageDto _$EditMessageDtoFromJson(Map<String, dynamic> json) =>
 Map<String, dynamic> _$EditMessageDtoToJson(EditMessageDto instance) =>
     <String, dynamic>{
       'id': instance.id,
+      'room': instance.room,
       'content': instance.content,
-      'purchase': instance.purchase?.toJson(),
     };

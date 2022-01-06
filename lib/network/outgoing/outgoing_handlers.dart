@@ -1,8 +1,8 @@
-import 'package:shopping_list_flutter/network/incoming/purchase_dto.dart';
-
 import '../common/typing_dto.dart';
 import '../connection_state.dart';
 import '../incoming/incoming_state.dart';
+import '../incoming/purchase_dto.dart';
+import '../outgoing/new_purchase_dto.dart';
 import '../../utils/static_logger.dart';
 import 'archive_messages_dto.dart';
 import 'delete_messages_dto.dart';
@@ -11,6 +11,7 @@ import 'login_dto.dart';
 import 'new_message_dto.dart';
 import 'get_messages_dto.dart';
 import 'mark_message_read_dto.dart';
+import 'new_pur_item_dto.dart';
 import 'new_purchase_dto.dart';
 
 class OutgoingHandlers {
@@ -55,10 +56,9 @@ class OutgoingHandlers {
 
     final json = NewMessageDto(
       room: incomingState.currentRoomId,
-      user: incomingState.userId,
+      //user: incomingState.userId,
       content: msg,
       replyto_id: isReplyingToMessageId,
-      purchase: null,
     ).toJson();
     connectionState.socket.emit("newMessage", json);
     StaticLogger.append('<< NEW_MESSAGE [$json]');
@@ -74,8 +74,8 @@ class OutgoingHandlers {
 
     final json = EditMessageDto(
       id: messageId,
+      room: incomingState.currentRoomId,
       content: msg,
-      purchase: null,
     ).toJson();
     connectionState.socket.emit("editMessage", json);
     StaticLogger.append('<< EDIT_MESSAGE [$json]');
@@ -176,14 +176,22 @@ class OutgoingHandlers {
       show_qnty: purchase.show_qnty,
       show_weight: purchase.show_weight,
       copiedfrom_id: purchase.copiedfrom_id,
-      person_created: purchase.person_created,
-      person_created_name: purchase.person_created_name,
       persons_can_edit: purchase.persons_can_edit,
-      purchased: purchase.purchased,
-      person_purchased_name: purchase.person_purchased_name,
-      price_total: purchase.price_total,
-      weight_total: purchase.weight_total,
-      purItems: purchase.purItems,
+      newPurItems: purchase.purItems.map((x) {
+        return NewPurItemDto(
+          name: x.name,
+          qnty: x.qnty,
+          comment: x.comment,
+          pgroup_id: x.pgroup_id,
+          pgroup_name: x.pgroup_name,
+          product_id: x.product_id,
+          product_name: x.product_name,
+          punit_id: x.punit_id,
+          punit_name: x.punit_name,
+          punit_brief: x.punit_brief,
+          punit_fpoint: x.punit_fpoint,
+        );
+      }).toList(),
     ).toJson();
     connectionState.socket.emit("newPurchase", json);
     StaticLogger.append('<< NEW_PURCHASE [$json]');

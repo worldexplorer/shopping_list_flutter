@@ -16,6 +16,7 @@ class PurchaseEdit extends HookConsumerWidget {
   PurchaseDto purchase;
   final bool isMe;
   final int messageId;
+  PurItemDto? newItemToFocus;
 
   PurchaseEdit({
     Key? key,
@@ -118,13 +119,14 @@ class PurchaseEdit extends HookConsumerWidget {
           //   itemCount: purchase.purItems.length,
           //   itemBuilder: (BuildContext context, int index) {
           //     final purItem = purchase.purItems[index];
-          //     return PurchaseItemEdit(
+          //     final widget = PurchaseItemEdit(
           //       key: Key(DateTime.now().microsecond.toString()),
           //       purchase: purchase,
           //       purItem: purItem,
           //       isMe: isMe,
           //     );
           //     // return Text(purItem.name, softWrap: true, style: purchaseStyle);
+          //     return widget;
           //   },
           // ),
 
@@ -138,8 +140,9 @@ class PurchaseEdit extends HookConsumerWidget {
                 Expanded(
                     child: ElevatedButton(
                         onPressed: () {
-                          purchase.purItems
-                              .add(PurItemDto(id: 0, bought: false, name: ''));
+                          newItemToFocus =
+                              PurItemDto(id: 0, bought: false, name: '');
+                          purchase.purItems.add(newItemToFocus!);
                           ui.rebuild();
                         },
                         child: Row(children: [

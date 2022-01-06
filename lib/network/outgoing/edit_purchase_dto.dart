@@ -3,9 +3,9 @@
 // $ flutter pub run build_runner watch
 
 import 'package:json_annotation/json_annotation.dart';
-import 'new_pur_item_dto.dart';
+import 'package:shopping_list_flutter/network/incoming/pur_item_dto.dart';
 
-part 'new_purchase_dto.g.dart';
+part 'edit_purchase_dto.g.dart';
 
 @JsonSerializable(
     checked: true,
@@ -14,7 +14,8 @@ part 'new_purchase_dto.g.dart';
     explicitToJson: true,
     disallowUnrecognizedKeys: true,
     includeIfNull: true)
-class NewPurchaseDto {
+class EditPurchaseDto {
+  int id;
   String name;
 
   int room;
@@ -25,13 +26,12 @@ class NewPurchaseDto {
   bool show_qnty;
   bool show_weight;
 
-  int? copiedfrom_id;
-
   List<int> persons_can_edit;
 
-  List<NewPurItemDto> newPurItems;
+  List<PurItemDto> purItems;
 
-  NewPurchaseDto({
+  EditPurchaseDto({
+    required this.id,
     required this.name,
     required this.room,
     required this.message,
@@ -39,12 +39,11 @@ class NewPurchaseDto {
     required this.show_price,
     required this.show_qnty,
     required this.show_weight,
-    required this.copiedfrom_id,
     required this.persons_can_edit,
-    required this.newPurItems,
+    required this.purItems,
   });
 
-  factory NewPurchaseDto.fromJson(Map<String, dynamic> json) =>
-      _$NewPurchaseDtoFromJson(json);
-  Map<String, dynamic> toJson() => _$NewPurchaseDtoToJson(this);
+  factory EditPurchaseDto.fromJson(Map<String, dynamic> json) =>
+      _$EditPurchaseDtoFromJson(json);
+  Map<String, dynamic> toJson() => _$EditPurchaseDtoToJson(this);
 }

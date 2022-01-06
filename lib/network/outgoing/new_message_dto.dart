@@ -16,17 +16,17 @@ part 'new_message_dto.g.dart';
     includeIfNull: true)
 class NewMessageDto {
   int room;
-  int user;
+  // int user;
   String content;
   int? replyto_id;
-  NewPurchaseDto? purchase;
+  // NewPurchaseDto? purchase;
 
   NewMessageDto({
     required this.room,
-    required this.user,
+    // required this.user,
     required this.content,
     this.replyto_id,
-    this.purchase,
+    // this.purchase,
   });
 
   factory NewMessageDto.fromJson(Map<String, dynamic> json) =>

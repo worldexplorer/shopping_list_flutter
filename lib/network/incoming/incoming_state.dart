@@ -106,6 +106,11 @@ class IncomingState extends ChangeNotifier {
         String purchase = msg.purchase?.name ?? 'NONE';
         changes += 'purchase[$prevPurchase]=>[$purchase] ';
       }
+      if (prevMsg.purchase?.date_updated != msg.purchase?.date_updated) {
+        DateTime? prevPurchase = prevMsg.purchase?.date_updated;
+        DateTime? purchase = msg.purchase?.date_updated;
+        changes += 'purchase.date_updated[$prevPurchase]=>[$purchase] ';
+      }
       if (changes == '') {
         StaticLogger.append('      NOT_CHANGED $msig');
       } else {

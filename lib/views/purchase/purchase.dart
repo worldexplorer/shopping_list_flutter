@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -20,14 +20,24 @@ class Purchase extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    double totalQnty = 0;
-    double totalPrice = 0;
-    double totalWeight = 0;
-    for (var purItem in purchase.purItems) {
-      totalQnty += purItem.bought_qnty ?? 0.0;
-      totalPrice += purItem.bought_price ?? 0.0;
-      totalWeight += purItem.bought_weight ?? 0.0;
-    }
+    final totalQnty = useState(.0);
+    final totalPrice = useState(.0);
+    final totalWeight = useState(.0);
+
+    final recalculateTotals = useCallback(() {
+      double tQnty = .0;
+      double tPrice = .0;
+      double tWeight = .0;
+      for (var purItem in purchase.purItems) {
+        tQnty += purItem.bought_qnty ?? 0.0;
+        tPrice += purItem.bought_price ?? 0.0;
+        tWeight += purItem.bought_weight ?? 0.0;
+      }
+
+      totalQnty.value = tQnty;
+      totalPrice.value = tPrice;
+      totalWeight.value = tWeight;
+    }, [totalQnty, totalPrice, totalWeight]);
 
     return Column(
         // mainAxisSize: MainAxisSize.min,
@@ -44,6 +54,7 @@ class Purchase extends HookConsumerWidget {
                 purchase: purchase,
                 purItem: x,
                 isMe: isMe,
+                recalculateTotals: recalculateTotals,
               )),
 
           Row(
@@ -52,11 +63,12 @@ class Purchase extends HookConsumerWidget {
               children: [
                 Text('Total:', style: purchaseStyle),
                 const SizedBox(width: 30),
-                optionalTotal(purchase.show_qnty, qntyColumnWidth, totalQnty),
-                optionalTotal(
-                    purchase.show_price, priceColumnWidth, totalPrice),
-                optionalTotal(
-                    purchase.show_weight, weightColumnWidth, totalWeight),
+                optionalTotal("Qnty", purchase.show_qnty, qntyColumnWidth,
+                    totalQnty.value),
+                optionalTotal("Price", purchase.show_price, priceColumnWidth,
+                    totalPrice.value),
+                optionalTotal("Weight", purchase.show_weight, weightColumnWidth,
+                    totalWeight.value),
               ]),
 
           // ListView.builder(
@@ -76,15 +88,18 @@ class Purchase extends HookConsumerWidget {
         ]);
   }
 
-  optionalTotal(bool show, double columnWidth, double value) {
+  optionalTotal(String hint, bool show, double columnWidth, double value) {
+    Widget formatted = value == 0.0
+        ? Text(hint, style: textInputHintStyle)
+        : Text(value.toStringAsPrecision(3).toString(), style: purchaseStyle);
     return show
         ? Container(
             width: columnWidth,
             height: 40,
             decoration: textInputDecoration,
-            margin: const EdgeInsets.fromLTRB(10, 0, 10, 5),
+            margin: textInputMargin,
             padding: const EdgeInsets.all(10),
-            child: Text(value.toString(), style: purchaseStyle))
+            child: formatted)
         : const SizedBox();
   }
 }

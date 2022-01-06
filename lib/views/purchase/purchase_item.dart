@@ -11,12 +11,14 @@ class PurchaseItem extends HookConsumerWidget {
   PurchaseDto purchase;
   PurItemDto purItem;
   bool isMe;
+  Function() recalculateTotals;
 
   PurchaseItem({
     Key? key,
     required this.purchase,
     required this.purItem,
     required this.isMe,
+    required this.recalculateTotals,
   }) : super(key: key);
 
   @override
@@ -61,17 +63,17 @@ class PurchaseItem extends HookConsumerWidget {
                 purchase.show_qnty, qntyColumnWidth, qntyInputCtrl,
                 (newDouble) {
               purItem.bought_qnty = newDouble;
-            }, 'Quantity', ui),
+            }, 'Quantity', recalculateTotals),
             optionalNumberInput(
                 purchase.show_price, priceColumnWidth, priceInputCtrl,
                 (newDouble) {
               purItem.bought_price = newDouble;
-            }, 'Price', ui),
+            }, 'Price', recalculateTotals),
             optionalNumberInput(
                 purchase.show_weight, weightColumnWidth, weightInputCtrl,
                 (newDouble) {
               purItem.bought_weight = newDouble;
-            }, 'Weight', ui),
+            }, 'Weight', recalculateTotals),
           ],
         ));
   }
@@ -82,12 +84,13 @@ class PurchaseItem extends HookConsumerWidget {
       TextEditingController textInputCtrl,
       Function(double newDouble) setField,
       String hintText,
-      UiState ui) {
+      Function() recalculateTotals,
+      [UiState? ui]) {
     return showNumberInput
         ? Container(
             width: width,
             decoration: textInputDecoration,
-            margin: const EdgeInsets.fromLTRB(10, 0, 10, 5),
+            margin: textInputMargin,
             child: TextField(
                 // textInputAction: TextInputAction.newline,
                 keyboardType: TextInputType.number,
@@ -96,7 +99,8 @@ class PurchaseItem extends HookConsumerWidget {
                 controller: textInputCtrl,
                 onChanged: (String text) {
                   setField(double.parse(text));
-                  ui.rebuild();
+                  // ui.rebuild();
+                  recalculateTotals();
                 },
                 decoration: InputDecoration(
                   hintText: hintText,

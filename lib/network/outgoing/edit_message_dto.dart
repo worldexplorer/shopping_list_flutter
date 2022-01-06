@@ -16,13 +16,15 @@ part 'edit_message_dto.g.dart';
     includeIfNull: true)
 class EditMessageDto {
   int id;
+  int room;
   String content;
-  PurchaseDto? purchase;
+  // PurchaseDto? purchase;
 
   EditMessageDto({
     required this.id,
+    required this.room,
     required this.content,
-    this.purchase,
+    // this.purchase,
   });
 
   factory EditMessageDto.fromJson(Map<String, dynamic> json) =>

@@ -219,6 +219,7 @@ class ChatMessages extends HookConsumerWidget {
         }
 
         if (msgItem.isMe &&
+            msgItem.message.purchaseId == null &&
             messagesSelected.isEmpty &&
             ui.msgInputCtrl.text == '') {
           ui.msgInputCtrl.text = msgItem.message.content;

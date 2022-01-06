@@ -4,7 +4,7 @@
 
 import 'package:json_annotation/json_annotation.dart';
 
-part 'pur_item_dto.g.dart';
+part 'new_pur_item_dto.g.dart';
 
 @JsonSerializable(
     checked: true,
@@ -13,11 +13,7 @@ part 'pur_item_dto.g.dart';
     explicitToJson: true,
     disallowUnrecognizedKeys: true,
     includeIfNull: true)
-class PurItemDto {
-  int id;
-  // DateTime date_created;
-  // DateTime date_updated;
-
+class NewPurItemDto {
   String name;
   double? qnty;
 
@@ -35,15 +31,7 @@ class PurItemDto {
   String? punit_brief;
   bool? punit_fpoint;
 
-  bool bought;
-  double? bought_qnty;
-  double? bought_price;
-  double? bought_weight;
-
-  PurItemDto({
-    required this.id,
-    // required this.date_created,
-    // required this.date_updated,
+  NewPurItemDto({
     required this.name,
     this.qnty,
     this.comment,
@@ -55,13 +43,9 @@ class PurItemDto {
     this.punit_name,
     this.punit_brief,
     this.punit_fpoint,
-    required this.bought,
-    this.bought_qnty,
-    this.bought_price,
-    this.bought_weight,
   });
 
-  factory PurItemDto.fromJson(Map<String, dynamic> json) =>
-      _$PurItemDtoFromJson(json);
-  Map<String, dynamic> toJson() => _$PurItemDtoToJson(this);
+  factory NewPurItemDto.fromJson(Map<String, dynamic> json) =>
+      _$NewPurItemDtoFromJson(json);
+  Map<String, dynamic> toJson() => _$NewPurItemDtoToJson(this);
 }
