@@ -11,14 +11,14 @@ class PurchaseItem extends HookConsumerWidget {
   PurchaseDto purchase;
   PurItemDto purItem;
   bool isMe;
-  Function() recalculateTotals;
+  Function() recalculateTotalsSendToServer;
 
   PurchaseItem({
     Key? key,
     required this.purchase,
     required this.purItem,
     required this.isMe,
-    required this.recalculateTotals,
+    required this.recalculateTotalsSendToServer,
   }) : super(key: key);
 
   @override
@@ -34,48 +34,51 @@ class PurchaseItem extends HookConsumerWidget {
     final weightInputCtrl = useTextEditingController();
     weightInputCtrl.text = purItem.bought_weight?.toString() ?? '';
 
-    return GestureDetector(
-        onTapDown: (TapDownDetails details) {
-          purItem.bought = !purItem.bought;
-          ui.rebuild();
-        },
-        child: Row(
-          // mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            purItem.bought == true
-                ? IconButton(
-                    onPressed: () => purItem.bought = !purItem.bought,
-                    icon: const Icon(
-                      Icons.check_circle,
-                      color: Colors.lightGreenAccent,
-                      size: 20,
-                    ))
-                : IconButton(
-                    onPressed: () => purItem.bought = !purItem.bought,
-                    icon: const Icon(Icons.check_circle_outline_rounded,
-                        color: Colors.grey, size: 20)),
-            const SizedBox(width: 3),
-            Expanded(
+    purItemToggle() {
+      purItem.bought = !purItem.bought;
+      ui.rebuild();
+      debugPrint(
+          'new bought: ${purItem.bought} for purItem[${purItem.id}:${purItem.name}] ');
+      recalculateTotalsSendToServer();
+    }
+
+    return Row(
+      // mainAxisSize: MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        IconButton(
+            onPressed: purItemToggle,
+            icon: purItem.bought
+                ? const Icon(
+                    Icons.check_circle,
+                    color: Colors.lightGreenAccent,
+                    size: 20,
+                  )
+                : const Icon(Icons.check_circle_outline_rounded,
+                    color: Colors.grey, size: 20)),
+        const SizedBox(width: 3),
+        Expanded(
+            child: GestureDetector(
+                onTapDown: (details) {
+                  purItemToggle();
+                },
                 child:
-                    Text(purItem.name, softWrap: true, style: purchaseStyle)),
-            optionalNumberInput(
-                purchase.show_qnty, qntyColumnWidth, qntyInputCtrl,
-                (newDouble) {
-              purItem.bought_qnty = newDouble;
-            }, 'Quantity', recalculateTotals),
-            optionalNumberInput(
-                purchase.show_price, priceColumnWidth, priceInputCtrl,
-                (newDouble) {
-              purItem.bought_price = newDouble;
-            }, 'Price', recalculateTotals),
-            optionalNumberInput(
-                purchase.show_weight, weightColumnWidth, weightInputCtrl,
-                (newDouble) {
-              purItem.bought_weight = newDouble;
-            }, 'Weight', recalculateTotals),
-          ],
-        ));
+                    Text(purItem.name, softWrap: true, style: purchaseStyle))),
+        optionalNumberInput(purchase.show_qnty, qntyColumnWidth, qntyInputCtrl,
+            (newDouble) {
+          purItem.bought_qnty = newDouble;
+        }, 'Quantity', recalculateTotalsSendToServer),
+        optionalNumberInput(
+            purchase.show_price, priceColumnWidth, priceInputCtrl, (newDouble) {
+          purItem.bought_price = newDouble;
+        }, 'Price', recalculateTotalsSendToServer),
+        optionalNumberInput(
+            purchase.show_weight, weightColumnWidth, weightInputCtrl,
+            (newDouble) {
+          purItem.bought_weight = newDouble;
+        }, 'Weight', recalculateTotalsSendToServer),
+      ],
+    );
   }
 
   optionalNumberInput(

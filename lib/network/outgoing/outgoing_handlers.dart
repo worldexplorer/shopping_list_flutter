@@ -13,6 +13,8 @@ import 'get_messages_dto.dart';
 import 'mark_message_read_dto.dart';
 import 'new_pur_item_dto.dart';
 import 'new_purchase_dto.dart';
+import 'pur_item_filled_dto.dart';
+import 'purchase_filled_dto.dart';
 
 class OutgoingHandlers {
   ConnectionState connectionState;
@@ -206,5 +208,39 @@ class OutgoingHandlers {
     final json = purchase.toJson();
     connectionState.socket.emit("editPurchase", json);
     StaticLogger.append('<< EDIT_PURCHASE [$json]');
+  }
+
+  void sendFillPurchase(PurchaseDto purchase) {
+    final String ident =
+        'id[${purchase.id}]:room[${purchase.room}]:message[${purchase.message}]';
+    if (!connectionState.socketConnected) {
+      StaticLogger.append(
+          'sendFillPurchase($ident): ${connectionState.socketId}');
+      return;
+    }
+
+    final purchaseFilled = PurchaseFilledDto(
+      id: purchase.id,
+      room: purchase.room,
+      message: purchase.message,
+      purchased: purchase.purchased,
+      price_total: purchase.price_total,
+      weight_total: purchase.weight_total,
+      purItemsFilled: purchase.purItems.map((purItem) {
+        return PurItemFilledDto(
+            id: purItem.id,
+            // room: purchase.room,
+            // message: purchase.message,
+            // purchase: purchase.id,
+            bought: purItem.bought,
+            bought_qnty: purItem.bought_qnty,
+            bought_price: purItem.bought_price,
+            bought_weight: purItem.bought_weight,
+            comment: purItem.comment);
+      }).toList(),
+    );
+    final json = purchaseFilled.toJson();
+    connectionState.socket.emit("fillPurchase", json);
+    StaticLogger.append('<< FILL_PURCHASE [$json]');
   }
 }

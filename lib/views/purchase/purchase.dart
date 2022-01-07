@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../network/incoming/purchase_dto.dart';
+import '../../network/incoming/incoming_state.dart';
 import '../../utils/theme.dart';
 
 import 'purchase_item.dart';
@@ -20,6 +21,8 @@ class Purchase extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final incoming = ref.watch(incomingStateProvider);
+
     final totalQnty = useState(.0);
     final totalPrice = useState(.0);
     final totalWeight = useState(.0);
@@ -29,6 +32,9 @@ class Purchase extends HookConsumerWidget {
       double tPrice = .0;
       double tWeight = .0;
       for (var purItem in purchase.purItems) {
+        if (!purItem.bought) {
+          continue;
+        }
         tQnty += purItem.bought_qnty ?? 0.0;
         tPrice += purItem.bought_price ?? 0.0;
         tWeight += purItem.bought_weight ?? 0.0;
@@ -37,7 +43,15 @@ class Purchase extends HookConsumerWidget {
       totalQnty.value = tQnty;
       totalPrice.value = tPrice;
       totalWeight.value = tWeight;
+
+      purchase.weight_total = tPrice;
+      purchase.price_total = tWeight;
     }, [totalQnty, totalPrice, totalWeight]);
+
+    final recalculateTotalsSendToServer = useCallback(() {
+      recalculateTotals();
+      incoming.outgoingHandlers.sendFillPurchase(purchase);
+    }, [recalculateTotals, incoming]);
 
     return Column(
         // mainAxisSize: MainAxisSize.min,
@@ -50,12 +64,27 @@ class Purchase extends HookConsumerWidget {
                 fontSize: 15,
               )),
 
-          ...purchase.purItems.map((x) => PurchaseItem(
+          ListView.builder(
+            scrollDirection: Axis.vertical,
+            shrinkWrap: true,
+            itemCount: purchase.purItems.length,
+            itemBuilder: (BuildContext context, int index) {
+              final purItem = purchase.purItems[index];
+              return PurchaseItem(
                 purchase: purchase,
-                purItem: x,
+                purItem: purItem,
                 isMe: isMe,
-                recalculateTotals: recalculateTotals,
-              )),
+                recalculateTotalsSendToServer: recalculateTotalsSendToServer,
+              );
+            },
+          ),
+
+          // ...purchase.purItems.map((x) => PurchaseItem(
+          //       purchase: purchase,
+          //       purItem: x,
+          //       isMe: isMe,
+          //       recalculateTotalsSendToServer: recalculateTotalsSendToServer,
+          //     )),
 
           Row(
               mainAxisSize: MainAxisSize.max,
@@ -70,21 +99,6 @@ class Purchase extends HookConsumerWidget {
                 optionalTotal("Weight", purchase.show_weight, weightColumnWidth,
                     totalWeight.value),
               ]),
-
-          // ListView.builder(
-          //   // scrollDirection: Axis.,
-          //   // shrinkWrap: true,
-          //   // padding: const EdgeInsets.all(10),
-          //   itemCount: purchase.purItems.length,
-          //   itemBuilder: (BuildContext context, int index) {
-          //     final purItem = purchase.purItems[index];
-          //     return PurchaseItem(
-          //       purchase: purchase,
-          //       purItem: purItem,
-          //       isMe: isMe,
-          //     );
-          //   },
-          // ),
         ]);
   }
 
