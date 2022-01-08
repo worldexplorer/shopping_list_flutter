@@ -12,12 +12,12 @@ import '../../network/incoming/pur_item_dto.dart';
 import 'purchase_item_edit.dart';
 
 class PurchaseEdit extends HookConsumerWidget {
-  PurchaseDto purchase;
+  final PurchaseDto purchase;
   final bool isMe;
   final int messageId;
-  PurItemDto? newItemToFocus;
+  // final PurItemDto? newItemToFocus;
 
-  PurchaseEdit({
+  const PurchaseEdit({
     Key? key,
     required this.purchase,
     required this.messageId,
@@ -80,7 +80,7 @@ class PurchaseEdit extends HookConsumerWidget {
                 IconButton(
                     icon: const Icon(Icons.save, size: 24, color: Colors.blue),
                     enableFeedback: true,
-                    autofocus: true,
+                    // autofocus: true,
                     onPressed: () {
                       if (purchase.id == 0) {
                         incoming.outgoingHandlers.sendNewPurchase(
@@ -139,9 +139,9 @@ class PurchaseEdit extends HookConsumerWidget {
                 Expanded(
                     child: ElevatedButton(
                         onPressed: () {
-                          newItemToFocus =
+                          final newItemToFocus =
                               PurItemDto(id: 0, bought: false, name: '');
-                          purchase.purItems.add(newItemToFocus!);
+                          purchase.purItems.add(newItemToFocus);
                           ui.rebuild();
                         },
                         child: Row(children: [

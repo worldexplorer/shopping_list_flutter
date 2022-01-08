@@ -37,6 +37,13 @@ class IncomingState extends ChangeNotifier {
     notifyListeners();
   }
 
+  String _serverError = '';
+  String get serverError => _serverError;
+  set serverError(String val) {
+    _serverError = val;
+    notifyListeners();
+  }
+
   final Map<int, MessageDto> messagesUnreadById = <int, MessageDto>{};
   List<int> getOnlyUnreadMessages() {
     final List<MessageDto> all = messagesUnreadById.values.toList();

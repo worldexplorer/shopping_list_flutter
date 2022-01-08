@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:shopping_list_flutter/network/incoming/pur_item_dto.dart';
+import 'package:shopping_list_flutter/utils/static_logger.dart';
+import 'package:shopping_list_flutter/utils/ui_state.dart';
 
 import '../../network/incoming/purchase_dto.dart';
 import '../../network/incoming/incoming_state.dart';
@@ -10,10 +13,10 @@ import '../../utils/theme.dart';
 import 'purchase_item.dart';
 
 class Purchase extends HookConsumerWidget {
-  PurchaseDto purchase;
+  final PurchaseDto purchase;
   final bool isMe;
 
-  Purchase({
+  const Purchase({
     Key? key,
     required this.purchase,
     this.isMe = false,
@@ -21,16 +24,21 @@ class Purchase extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final ui = ref.watch(uiStateProvider);
     final incoming = ref.watch(incomingStateProvider);
 
-    final totalQnty = useState(.0);
-    final totalPrice = useState(.0);
-    final totalWeight = useState(.0);
+    // final totalQnty = useState(.0);
+    // final totalPrice = useState(.0);
+    // final totalWeight = useState(.0);
 
-    final recalculateTotals = useCallback(() {
-      double tQnty = .0;
-      double tPrice = .0;
-      double tWeight = .0;
+    double tQnty = .0;
+    double tPrice = .0;
+    double tWeight = .0;
+
+    recalculateTotals() {
+      tQnty = .0;
+      tPrice = .0;
+      tWeight = .0;
       for (var purItem in purchase.purItems) {
         if (!purItem.bought) {
           continue;
@@ -40,18 +48,40 @@ class Purchase extends HookConsumerWidget {
         tWeight += purItem.bought_weight ?? 0.0;
       }
 
-      totalQnty.value = tQnty;
-      totalPrice.value = tPrice;
-      totalWeight.value = tWeight;
+      // totalQnty.value = tQnty;
+      // totalPrice.value = tPrice;
+      // totalWeight.value = tWeight;
 
       purchase.weight_total = tPrice;
       purchase.price_total = tWeight;
-    }, [totalQnty, totalPrice, totalWeight]);
+    }
+    // , [totalQnty, totalPrice, totalWeight]);
 
-    final recalculateTotalsSendToServer = useCallback(() {
-      recalculateTotals();
+    // final recalculateTotalsSendToServer = useCallback(() {
+    //   recalculateTotals();
+    //   incoming.outgoingHandlers.sendFillPurchase(purchase);
+    // }, [recalculateTotals, incoming]);
+
+    // purItemToggle(PurItemDto purItem) {
+    //   purItem.bought = !purItem.bought;
+    //   // final purItemFound =
+    //   // purchase.purItems.singleWhere((x) => x.id == purItem.id);
+    //   // purItemFound.bought = !purItemFound.bought;
+    //   StaticLogger.append(
+    //       'new bought => [${purItem.bought}] for purItem[${purItem.id}:${purItem.name}] ');
+    //   // recalculateTotalsSendToServer();
+    //   recalculateTotals();
+    //   incoming.outgoingHandlers.sendFillPurchase(purchase);
+    //   ui.rebuild();
+    // }
+
+    recalculateTotalsSendToServer() {
+      // recalculateTotals();
       incoming.outgoingHandlers.sendFillPurchase(purchase);
-    }, [recalculateTotals, incoming]);
+      // ui.rebuild();
+    }
+
+    recalculateTotals();
 
     return Column(
         // mainAxisSize: MainAxisSize.min,
@@ -64,41 +94,50 @@ class Purchase extends HookConsumerWidget {
                 fontSize: 15,
               )),
 
-          ListView.builder(
-            scrollDirection: Axis.vertical,
-            shrinkWrap: true,
-            itemCount: purchase.purItems.length,
-            itemBuilder: (BuildContext context, int index) {
-              final purItem = purchase.purItems[index];
-              return PurchaseItem(
-                purchase: purchase,
-                purItem: purItem,
-                isMe: isMe,
-                recalculateTotalsSendToServer: recalculateTotalsSendToServer,
-              );
-            },
-          ),
-
-          // ...purchase.purItems.map((x) => PurchaseItem(
+          // ListView.builder(
+          //   scrollDirection: Axis.vertical,
+          //   shrinkWrap: true,
+          //   itemCount: purchase.purItems.length,
+          //   itemBuilder: (BuildContext context, int index) {
+          //     final purItem = purchase.purItems[index];
+          //     return PurchaseItem(
           //       purchase: purchase,
-          //       purItem: x,
+          //       purItem: purItem,
           //       isMe: isMe,
           //       recalculateTotalsSendToServer: recalculateTotalsSendToServer,
-          //     )),
+          //     );
+          //   },
+          // ),
 
-          Row(
-              mainAxisSize: MainAxisSize.max,
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                Text('Total:', style: purchaseStyle),
-                const SizedBox(width: 30),
-                optionalTotal("Qnty", purchase.show_qnty, qntyColumnWidth,
-                    totalQnty.value),
-                optionalTotal("Price", purchase.show_price, priceColumnWidth,
-                    totalPrice.value),
-                optionalTotal("Weight", purchase.show_weight, weightColumnWidth,
-                    totalWeight.value),
-              ]),
+          ...purchase.purItems.map((x) => PurchaseItem(
+                key: Key('${x.id}:${DateTime.now().microsecond.toString()}'),
+                purchase: purchase,
+                purItem: x,
+                isMe: isMe,
+                recalculateTotalsSendToServer: recalculateTotalsSendToServer,
+                // purItemToggle: () {
+                //   purItemToggle(x);
+                // },
+                // purItemToggle: () {
+                //   purItemToggle(x);
+                //   recalculateTotalsSendToServer();
+                // },
+              )),
+
+          if (purchase.show_qnty || purchase.show_price || purchase.show_weight)
+            Row(
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Text('Total:', style: purchaseStyle),
+                  const SizedBox(width: 30),
+                  optionalTotal(
+                      "Qnty", purchase.show_qnty, qntyColumnWidth, tQnty),
+                  optionalTotal(
+                      "Price", purchase.show_price, priceColumnWidth, tPrice),
+                  optionalTotal("Weight", purchase.show_weight,
+                      weightColumnWidth, tWeight),
+                ]),
         ]);
   }
 

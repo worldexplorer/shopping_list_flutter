@@ -61,7 +61,7 @@ class PurchaseItemEdit extends HookConsumerWidget {
             icon: const Icon(Icons.delete_outline_outlined,
                 size: 24, color: Colors.blue),
             enableFeedback: true,
-            autofocus: true,
+            // autofocus: true,
             onPressed: () {
               purchase.purItems.remove(purItem);
               ui.rebuild();

@@ -267,5 +267,6 @@ class IncomingHandlers {
 
   void onServerError(data) {
     StaticLogger.append('> SERVER_ERROR [$data]');
+    incomingState.serverError = '$data';
   }
 }
