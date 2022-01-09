@@ -73,3 +73,5 @@ EdgeInsets textInputPadding = const EdgeInsets.fromLTRB(
 const double qntyColumnWidth = 80;
 const double priceColumnWidth = 80;
 const double weightColumnWidth = 75;
+
+const double iconSize = 24;

@@ -9,25 +9,27 @@ import '../../network/incoming/purchase_dto.dart';
 import '../../network/incoming/incoming_state.dart';
 import '../../network/incoming/pur_item_dto.dart';
 
+import 'grouping.dart';
+import 'pgroup_edit.dart';
 import 'purchase_item_edit.dart';
 
 class PurchaseEdit extends HookConsumerWidget {
   final PurchaseDto purchase;
-  final bool isMe;
   final int messageId;
   // final PurItemDto? newItemToFocus;
 
-  const PurchaseEdit({
+  PurchaseEdit({
     Key? key,
     required this.purchase,
     required this.messageId,
-    this.isMe = false,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final ui = ref.watch(uiStateProvider);
     final incoming = ref.watch(incomingStateProvider);
+
+    final grouping = useState(Grouping(purchase.purItems));
 
     final settingsExpanded = useState(false);
 
@@ -48,6 +50,30 @@ class PurchaseEdit extends HookConsumerWidget {
 
     double addCancelSpace = (widthAfterRebuild > wideEnough) ? 50 : 20;
 
+    onSaveButtonPressed() {
+      if (purchase.id == 0) {
+        incoming.outgoingHandlers
+            .sendNewPurchase(purchase, ui.isReplyingToMessageId);
+        //TODO: move to incomingHandlers.onPurchaseCreated
+        incoming.newPurchaseItem = null;
+      } else {
+        try {
+          incoming.outgoingHandlers.sendEditPurchase(purchase);
+
+          //TODO: move to incomingHandlers.onPurchaseEdited
+          ui.messagesSelected.remove(purchase.message);
+
+          final indexFound = incoming.messageItems
+              .indexWhere((x) => x.message.id == messageId);
+          incoming.messageItems[indexFound].selected = false;
+          ui.rebuild();
+        } catch (e) {
+          StaticLogger.append(
+              'SavePurchase(): ERROR deselecting an existing Purchase: ${e.toString()}');
+        }
+      }
+    }
+
     return Column(
         mainAxisSize: MainAxisSize.max,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -59,7 +85,6 @@ class PurchaseEdit extends HookConsumerWidget {
                 Expanded(
                     child: Container(
                         decoration: textInputDecoration,
-                        margin: const EdgeInsets.fromLTRB(0, 0, 10, 10),
                         child: TextField(
                             textInputAction: TextInputAction.newline,
                             keyboardType: TextInputType.multiline,
@@ -73,64 +98,28 @@ class PurchaseEdit extends HookConsumerWidget {
                             decoration: InputDecoration(
                               hintText: 'Store name...',
                               hintStyle: textInputHintStyle,
-                              // border: InputBorder.none,
                               contentPadding: textInputPadding,
+                              // fillColor: altColor,
+                              // // border: InputBorder.none,
+                              // border: const UnderlineInputBorder(
+                              //     // borderSide: BorderSide(),
+                              //     // borderRadius: BorderRadius.circular(6),
+                              //     )
                             ),
                             style: textInputStyle))),
-                IconButton(
-                    icon: const Icon(Icons.save, size: 24, color: Colors.blue),
-                    enableFeedback: true,
-                    // autofocus: true,
-                    onPressed: () {
-                      if (purchase.id == 0) {
-                        incoming.outgoingHandlers.sendNewPurchase(
-                            purchase, ui.isReplyingToMessageId);
-                        //TODO: move to incomingHandlers.onPurchaseCreated
-                        incoming.newPurchaseItem = null;
-                      } else {
-                        try {
-                          incoming.outgoingHandlers.sendEditPurchase(purchase);
-
-                          //TODO: move to incomingHandlers.onPurchaseEdited
-                          ui.messagesSelected.remove(purchase.message);
-
-                          final indexFound = incoming.messageItems
-                              .indexWhere((x) => x.message.id == messageId);
-                          incoming.messageItems[indexFound].selected = false;
-                          ui.rebuild();
-                        } catch (e) {
-                          StaticLogger.append(
-                              'SavePurchase(): ERROR deselecting an existing Purchase: ${e.toString()}');
-                        }
-                      }
-                    }),
+                const SizedBox(width: 10),
+                ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 10),
+                      // fixedSize: const Size(20, 20)
+                    ),
+                    child: const Icon(Icons.save,
+                        size: iconSize, color: Colors.white),
+                    onPressed: onSaveButtonPressed),
               ]),
-
-          ...purchase.purItems.map((x) => PurchaseItemEdit(
-                key: Key(DateTime.now().microsecond.toString()),
-                purchase: purchase,
-                purItem: x,
-                isMe: isMe,
-              )),
-
-          // ListView.builder(
-          //   shrinkWrap: true,
-          //   itemCount: purchase.purItems.length,
-          //   itemBuilder: (BuildContext context, int index) {
-          //     final purItem = purchase.purItems[index];
-          //     final widget = PurchaseItemEdit(
-          //       key: Key(DateTime.now().microsecond.toString()),
-          //       purchase: purchase,
-          //       purItem: purItem,
-          //       isMe: isMe,
-          //     );
-          //     // return Text(purItem.name, softWrap: true, style: purchaseStyle);
-          //     return widget;
-          //   },
-          // ),
-
           const SizedBox(height: 5),
-
+          ...flatOrGrouped(grouping, ui),
+          const SizedBox(height: 5),
           Row(
               mainAxisSize: MainAxisSize.max,
               mainAxisAlignment: MainAxisAlignment.end,
@@ -146,7 +135,7 @@ class PurchaseEdit extends HookConsumerWidget {
                         },
                         child: Row(children: [
                           const Icon(Icons.add_circle_outline,
-                              size: 24, color: Colors.white),
+                              size: iconSize, color: Colors.white),
                           const SizedBox(width: 10),
                           Text(btnLabelAddProduct, style: purchaseStyle)
                         ]))),
@@ -166,7 +155,8 @@ class PurchaseEdit extends HookConsumerWidget {
                     }
                   },
                   child: Row(children: [
-                    const Icon(Icons.clear, size: 24, color: Colors.white),
+                    const Icon(Icons.clear,
+                        size: iconSize, color: Colors.white),
                     const SizedBox(width: 10),
                     Text(btnLabelCancelPurchase, style: purchaseStyle),
                   ]),
@@ -185,9 +175,7 @@ class PurchaseEdit extends HookConsumerWidget {
                       settingsExpanded.value = !settingsExpanded.value;
                     }),
               ]),
-
           const SizedBox(height: 5),
-
           if (settingsExpanded.value)
             Container(
                 alignment: Alignment.topRight,
@@ -242,5 +230,66 @@ class PurchaseEdit extends HookConsumerWidget {
         )),
       ],
     );
+  }
+
+  Iterable<Widget> flatOrGrouped(
+      ValueNotifier<Grouping> groupingNotifier, UiState ui) {
+    if (purchase.show_pgroup) {
+      final grouping = groupingNotifier.value;
+      // grouping.buildGroups();
+
+      final List<Widget> ret = [];
+      for (var idPgroup in grouping.pgroupById.entries) {
+        final int pgroupId = idPgroup.key;
+        final String pgroupName = idPgroup.value;
+
+        ret.add(PgroupEdit(
+            key: Key('$pgroupId'),
+            name: pgroupName,
+            onChanged: (newName) {
+              final addedOrRemoved =
+                  grouping.changeGroupName(pgroupId, newName);
+              if (addedOrRemoved) {
+                ui.rebuild();
+              }
+            },
+            canDelete: grouping.canDeleteGroup(pgroupId),
+            onDelete: () {
+              grouping.deleteGroup(pgroupId);
+              ui.rebuild();
+            }));
+
+        for (var product in grouping.productsByPgroup[pgroupId] ?? []) {
+          ret.add(PurchaseItemEdit(
+            key: Key(DateTime.now().microsecond.toString()),
+            purchase: purchase,
+            purItem: product,
+          ));
+        }
+      }
+      return ret;
+    } else {
+      return purchase.purItems.map((x) => PurchaseItemEdit(
+            key: Key(DateTime.now().microsecond.toString()),
+            purchase: purchase,
+            purItem: x,
+          ));
+
+      // ListView.builder(
+      //   shrinkWrap: true,
+      //   itemCount: purchase.purItems.length,
+      //   itemBuilder: (BuildContext context, int index) {
+      //     final purItem = purchase.purItems[index];
+      //     final widget = PurchaseItemEdit(
+      //       key: Key(DateTime.now().microsecond.toString()),
+      //       purchase: purchase,
+      //       purItem: purItem,
+      //       isMe: isMe,
+      //     );
+      //     // return Text(purItem.name, softWrap: true, style: purchaseStyle);
+      //     return widget;
+      //   },
+      // ),
+    }
   }
 }

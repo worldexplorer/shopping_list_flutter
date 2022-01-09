@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:shopping_list_flutter/utils/static_logger.dart';
 
 import '../../network/incoming/pur_item_dto.dart';
 import '../../network/incoming/purchase_dto.dart';
@@ -13,7 +12,6 @@ class PurchaseItem extends HookConsumerWidget {
   final PurItemDto purItem;
   final bool isMe;
   final Function() recalculateTotalsSendToServer;
-  // final Function(PurchaseDto originalPurItem) purItemToggle;
 
   const PurchaseItem({
     Key? key,
@@ -21,7 +19,6 @@ class PurchaseItem extends HookConsumerWidget {
     required this.purItem,
     required this.isMe,
     required this.recalculateTotalsSendToServer,
-    // required this.purItemToggle,
   }) : super(key: key);
 
   @override
@@ -30,11 +27,6 @@ class PurchaseItem extends HookConsumerWidget {
 
     final qntyInputCtrl =
         useTextEditingController(text: purItem.bought_qnty?.toString() ?? '');
-    // qntyInputCtrl.addListener(() {
-    //   try {
-    //     purItem.bought_qnty = double.parse(updateQnty.text);
-    //   } catch (e) {}
-    // });
     final updateQnty = useValueListenable(qntyInputCtrl);
     useEffect(() {
       qntyInputCtrl.text = updateQnty.text;
@@ -47,11 +39,6 @@ class PurchaseItem extends HookConsumerWidget {
 
     final priceInputCtrl =
         useTextEditingController(text: purItem.bought_price?.toString() ?? '');
-    // priceInputCtrl.addListener(() {
-    //   try {
-    //     purItem.bought_price = double.parse(priceInputCtrl.text);
-    //   } catch (e) {}
-    // });
     final updatePrice = useValueListenable(priceInputCtrl);
     useEffect(() {
       priceInputCtrl.text = updatePrice.text;
@@ -64,11 +51,6 @@ class PurchaseItem extends HookConsumerWidget {
 
     final weightInputCtrl =
         useTextEditingController(text: purItem.bought_weight?.toString() ?? '');
-    // weightInputCtrl.addListener(() {
-    //   try {
-    //     purItem.bought_weight = double.parse(weightInputCtrl.text);
-    //   } catch (e) {}
-    // });
     final updateWeight = useValueListenable(weightInputCtrl);
     useEffect(() {
       weightInputCtrl.text = updateWeight.text;
@@ -86,7 +68,6 @@ class PurchaseItem extends HookConsumerWidget {
         IconButton(
             onPressed: () {
               purItem.bought = !purItem.bought;
-              // purItemToggle(purItem);
               recalculateTotalsSendToServer();
             },
             icon: purItem.bought
@@ -102,28 +83,27 @@ class PurchaseItem extends HookConsumerWidget {
             child: GestureDetector(
                 onTapDown: (details) {
                   purItem.bought = !purItem.bought;
-                  // purItemToggle(purItem);
                   recalculateTotalsSendToServer();
                 },
                 child:
                     Text(purItem.name, softWrap: true, style: purchaseStyle))),
         optionalNumberInput(
-          purchase.show_qnty, qntyColumnWidth, qntyInputCtrl, 'Quantity',
-          // (newDouble) {
-          //   purItem.bought_qnty = newDouble;
-          // }, purItemToggle
+          purchase.show_qnty,
+          qntyColumnWidth,
+          qntyInputCtrl,
+          'Quantity',
         ),
         optionalNumberInput(
-          purchase.show_price, priceColumnWidth, priceInputCtrl, 'Price',
-          // (newDouble) {
-          //   purItem.bought_price = newDouble;
-          // }, purItemToggle
+          purchase.show_price,
+          priceColumnWidth,
+          priceInputCtrl,
+          'Price',
         ),
         optionalNumberInput(
-          purchase.show_weight, weightColumnWidth, weightInputCtrl, 'Weight',
-          // (newDouble) {
-          //   purItem.bought_weight = newDouble;
-          // }, purItemToggle
+          purchase.show_weight,
+          weightColumnWidth,
+          weightInputCtrl,
+          'Weight',
         ),
       ],
     );
@@ -145,11 +125,6 @@ class PurchaseItem extends HookConsumerWidget {
                 minLines: 1,
                 maxLines: 1,
                 controller: textInputCtrl,
-                // onChanged: (String text) {
-                //   pushToObject(double.parse(text));
-                //   // ui.rebuild();
-                //   // recalculateTotals();
-                // },
                 decoration: InputDecoration(
                   hintText: hintText,
                   hintStyle: textInputHintStyle,

@@ -2,33 +2,37 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import '../../network/incoming/pur_item_dto.dart';
-import '../../network/incoming/purchase_dto.dart';
 import '../../utils/theme.dart';
 import '../../utils/ui_state.dart';
 
-class PurchaseItemEdit extends HookConsumerWidget {
-  final PurchaseDto purchase;
-  final PurItemDto purItem;
+class PgroupEdit extends HookConsumerWidget {
+  // final int id;
+  final String name;
+  final Function(String newName) onChanged;
+  final bool canDelete;
+  final Function() onDelete;
+  final hasDragHandle = true;
 
-  const PurchaseItemEdit({
+  const PgroupEdit({
     Key? key,
-    required this.purchase,
-    required this.purItem,
+    // required this.id,
+    required this.name,
+    required this.onChanged,
+    required this.canDelete,
+    required this.onDelete,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final ui = ref.watch(uiStateProvider);
 
-    final nameInputCtrl = useTextEditingController(text: purItem.name);
+    final nameInputCtrl = useTextEditingController(text: name);
 
     return Row(
       mainAxisSize: MainAxisSize.max,
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
-        if (purItem.pgroup_id != null) const SizedBox(width: 25),
-        purchase.purItems.length > 1
+        hasDragHandle
             ? GestureDetector(
                 child:
                     const Icon(Icons.drag_handle, color: Colors.blue, size: 20))
@@ -44,27 +48,23 @@ class PurchaseItemEdit extends HookConsumerWidget {
                     minLines: 1,
                     maxLines: 3,
                     controller: nameInputCtrl,
-                    onChanged: (String text) {
-                      purItem.name = text;
-                      // ui.rebuild();
-                    },
+                    onChanged: onChanged,
                     decoration: InputDecoration(
-                      hintText: 'Product to Purchase...',
+                      hintText: 'Group Name...',
                       hintStyle: textInputHintStyle,
                       // border: InputBorder.none,
                       contentPadding: textInputPadding,
                     ),
                     style: textInputStyle))),
         const SizedBox(width: 10),
-        IconButton(
-            icon: const Icon(Icons.delete_outline_outlined,
-                size: iconSize, color: Colors.blue),
-            enableFeedback: true,
-            // autofocus: true,
-            onPressed: () {
-              purchase.purItems.remove(purItem);
-              ui.rebuild();
-            })
+        canDelete
+            ? IconButton(
+                icon: const Icon(Icons.delete_outline_outlined,
+                    size: iconSize, color: Colors.blue),
+                enableFeedback: true,
+                // autofocus: true,
+                onPressed: onDelete)
+            : const SizedBox(width: iconSize + 24),
       ],
     );
   }

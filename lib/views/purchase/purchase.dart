@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:shopping_list_flutter/network/incoming/pur_item_dto.dart';
-import 'package:shopping_list_flutter/utils/static_logger.dart';
 import 'package:shopping_list_flutter/utils/ui_state.dart';
 
 import '../../network/incoming/purchase_dto.dart';
@@ -27,10 +24,6 @@ class Purchase extends HookConsumerWidget {
     final ui = ref.watch(uiStateProvider);
     final incoming = ref.watch(incomingStateProvider);
 
-    // final totalQnty = useState(.0);
-    // final totalPrice = useState(.0);
-    // final totalWeight = useState(.0);
-
     double tQnty = .0;
     double tPrice = .0;
     double tWeight = .0;
@@ -48,32 +41,9 @@ class Purchase extends HookConsumerWidget {
         tWeight += purItem.bought_weight ?? 0.0;
       }
 
-      // totalQnty.value = tQnty;
-      // totalPrice.value = tPrice;
-      // totalWeight.value = tWeight;
-
       purchase.weight_total = tPrice;
       purchase.price_total = tWeight;
     }
-    // , [totalQnty, totalPrice, totalWeight]);
-
-    // final recalculateTotalsSendToServer = useCallback(() {
-    //   recalculateTotals();
-    //   incoming.outgoingHandlers.sendFillPurchase(purchase);
-    // }, [recalculateTotals, incoming]);
-
-    // purItemToggle(PurItemDto purItem) {
-    //   purItem.bought = !purItem.bought;
-    //   // final purItemFound =
-    //   // purchase.purItems.singleWhere((x) => x.id == purItem.id);
-    //   // purItemFound.bought = !purItemFound.bought;
-    //   StaticLogger.append(
-    //       'new bought => [${purItem.bought}] for purItem[${purItem.id}:${purItem.name}] ');
-    //   // recalculateTotalsSendToServer();
-    //   recalculateTotals();
-    //   incoming.outgoingHandlers.sendFillPurchase(purchase);
-    //   ui.rebuild();
-    // }
 
     recalculateTotalsSendToServer() {
       // recalculateTotals();
@@ -115,13 +85,6 @@ class Purchase extends HookConsumerWidget {
                 purItem: x,
                 isMe: isMe,
                 recalculateTotalsSendToServer: recalculateTotalsSendToServer,
-                // purItemToggle: () {
-                //   purItemToggle(x);
-                // },
-                // purItemToggle: () {
-                //   purItemToggle(x);
-                //   recalculateTotalsSendToServer();
-                // },
               )),
 
           if (purchase.show_qnty || purchase.show_price || purchase.show_weight)

@@ -81,14 +81,14 @@ class MessageItem extends ConsumerWidget {
                   children: [
                     message.purchase != null
                         ? inEditMode || editingNewPurchase
-                            ? PurchaseEdit(
-                                purchase: message.purchase!,
-                                messageId: message.id,
-                                isMe: isMe,
-                              )
+                            ? SingleChildScrollView(
+                                scrollDirection: Axis.vertical,
+                                child: PurchaseEdit(
+                                  purchase: message.purchase!,
+                                  messageId: message.id,
+                                ))
                             : Purchase(
                                 purchase: message.purchase!,
-                                isMe: isMe,
                               )
                         : Text(
                             message.content,
