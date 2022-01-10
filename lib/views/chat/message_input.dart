@@ -58,7 +58,8 @@ class MessageInput extends HookConsumerWidget {
                 Icons.add_outlined,
                 color: Colors.green,
               ),
-              onPressed: () => incoming.addEmptyPurchase()),
+              onPressed: () =>
+                  incoming.addEmptyPurchase(ui.newPurchaseSettings)),
           const SizedBox(width: 10),
           // https://stackoverflow.com/questions/57803737/flutter-renderflex-children-have-non-zero-flex-but-incoming-height-constraints
           Expanded(

@@ -41,4 +41,14 @@ class UiState extends ChangeNotifier {
     _refreshCounter++;
     notifyListeners();
   }
+
+  // TODO: save to local database
+  final newPurchaseSettings = NewPurchaseSettings();
+}
+
+class NewPurchaseSettings {
+  bool showPgroups = true;
+  bool showPrice = true;
+  bool showQnty = false;
+  bool showWeight = false;
 }

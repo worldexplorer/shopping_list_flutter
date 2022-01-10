@@ -8,10 +8,11 @@ import '../../utils/ui_state.dart';
 class PgroupEdit extends HookConsumerWidget {
   // final int id;
   final String name;
+  final Function() onFocused;
   final Function(String newName) onChanged;
   final bool canDelete;
   final Function() onDelete;
-  final hasDragHandle = true;
+  final hasDragHandle;
 
   const PgroupEdit({
     Key? key,
@@ -20,6 +21,8 @@ class PgroupEdit extends HookConsumerWidget {
     required this.onChanged,
     required this.canDelete,
     required this.onDelete,
+    required this.onFocused,
+    required this.hasDragHandle,
   }) : super(key: key);
 
   @override
@@ -49,6 +52,7 @@ class PgroupEdit extends HookConsumerWidget {
                     maxLines: 3,
                     controller: nameInputCtrl,
                     onChanged: onChanged,
+                    onTap: onFocused,
                     decoration: InputDecoration(
                       hintText: 'Group Name...',
                       hintStyle: textInputHintStyle,

@@ -10,11 +10,17 @@ import '../../utils/ui_state.dart';
 class PurchaseItemEdit extends HookConsumerWidget {
   final PurchaseDto purchase;
   final PurItemDto purItem;
+  final Function() onTap;
+  final Function(String newName) onChanged;
+  final Function() onDeleted;
 
   const PurchaseItemEdit({
     Key? key,
     required this.purchase,
     required this.purItem,
+    required this.onTap,
+    required this.onChanged,
+    required this.onDeleted,
   }) : super(key: key);
 
   @override
@@ -27,7 +33,8 @@ class PurchaseItemEdit extends HookConsumerWidget {
       mainAxisSize: MainAxisSize.max,
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
-        if (purItem.pgroup_id != null) const SizedBox(width: 25),
+        // if (purItem.pgroup_id != null) const SizedBox(width: 25),
+        if (purchase.show_pgroup) const SizedBox(width: 25),
         purchase.purItems.length > 1
             ? GestureDetector(
                 child:
@@ -46,8 +53,10 @@ class PurchaseItemEdit extends HookConsumerWidget {
                     controller: nameInputCtrl,
                     onChanged: (String text) {
                       purItem.name = text;
+                      onChanged(text);
                       // ui.rebuild();
                     },
+                    onTap: onTap,
                     decoration: InputDecoration(
                       hintText: 'Product to Purchase...',
                       hintStyle: textInputHintStyle,
@@ -63,6 +72,7 @@ class PurchaseItemEdit extends HookConsumerWidget {
             // autofocus: true,
             onPressed: () {
               purchase.purItems.remove(purItem);
+              onDeleted();
               ui.rebuild();
             })
       ],

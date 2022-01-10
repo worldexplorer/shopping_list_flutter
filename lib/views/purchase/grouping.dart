@@ -16,6 +16,18 @@ class Grouping {
     buildGroups();
   }
 
+  int? get lastGroup {
+    try {
+      return pgroupById.keys.last;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  String? get lastGroupName {
+    return pgroupById[lastGroup];
+  }
+
   void buildGroups() {
     for (var purItem in purItems) {
       if (purItem.pgroup_id == null) {
@@ -29,10 +41,11 @@ class Grouping {
       }
 
       final pgroup_id = purItem.pgroup_id!;
-      final pgroup_name = purItem.pgroup_name!;
+      final pgroup_name =
+          purItem.pgroup_name ?? pgroupById[pgroup_id] ?? newPgroupName;
 
-      final product_id = purItem.product_id!;
-      final product_name = purItem.product_name!;
+      // final product_id = purItem.product_id!;
+      // final product_name = purItem.product_name!;
 
       pgroupById.putIfAbsent(pgroup_id, () => pgroup_name);
 
@@ -54,7 +67,21 @@ class Grouping {
   }
 
   deleteGroup(int pgroupId) {
+    if (!canDeleteGroup(pgroupId)) {
+      return;
+    }
+    // delete only empty group
     pgroupById.remove(pgroupId);
+
+    // if (pgroupId < 0) {
+    //   // negativeGroupsViolateForeignKey
+    //   final resetToNull = productsByPgroup[pgroupId];
+    //   if (resetToNull != null) {
+    //     for (var newProduct in resetToNull) {
+    //       newProduct.pgroup_id = null;
+    //     }
+    //   }
+    // }
   }
 
   bool changeGroupName(int pgroupId, String newName) {
@@ -72,9 +99,13 @@ class Grouping {
       }
 
       if (emptyNamePgroupId == null) {
+        //add new group
         final newGroupId = --pgroupNegSeq;
         pgroupById[newGroupId] = newPgroupName;
         emptyNamePgroupId = newGroupId;
+
+        //add empty products[] into this group
+        productsByPgroup[newGroupId] = [];
         return true;
       }
     }
@@ -96,14 +127,59 @@ class Grouping {
     return false;
   }
 
-// new ungrouped PurItems arrived from network?
-// for (var purItem in purchase.purItems) {
-//   if (purItem.pgroup_id != null && pgroupsNegSeq > purItem.pgroup_id!) {
-//     pgroupsNegSeq = purItem.pgroup_id!;
-//   }
-//   if (purItem.product_id != null && productsNegSeq > purItem.product_id!) {
-//     productsNegSeq = purItem.product_id!;
-//   }
-// }
+  bool productNameChanged(PurItemDto product) {
+    bool shouldAddProductBelow = false;
+    final productsInGroup = productsByPgroup[product.pgroup_id];
+    if (productsInGroup == null) {
+      return shouldAddProductBelow;
+    }
 
+    shouldAddProductBelow = allPurItemsHaveName(productsInGroup);
+    return shouldAddProductBelow;
+  }
+
+  addProduct(PurItemDto product) {
+    final shouldBeInt = product.pgroup_id;
+    if (shouldBeInt == null) {
+      return;
+    }
+    final shouldExist = productsByPgroup[shouldBeInt];
+    if (shouldExist == null) {
+      // should never happen: add empty products[] into this group
+      productsByPgroup[shouldBeInt] = [product];
+      return;
+    }
+    shouldExist.add(product);
+  }
+
+  deleteProduct(PurItemDto product) {
+    final shouldBeInt = product.pgroup_id;
+    if (shouldBeInt == null) {
+      return;
+    }
+    final shouldExist = productsByPgroup[shouldBeInt];
+    if (shouldExist == null) {
+      productsByPgroup[shouldBeInt] = [product]; // should never happen
+      return;
+    }
+    if (!shouldExist.contains(product)) {
+      return;
+    }
+    shouldExist.remove(product);
+  }
+}
+
+allPurItemsHaveName(List<PurItemDto> items) {
+  int positionFound = items.indexWhere((element) => element.name == '');
+  return positionFound == -1;
+}
+
+removeEmptyPuritemsLeaveOnlyLast(List<PurItemDto> items) {
+  List<PurItemDto> withEmptyNames =
+      items.where((element) => element.name == '').toList();
+  if (withEmptyNames.length > 1) {
+    for (int i = 0; i <= withEmptyNames.length - 2; i++) {
+      items.remove(withEmptyNames[i]);
+    }
+  }
 }

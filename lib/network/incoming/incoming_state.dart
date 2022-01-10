@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:shopping_list_flutter/utils/ui_state.dart';
 
 import '../connection.dart';
 import '../outgoing/outgoing_handlers.dart';
@@ -198,7 +199,7 @@ class IncomingState extends ChangeNotifier {
     notifyListeners();
   }
 
-  addEmptyPurchase() {
+  addEmptyPurchase(NewPurchaseSettings newPurchaseSettings) {
     final newPurchase = PurchaseDto(
       id: 0,
       date_created: DateTime.now(),
@@ -206,10 +207,10 @@ class IncomingState extends ChangeNotifier {
       name: '',
       room: currentRoomId,
       message: 0,
-      show_pgroup: false,
-      show_price: true,
-      show_qnty: false,
-      show_weight: false,
+      show_pgroup: newPurchaseSettings.showPgroups,
+      show_price: newPurchaseSettings.showPrice,
+      show_qnty: newPurchaseSettings.showQnty,
+      show_weight: newPurchaseSettings.showWeight,
       copiedfrom_id: null,
       person_created: userId,
       person_created_name: userName,
