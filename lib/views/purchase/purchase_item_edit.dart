@@ -6,6 +6,7 @@ import '../../network/incoming/pur_item_dto.dart';
 import '../../network/incoming/purchase_dto.dart';
 import '../../utils/theme.dart';
 import '../../utils/ui_state.dart';
+import 'purchase_item.dart';
 
 class PurchaseItemEdit extends HookConsumerWidget {
   final PurchaseDto purchase;
@@ -65,7 +66,10 @@ class PurchaseItemEdit extends HookConsumerWidget {
                     ),
                     style: textInputStyle))),
         const SizedBox(width: 10),
+        ...qntyColumns(purchase.show_qnty, purItem.qnty, purItem.punit_fpoint,
+            purItem.punit_brief),
         IconButton(
+            padding: EdgeInsets.zero,
             icon: const Icon(Icons.delete_outline_outlined,
                 size: iconSize, color: Colors.blue),
             enableFeedback: true,

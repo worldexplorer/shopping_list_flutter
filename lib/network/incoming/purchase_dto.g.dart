@@ -23,6 +23,7 @@ PurchaseDto _$PurchaseDtoFromJson(Map<String, dynamic> json) => $checkedCreate(
             'show_price',
             'show_qnty',
             'show_weight',
+            'show_serno',
             'copiedfrom_id',
             'person_created',
             'person_created_name',
@@ -48,6 +49,7 @@ PurchaseDto _$PurchaseDtoFromJson(Map<String, dynamic> json) => $checkedCreate(
           show_price: $checkedConvert('show_price', (v) => v as bool),
           show_qnty: $checkedConvert('show_qnty', (v) => v as bool),
           show_weight: $checkedConvert('show_weight', (v) => v as bool),
+          show_serno: $checkedConvert('show_serno', (v) => v as bool),
           copiedfrom_id: $checkedConvert('copiedfrom_id', (v) => v as int?),
           person_created: $checkedConvert('person_created', (v) => v as int),
           person_created_name:
@@ -85,6 +87,7 @@ Map<String, dynamic> _$PurchaseDtoToJson(PurchaseDto instance) =>
       'show_price': instance.show_price,
       'show_qnty': instance.show_qnty,
       'show_weight': instance.show_weight,
+      'show_serno': instance.show_serno,
       'copiedfrom_id': instance.copiedfrom_id,
       'person_created': instance.person_created,
       'person_created_name': instance.person_created_name,

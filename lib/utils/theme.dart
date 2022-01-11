@@ -44,6 +44,7 @@ Color get menuBackgroundColor => Color(0xFF4A4A58);
 Color get altColor => Platform.isIOS ? Color(0xff17263c) : Color(0xff28263c);
 
 TextStyle purchaseStyle = const TextStyle(color: Colors.white);
+TextStyle totalsStyle = const TextStyle(color: Colors.lightGreenAccent);
 
 TextStyle textInputStyle = const TextStyle(color: Colors.white);
 
@@ -70,7 +71,7 @@ EdgeInsets textInputPadding = const EdgeInsets.fromLTRB(
   0,
 );
 
-const double qntyColumnWidth = 80;
+const double qntyColumnWidth = 55;
 const double priceColumnWidth = 80;
 const double weightColumnWidth = 75;
 

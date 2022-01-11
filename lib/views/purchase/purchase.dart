@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:shopping_list_flutter/utils/ui_state.dart';
 
 import '../../network/incoming/purchase_dto.dart';
 import '../../network/incoming/incoming_state.dart';
 import '../../utils/theme.dart';
+import '../../utils/ui_state.dart';
+import '../../utils/purchase_totals.dart';
 
 import 'purchase_item.dart';
 
@@ -24,26 +25,11 @@ class Purchase extends HookConsumerWidget {
     final ui = ref.watch(uiStateProvider);
     final incoming = ref.watch(incomingStateProvider);
 
-    double tQnty = .0;
-    double tPrice = .0;
-    double tWeight = .0;
+    final totals = PurchaseTotals();
+    totals.recalculateTotals(purchase);
 
-    recalculateTotals() {
-      tQnty = .0;
-      tPrice = .0;
-      tWeight = .0;
-      for (var purItem in purchase.purItems) {
-        if (!purItem.bought) {
-          continue;
-        }
-        tQnty += purItem.bought_qnty ?? 0.0;
-        tPrice += purItem.bought_price ?? 0.0;
-        tWeight += purItem.bought_weight ?? 0.0;
-      }
-
-      purchase.weight_total = tPrice;
-      purchase.price_total = tWeight;
-    }
+    purchase.weight_total = totals.tPrice;
+    purchase.price_total = totals.tWeight;
 
     recalculateTotalsSendToServer() {
       // recalculateTotals();
@@ -51,7 +37,9 @@ class Purchase extends HookConsumerWidget {
       // ui.rebuild();
     }
 
-    recalculateTotals();
+    int serno = 1;
+    int purItemsChecked =
+        purchase.purItems.where((x) => x.bought == true).length;
 
     return Column(
         // mainAxisSize: MainAxisSize.min,
@@ -85,26 +73,45 @@ class Purchase extends HookConsumerWidget {
                 purItem: x,
                 isMe: isMe,
                 recalculateTotalsSendToServer: recalculateTotalsSendToServer,
+                serno: serno++,
               )),
 
-          if (purchase.show_qnty || purchase.show_price || purchase.show_weight)
-            Row(
-                mainAxisSize: MainAxisSize.max,
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  Text('Total:', style: purchaseStyle),
-                  const SizedBox(width: 30),
-                  optionalTotal(
-                      "Qnty", purchase.show_qnty, qntyColumnWidth, tQnty),
-                  optionalTotal(
-                      "Price", purchase.show_price, priceColumnWidth, tPrice),
-                  optionalTotal("Weight", purchase.show_weight,
-                      weightColumnWidth, tWeight),
-                ]),
+          Row(
+              mainAxisSize: MainAxisSize.max,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                const SizedBox(width: 20),
+                Expanded(
+                    child: purItemsChecked > 0
+                        ? Text(
+                            '$purItemsChecked / ${purchase.purItems.length} items checked',
+                            softWrap: true,
+                            style: totalsStyle)
+                        : const Divider()),
+                ...visualizeTotals(purchase, totals),
+              ]),
         ]);
   }
 
-  optionalTotal(String hint, bool show, double columnWidth, double value) {
+  List<Widget> visualizeTotals(PurchaseDto purchase, PurchaseTotals totals) {
+    if (purchase.show_qnty || purchase.show_price || purchase.show_weight) {
+      return [
+        Text('Total:', style: totalsStyle),
+        const SizedBox(width: 30),
+        optionalTotal(
+            "Qnty", purchase.show_qnty, qntyColumnWidth, totals.tQnty),
+        optionalTotal(
+            "Price", purchase.show_price, priceColumnWidth, totals.tPrice),
+        optionalTotal(
+            "Weight", purchase.show_weight, weightColumnWidth, totals.tWeight),
+      ];
+    } else {
+      return [];
+    }
+  }
+
+  Widget optionalTotal(
+      String hint, bool show, double columnWidth, double value) {
     Widget formatted = value == 0.0
         ? Text(hint, style: textInputHintStyle)
         : Text(value.toStringAsPrecision(3).toString(), style: purchaseStyle);

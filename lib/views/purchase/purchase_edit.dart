@@ -63,6 +63,7 @@ class PurchaseEdit extends HookConsumerWidget {
     }
 
     onSaveButtonPressed() {
+      removeEmptyPuritemsBeforeSave(purchase.show_pgroup, purchase.purItems);
       if (purchase.id == 0) {
         incoming.outgoingHandlers
             .sendNewPurchase(purchase, ui.isReplyingToMessageId);
@@ -175,43 +176,44 @@ class PurchaseEdit extends HookConsumerWidget {
           // const SizedBox(height: 5),
           const Divider(height: 10, thickness: 1, indent: 3),
           if (settingsExpanded.value)
-            SizedBox(
-                height: 25,
-                child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      // Text('Show: ', style: purchaseStyle),
-                      // const SizedBox(width: 5),
-                      toggle('Groups', purchase.show_pgroup,
-                          (bool newShowGroups) {
-                        purchase.show_pgroup = newShowGroups;
-                        ui.newPurchaseSettings.showPgroups = newShowGroups;
-                        if (newShowGroups == false) {
-                          pgroupFocused.value = null;
-                          removeEmptyPuritemsLeaveOnlyLast(purchase.purItems);
-                        } else {
-                          pgroupFocused.value = grouping.value.lastGroup;
-                        }
-                      }, ui),
-                      const SizedBox(width: 15),
-                      toggle('Total', purchase.show_price, (bool newShowPrice) {
-                        purchase.show_price = newShowPrice;
-                        ui.newPurchaseSettings.showPrice = newShowPrice;
-                      }, ui),
-                      const SizedBox(width: 15),
-                      toggle('Quantity', purchase.show_qnty,
-                          (bool newShowQnty) {
-                        purchase.show_qnty = newShowQnty;
-                        ui.newPurchaseSettings.showQnty = newShowQnty;
-                      }, ui),
-                      const SizedBox(width: 15),
-                      toggle('Weight', purchase.show_weight,
-                          (bool newShowWeight) {
-                        purchase.show_weight = newShowWeight;
-                        ui.newPurchaseSettings.showWeight = newShowWeight;
-                      }, ui)
-                    ])),
+            Flex(
+                direction: Axis.horizontal,
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  // Text('Show: ', style: purchaseStyle),
+                  // const SizedBox(width: 5),
+                  toggle('Groups', purchase.show_pgroup, (bool newShowGroups) {
+                    purchase.show_pgroup = newShowGroups;
+                    ui.newPurchaseSettings.showPgroups = newShowGroups;
+                    if (newShowGroups == false) {
+                      pgroupFocused.value = null;
+                      removeEmptyPuritemsLeaveOnlyLast(purchase.purItems);
+                    } else {
+                      pgroupFocused.value = grouping.value.lastGroup;
+                    }
+                  }, ui),
+                  const SizedBox(width: 15),
+                  toggle('Sequence', purchase.show_serno, (bool newShowSerno) {
+                    purchase.show_serno = newShowSerno;
+                    ui.newPurchaseSettings.showSerno = newShowSerno;
+                  }, ui),
+                  const SizedBox(width: 15),
+                  toggle('Quantity', purchase.show_qnty, (bool newShowQnty) {
+                    purchase.show_qnty = newShowQnty;
+                    ui.newPurchaseSettings.showQnty = newShowQnty;
+                  }, ui),
+                  const SizedBox(width: 15),
+                  toggle('Total', purchase.show_price, (bool newShowPrice) {
+                    purchase.show_price = newShowPrice;
+                    ui.newPurchaseSettings.showPrice = newShowPrice;
+                  }, ui),
+                  const SizedBox(width: 15),
+                  toggle('Weight', purchase.show_weight, (bool newShowWeight) {
+                    purchase.show_weight = newShowWeight;
+                    ui.newPurchaseSettings.showWeight = newShowWeight;
+                  }, ui)
+                ]),
         ]);
   }
 

@@ -170,7 +170,6 @@ class ChatMessages extends HookConsumerWidget {
     final ui = ref.watch(uiStateProvider);
     final messagesSelected = ui.messagesSelected;
 
-    final inSelectionMode = messagesSelected.isNotEmpty;
     return GestureDetector(
       behavior: HitTestBehavior.translucent,
       onTapDown: (TapDownDetails details) {
@@ -185,6 +184,7 @@ class ChatMessages extends HookConsumerWidget {
           }
           ui.isReplyingToMessageId = null;
         } else {
+          // final inSelectionMode = messagesSelected.isNotEmpty;
           if (messagesSelected.isNotEmpty) {
             final first = messagesSelected.values.toList()[0];
             if (first.message.purchaseId != null) {

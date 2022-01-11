@@ -1,6 +1,7 @@
 import 'package:shopping_list_flutter/network/incoming/pur_item_dto.dart';
 
 const newPgroupName = '';
+const newProductName = '';
 
 class Grouping {
   final pgroupById = <int, String>{};
@@ -91,7 +92,7 @@ class Grouping {
       if (emptyNamePgroupId != null) {
         try {
           final firstEmpty =
-              pgroupById.entries.firstWhere((element) => element.value == '');
+              pgroupById.entries.firstWhere((x) => x.value == '');
           emptyNamePgroupId == firstEmpty.key;
         } catch (e) {
           emptyNamePgroupId = null;
@@ -169,17 +170,48 @@ class Grouping {
   }
 }
 
-allPurItemsHaveName(List<PurItemDto> items) {
-  int positionFound = items.indexWhere((element) => element.name == '');
+bool allPurItemsHaveName(List<PurItemDto> items) {
+  int positionFound = items.indexWhere((x) => x.name == '');
   return positionFound == -1;
 }
 
-removeEmptyPuritemsLeaveOnlyLast(List<PurItemDto> items) {
+int removeEmptyPuritemsLeaveOnlyLast(List<PurItemDto> items) {
+  int removed = 0;
   List<PurItemDto> withEmptyNames =
-      items.where((element) => element.name == '').toList();
+      items.where((x) => x.name == '' && x.id < 0).toList();
   if (withEmptyNames.length > 1) {
-    for (int i = 0; i <= withEmptyNames.length - 2; i++) {
+    for (int i = 0; i < withEmptyNames.length - 1; i++) {
       items.remove(withEmptyNames[i]);
+      removed++;
     }
   }
+  return removed;
+}
+
+int removeEmptyPuritemsBeforeSave(bool showPgroup, List<PurItemDto> items) {
+  int removed = 0;
+
+  if (showPgroup) {
+    List<PurItemDto> withEmptyNames = items
+        .where((x) =>
+            //x.product_name == newProductName && (x.product_id ?? -999) < 0
+            x.id == 0)
+        .toList();
+    for (int i = 0; i < withEmptyNames.length - 1; i++) {
+      items.remove(withEmptyNames[i]);
+      removed++;
+    }
+  } else {
+    List<PurItemDto> withEmptyNames = items
+        .where((x) =>
+            // x.name == newProductName &&
+            x.id == 0)
+        .toList();
+    for (int i = 0; i < withEmptyNames.length - 1; i++) {
+      items.remove(withEmptyNames[i]);
+      removed++;
+    }
+  }
+
+  return removed;
 }

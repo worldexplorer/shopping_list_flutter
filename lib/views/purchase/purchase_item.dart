@@ -11,6 +11,7 @@ class PurchaseItem extends HookConsumerWidget {
   final PurchaseDto purchase;
   final PurItemDto purItem;
   final bool isMe;
+  final int serno;
   final Function() recalculateTotalsSendToServer;
 
   const PurchaseItem({
@@ -19,14 +20,20 @@ class PurchaseItem extends HookConsumerWidget {
     required this.purItem,
     required this.isMe,
     required this.recalculateTotalsSendToServer,
+    required this.serno,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     // final ui = ref.watch(uiStateProvider);
 
-    final qntyInputCtrl =
-        useTextEditingController(text: purItem.bought_qnty?.toString() ?? '');
+    final qntyInputCtrl = useTextEditingController();
+    double? bought_qnty = purItem.bought_qnty;
+    if (bought_qnty != null) {
+      qntyInputCtrl.text = (purItem.punit_fpoint ?? false)
+          ? bought_qnty.toInt().toString()
+          : bought_qnty.toStringAsPrecision(2);
+    }
     final updateQnty = useValueListenable(qntyInputCtrl);
     useEffect(() {
       qntyInputCtrl.text = updateQnty.text;
@@ -61,6 +68,11 @@ class PurchaseItem extends HookConsumerWidget {
       }
     }, [updateWeight.text]);
 
+    String purItemName = purItem.name;
+    if (purchase.show_serno) {
+      purItemName = '${serno})   ' + purItemName;
+    }
+
     return Row(
       // mainAxisSize: MainAxisSize.min,
       mainAxisAlignment: MainAxisAlignment.start,
@@ -81,17 +93,19 @@ class PurchaseItem extends HookConsumerWidget {
         const SizedBox(width: 3),
         Expanded(
             child: GestureDetector(
-                onTapDown: (details) {
+                onTapUp: (details) {
                   purItem.bought = !purItem.bought;
                   recalculateTotalsSendToServer();
                 },
                 child:
-                    Text(purItem.name, softWrap: true, style: purchaseStyle))),
+                    Text(purItemName, softWrap: true, style: purchaseStyle))),
+        ...qntyColumns(purchase.show_qnty, purItem.qnty, purItem.punit_fpoint,
+            purItem.punit_brief),
         optionalNumberInput(
           purchase.show_qnty,
           qntyColumnWidth,
           qntyInputCtrl,
-          'Quantity',
+          'Qnty',
         ),
         optionalNumberInput(
           purchase.show_price,
@@ -108,30 +122,46 @@ class PurchaseItem extends HookConsumerWidget {
       ],
     );
   }
+}
 
-  optionalNumberInput(bool showNumberInput, double width,
-      TextEditingController textInputCtrl, String hintText,
-      [Function(double newDouble)? pushToObject,
-      Function()? recalculateTotals,
-      UiState? ui]) {
-    return showNumberInput
-        ? Container(
-            width: width,
-            decoration: textInputDecoration,
-            margin: textInputMargin,
-            child: TextField(
-                // textInputAction: TextInputAction.newline,
-                keyboardType: TextInputType.number,
-                minLines: 1,
-                maxLines: 1,
-                controller: textInputCtrl,
-                decoration: InputDecoration(
-                  hintText: hintText,
-                  hintStyle: textInputHintStyle,
-                  // border: InputBorder.none,
-                  contentPadding: textInputPadding,
-                ),
-                style: textInputStyle))
-        : const SizedBox();
+Widget optionalNumberInput(bool showNumberInput, double width,
+    TextEditingController textInputCtrl, String hintText) {
+  return showNumberInput
+      ? Container(
+          width: width,
+          decoration: textInputDecoration,
+          margin: textInputMargin,
+          child: TextField(
+              // textInputAction: TextInputAction.newline,
+              keyboardType: TextInputType.number,
+              minLines: 1,
+              maxLines: 1,
+              controller: textInputCtrl,
+              decoration: InputDecoration(
+                hintText: hintText,
+                hintStyle: textInputHintStyle,
+                // border: InputBorder.none,
+                contentPadding: textInputPadding,
+              ),
+              style: textInputStyle))
+      : const SizedBox();
+}
+
+List<Widget> qntyColumns(
+    bool show_qnty, double? qnty, bool? punit_fpoint, String? punit_brief) {
+  if (!show_qnty ||
+      qnty == null ||
+      punit_fpoint == null ||
+      punit_brief == null) {
+    return [];
+  } else {
+    return [
+      const SizedBox(width: 3),
+      Text(punit_fpoint ? qnty.toStringAsPrecision(2) : qnty.toInt().toString(),
+          style: purchaseStyle),
+      const SizedBox(width: 3),
+      Text(punit_brief, style: purchaseStyle),
+      const SizedBox(width: 3),
+    ];
   }
 }
