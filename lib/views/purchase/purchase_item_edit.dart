@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -38,6 +39,9 @@ class PurchaseItemEdit extends HookConsumerWidget {
         if (purchase.show_pgroup) const SizedBox(width: 25),
         purchase.purItems.length > 1
             ? GestureDetector(
+                onLongPressDown: (details) {
+                  HapticFeedback.vibrate();
+                },
                 child:
                     const Icon(Icons.drag_handle, color: Colors.blue, size: 20))
             : const SizedBox(width: 20),

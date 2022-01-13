@@ -177,6 +177,7 @@ class OutgoingHandlers {
       show_price: purchase.show_price,
       show_qnty: purchase.show_qnty,
       show_weight: purchase.show_weight,
+      show_threestate: purchase.show_threestate,
       copiedfrom_id: purchase.copiedfrom_id,
       persons_can_edit: purchase.persons_can_edit,
       newPurItems: purchase.purItems.map((x) {

@@ -52,4 +52,5 @@ class NewPurchaseSettings {
   bool showQnty = false;
   bool showPrice = true;
   bool showWeight = false;
+  bool showThreeState = true;
 }

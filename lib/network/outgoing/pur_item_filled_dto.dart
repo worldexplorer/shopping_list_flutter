@@ -19,7 +19,7 @@ class PurItemFilledDto {
   // int message;
   // int purchase;
 
-  bool bought;
+  bool? bought;
   double? bought_qnty;
   double? bought_price;
   double? bought_weight;

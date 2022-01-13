@@ -91,10 +91,11 @@ class IncomingState extends ChangeNotifier {
               (x.punit_fpoint ?? false) ? x.qnty : (x.qnty ?? 0).round();
           return '${x.name}'
               '\t\t${qnty} ${x.punit_brief}'
+              '\t\tbought:${x.bought}'
               '\t\tqnty:${x.qnty}'
               '\t\tpunit:${x.punit_name}(${x.punit_id})'
-              '\t\t\t${x.pgroup_name}(${x.pgroup_id})'
-              '\t\t${x.product_name}(${x.product_id})';
+              '\t\tpgroup:${x.pgroup_name}(${x.pgroup_id})'
+              '\t\tproduct:${x.product_name}(${x.product_id})';
         }).join('\n\t\t\t\t');
       }
 
@@ -212,6 +213,7 @@ class IncomingState extends ChangeNotifier {
       show_qnty: newPurchaseSettings.showQnty,
       show_price: newPurchaseSettings.showPrice,
       show_weight: newPurchaseSettings.showWeight,
+      show_threestate: newPurchaseSettings.showThreeState,
       copiedfrom_id: null,
       person_created: userId,
       person_created_name: userName,

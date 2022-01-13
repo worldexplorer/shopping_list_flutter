@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:shopping_list_flutter/network/incoming/pur_item_dto.dart';
 
 import '../../network/incoming/purchase_dto.dart';
 import '../../network/incoming/incoming_state.dart';
@@ -8,6 +10,7 @@ import '../../utils/theme.dart';
 import '../../utils/ui_state.dart';
 import '../../utils/purchase_totals.dart';
 
+import 'grouping.dart';
 import 'purchase_item.dart';
 
 class Purchase extends HookConsumerWidget {
@@ -25,6 +28,8 @@ class Purchase extends HookConsumerWidget {
     final ui = ref.watch(uiStateProvider);
     final incoming = ref.watch(incomingStateProvider);
 
+    final grouping = useState(Grouping(purchase.purItems));
+
     final totals = PurchaseTotals();
     totals.recalculateTotals(purchase);
 
@@ -37,7 +42,6 @@ class Purchase extends HookConsumerWidget {
       // ui.rebuild();
     }
 
-    int serno = 1;
     int purItemsChecked =
         purchase.purItems.where((x) => x.bought == true).length;
 
@@ -51,31 +55,7 @@ class Purchase extends HookConsumerWidget {
                 color: Colors.white.withOpacity(isMe ? 1 : 0.8),
                 fontSize: 15,
               )),
-
-          // ListView.builder(
-          //   scrollDirection: Axis.vertical,
-          //   shrinkWrap: true,
-          //   itemCount: purchase.purItems.length,
-          //   itemBuilder: (BuildContext context, int index) {
-          //     final purItem = purchase.purItems[index];
-          //     return PurchaseItem(
-          //       purchase: purchase,
-          //       purItem: purItem,
-          //       isMe: isMe,
-          //       recalculateTotalsSendToServer: recalculateTotalsSendToServer,
-          //     );
-          //   },
-          // ),
-
-          ...purchase.purItems.map((x) => PurchaseItem(
-                key: Key('${x.id}:${DateTime.now().microsecond.toString()}'),
-                purchase: purchase,
-                purItem: x,
-                isMe: isMe,
-                recalculateTotalsSendToServer: recalculateTotalsSendToServer,
-                serno: serno++,
-              )),
-
+          ...flatOrGrouped(grouping, purchase, recalculateTotalsSendToServer),
           Row(
               mainAxisSize: MainAxisSize.max,
               mainAxisAlignment: MainAxisAlignment.start,
@@ -124,5 +104,69 @@ class Purchase extends HookConsumerWidget {
             padding: const EdgeInsets.all(10),
             child: formatted)
         : const SizedBox();
+  }
+
+  Iterable<Widget> flatOrGrouped(ValueNotifier<Grouping> groupingNotifier,
+      PurchaseDto purchase, Function() recalculateTotalsSendToServer) {
+    int serno = 1;
+
+    if (purchase.show_pgroup) {
+      final grouping = groupingNotifier.value;
+
+      final List<Widget> ret = [];
+
+      int indexPgroup = 0;
+      for (MapEntry<int, String> idPgroup in grouping.pgroupById.entries) {
+        final int pgroupId = idPgroup.key;
+        final String pgroupName = idPgroup.value;
+
+        String pgroupCounters = pgroupName;
+        final products = grouping.productsByPgroup[pgroupId] ?? [];
+        if (products.isNotEmpty) {
+          pgroupCounters += ' (${purchase.purItems.length})';
+        }
+
+        ret.add(Text(pgroupCounters, softWrap: true, style: pGroupStyle));
+
+        int indexProduct = 0;
+        for (PurItemDto product in products) {
+          ret.add(PurchaseItem(
+            key: Key(
+                '$indexPgroup:$pgroupId:${indexProduct++}:${product.product_id}'),
+            purchase: purchase,
+            purItem: product,
+            isMe: isMe,
+            recalculateTotalsSendToServer: recalculateTotalsSendToServer,
+            serno: serno++,
+          ));
+        }
+      }
+      return ret;
+    } else {
+      // ListView.builder(
+      //   scrollDirection: Axis.vertical,
+      //   shrinkWrap: true,
+      //   itemCount: purchase.purItems.length,
+      //   itemBuilder: (BuildContext context, int index) {
+      //     final purItem = purchase.purItems[index];
+      //     return PurchaseItem(
+      //       purchase: purchase,
+      //       purItem: purItem,
+      //       isMe: isMe,
+      //       recalculateTotalsSendToServer: recalculateTotalsSendToServer,
+      //     );
+      //   },
+      // ),
+
+      int i = 1;
+      return purchase.purItems.map((x) => PurchaseItem(
+            key: Key('${i++}:${x.id}:${x.pgroup_id}:${x.product_id}'),
+            purchase: purchase,
+            purItem: x,
+            isMe: isMe,
+            recalculateTotalsSendToServer: recalculateTotalsSendToServer,
+            serno: serno++,
+          ));
+    }
   }
 }

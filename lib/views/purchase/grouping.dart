@@ -87,6 +87,9 @@ class Grouping {
 
   bool changeGroupName(int pgroupId, String newName) {
     pgroupById[pgroupId] = newName;
+    productsByPgroup[pgroupId]?.forEach((product) {
+      product.pgroup_name = newName;
+    });
 
     if (newName.isNotEmpty) {
       if (emptyNamePgroupId != null) {

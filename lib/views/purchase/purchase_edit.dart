@@ -176,10 +176,12 @@ class PurchaseEdit extends HookConsumerWidget {
           // const SizedBox(height: 5),
           const Divider(height: 10, thickness: 1, indent: 3),
           if (settingsExpanded.value)
-            Flex(
+            Wrap(
                 direction: Axis.horizontal,
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.start,
+                alignment: WrapAlignment.spaceBetween,
+                spacing: 15,
+                runAlignment: WrapAlignment.spaceEvenly,
+                runSpacing: 5,
                 children: [
                   // Text('Show: ', style: purchaseStyle),
                   // const SizedBox(width: 5),
@@ -193,26 +195,27 @@ class PurchaseEdit extends HookConsumerWidget {
                       pgroupFocused.value = grouping.value.lastGroup;
                     }
                   }, ui),
-                  const SizedBox(width: 15),
                   toggle('Sequence', purchase.show_serno, (bool newShowSerno) {
                     purchase.show_serno = newShowSerno;
                     ui.newPurchaseSettings.showSerno = newShowSerno;
                   }, ui),
-                  const SizedBox(width: 15),
                   toggle('Quantity', purchase.show_qnty, (bool newShowQnty) {
                     purchase.show_qnty = newShowQnty;
                     ui.newPurchaseSettings.showQnty = newShowQnty;
                   }, ui),
-                  const SizedBox(width: 15),
                   toggle('Total', purchase.show_price, (bool newShowPrice) {
                     purchase.show_price = newShowPrice;
                     ui.newPurchaseSettings.showPrice = newShowPrice;
                   }, ui),
-                  const SizedBox(width: 15),
                   toggle('Weight', purchase.show_weight, (bool newShowWeight) {
                     purchase.show_weight = newShowWeight;
                     ui.newPurchaseSettings.showWeight = newShowWeight;
-                  }, ui)
+                  }, ui),
+                  toggle('Three-state', purchase.show_threestate,
+                      (bool newShowThreeState) {
+                    purchase.show_threestate = newShowThreeState;
+                    ui.newPurchaseSettings.showThreeState = newShowThreeState;
+                  }, ui),
                 ]),
         ]);
   }
@@ -312,7 +315,7 @@ class PurchaseEdit extends HookConsumerWidget {
     } else {
       int i = 1;
       return purchase.purItems.map((x) => PurchaseItemEdit(
-            key: Key('${i++}:${x.pgroup_id}:${x.product_id}'),
+            key: Key('${i++}:${x.id}:${x.pgroup_id}:${x.product_id}'),
             purchase: purchase,
             purItem: x,
             onTap: () {

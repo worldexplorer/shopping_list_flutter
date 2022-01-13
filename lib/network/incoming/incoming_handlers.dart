@@ -1,9 +1,10 @@
+import '../../utils/static_logger.dart';
 import '../common/typing_dto.dart';
+import '../outgoing/outgoing_handlers.dart';
+import '../connection_state.dart';
+
 import 'archived_messages_dto.dart';
 import 'user_dto.dart';
-import '../outgoing/outgoing_handlers.dart';
-import '../../utils/static_logger.dart';
-import '../connection_state.dart';
 import 'deleted_messages_dto.dart';
 import 'incoming_state.dart';
 import 'message_dto.dart';

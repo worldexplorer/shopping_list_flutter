@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -73,32 +74,64 @@ class PurchaseItem extends HookConsumerWidget {
       purItemName = '${serno})   ' + purItemName;
     }
 
+    onPurItemTap() {
+      if (purchase.show_threestate) {
+        // false => NULL => true
+        if (purItem.bought == null) {
+          purItem.bought = true;
+        } else {
+          if (purItem.bought == true) {
+            purItem.bought = false;
+          } else {
+            purItem.bought = null;
+          }
+        }
+      } else {
+        bool nullMeansNo = purItem.bought == null ? false : purItem.bought!;
+        purItem.bought = !nullMeansNo;
+      }
+      recalculateTotalsSendToServer();
+    }
+
     return Row(
       // mainAxisSize: MainAxisSize.min,
-      mainAxisAlignment: MainAxisAlignment.start,
+      // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        IconButton(
-            onPressed: () {
-              purItem.bought = !purItem.bought;
-              recalculateTotalsSendToServer();
-            },
-            icon: purItem.bought
-                ? const Icon(
-                    Icons.check_circle,
-                    color: Colors.lightGreenAccent,
-                    size: 20,
-                  )
-                : const Icon(Icons.check_circle_outline_rounded,
-                    color: Colors.grey, size: 20)),
-        const SizedBox(width: 3),
+        Container(
+            padding:
+                EdgeInsets.fromLTRB(purchase.show_pgroup ? 10 : 0, 0, 10, 0),
+            child: IconButton(
+                color: Colors.grey,
+                padding: const EdgeInsets.all(0),
+                // iconSize: 20,
+                constraints: const BoxConstraints(maxHeight: 25),
+                onPressed: onPurItemTap,
+                icon: purItem.bought != null
+                    ? purItem.bought! == true
+                        ? const Icon(
+                            Icons.check_circle,
+                            color: Colors.lightGreenAccent,
+                          )
+                        : const Icon(Icons.check_circle_outline_rounded,
+                            color: Colors.grey)
+                    : const Icon(
+                        Icons.query_builder,
+                        color: Colors.yellowAccent,
+                      ))),
+        // const SizedBox(width: 3),
         Expanded(
-            child: GestureDetector(
-                onTapUp: (details) {
-                  purItem.bought = !purItem.bought;
-                  recalculateTotalsSendToServer();
-                },
-                child:
-                    Text(purItemName, softWrap: true, style: purchaseStyle))),
+            child: Container(
+                // color: Colors.lightBlueAccent,
+                padding: const EdgeInsets.fromLTRB(0, 2, 0, 0),
+                child: GestureDetector(
+                    // onLongPressDown: (details) {
+                    //   HapticFeedback.vibrate();
+                    //   HapticFeedback.vibrate();
+                    // },
+                    onTapUp: (details) => onPurItemTap,
+                    child: Text(purItemName,
+                        softWrap: true, style: purchaseStyle)))),
         ...qntyColumns(purchase.show_qnty, purItem.qnty, purItem.punit_fpoint,
             purItem.punit_brief),
         optionalNumberInput(

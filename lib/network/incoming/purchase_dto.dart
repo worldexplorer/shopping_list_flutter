@@ -25,10 +25,11 @@ class PurchaseDto {
   int message;
 
   bool show_pgroup;
-  bool show_price;
-  bool show_qnty;
-  bool show_weight;
   bool show_serno;
+  bool show_qnty;
+  bool show_price;
+  bool show_weight;
+  bool show_threestate;
 
   int? copiedfrom_id;
 
@@ -52,10 +53,11 @@ class PurchaseDto {
     required this.room,
     required this.message,
     required this.show_pgroup,
-    required this.show_price,
-    required this.show_qnty,
-    required this.show_weight,
     required this.show_serno,
+    required this.show_qnty,
+    required this.show_price,
+    required this.show_weight,
+    required this.show_threestate,
     required this.copiedfrom_id,
     required this.person_created,
     required this.person_created_name,
