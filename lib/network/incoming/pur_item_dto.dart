@@ -35,7 +35,7 @@ class PurItemDto {
   String? punit_brief;
   bool? punit_fpoint;
 
-  bool? bought; // can be NULL inside a purchase.show_trheestate=true
+  int bought;
   double? bought_qnty;
   double? bought_price;
   double? bought_weight;

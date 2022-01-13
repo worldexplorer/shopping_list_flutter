@@ -213,7 +213,8 @@ class IncomingState extends ChangeNotifier {
       show_qnty: newPurchaseSettings.showQnty,
       show_price: newPurchaseSettings.showPrice,
       show_weight: newPurchaseSettings.showWeight,
-      show_threestate: newPurchaseSettings.showThreeState,
+      show_state_unknown: newPurchaseSettings.showStateUnknown,
+      show_state_stop: newPurchaseSettings.showStateStop,
       copiedfrom_id: null,
       person_created: userId,
       person_created_name: userName,
@@ -223,7 +224,7 @@ class IncomingState extends ChangeNotifier {
       person_purchased_name: null,
       price_total: null,
       weight_total: null,
-      purItems: [PurItemDto(id: 0, bought: false, name: '')],
+      purItems: [PurItemDto(id: 0, bought: 0, name: '')],
     );
 
     final newMessage = MessageDto(

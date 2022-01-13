@@ -72,17 +72,22 @@ class PurchaseItemEdit extends HookConsumerWidget {
         const SizedBox(width: 10),
         ...qntyColumns(purchase.show_qnty, purItem.qnty, purItem.punit_fpoint,
             purItem.punit_brief),
-        IconButton(
-            padding: EdgeInsets.zero,
-            icon: const Icon(Icons.delete_outline_outlined,
-                size: iconSize, color: Colors.blue),
-            enableFeedback: true,
-            // autofocus: true,
-            onPressed: () {
-              purchase.purItems.remove(purItem);
-              onDeleted();
-              ui.rebuild();
-            })
+        Padding(
+            padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+            child: IconButton(
+              padding: EdgeInsets.zero,
+              constraints: const BoxConstraints(),
+              iconSize: iconSize,
+              onPressed: () {
+                purchase.purItems.remove(purItem);
+                onDeleted();
+                ui.rebuild();
+              },
+              icon: const Icon(Icons.delete_outline_outlined,
+                  size: iconSize, color: Colors.blue),
+              enableFeedback: true,
+              // autofocus: true,
+            ))
       ],
     );
   }

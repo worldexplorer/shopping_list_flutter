@@ -24,7 +24,7 @@ PurItemFilledDto _$PurItemFilledDtoFromJson(Map<String, dynamic> json) =>
         );
         final val = PurItemFilledDto(
           id: $checkedConvert('id', (v) => v as int),
-          bought: $checkedConvert('bought', (v) => v as bool?),
+          bought: $checkedConvert('bought', (v) => v as int),
           bought_qnty:
               $checkedConvert('bought_qnty', (v) => (v as num?)?.toDouble()),
           bought_price:

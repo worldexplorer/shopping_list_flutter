@@ -44,6 +44,10 @@ Color get menuBackgroundColor => Color(0xFF4A4A58);
 Color get altColor => Platform.isIOS ? Color(0xff17263c) : Color(0xff28263c);
 
 TextStyle purchaseStyle = const TextStyle(color: Colors.white);
+TextStyle sernoStyle = TextStyle(
+  color: Colors.white.withOpacity(0.4),
+);
+
 TextStyle pGroupStyle = const TextStyle(
     color: Color(0xD9E6FF8F), fontSize: 20, fontWeight: FontWeight.bold);
 TextStyle totalsStyle = const TextStyle(color: Colors.lightGreenAccent);

@@ -29,7 +29,8 @@ class PurchaseDto {
   bool show_qnty;
   bool show_price;
   bool show_weight;
-  bool show_threestate;
+  bool show_state_unknown;
+  bool show_state_stop;
 
   int? copiedfrom_id;
 
@@ -57,7 +58,8 @@ class PurchaseDto {
     required this.show_qnty,
     required this.show_price,
     required this.show_weight,
-    required this.show_threestate,
+    required this.show_state_unknown,
+    required this.show_state_stop,
     required this.copiedfrom_id,
     required this.person_created,
     required this.person_created_name,

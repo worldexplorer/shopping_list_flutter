@@ -13,6 +13,7 @@ class PurchaseItem extends HookConsumerWidget {
   final PurItemDto purItem;
   final bool isMe;
   final int serno;
+  final Function(int newBought) setBought;
   final Function() recalculateTotalsSendToServer;
 
   const PurchaseItem({
@@ -20,6 +21,7 @@ class PurchaseItem extends HookConsumerWidget {
     required this.purchase,
     required this.purItem,
     required this.isMe,
+    required this.setBought,
     required this.recalculateTotalsSendToServer,
     required this.serno,
   }) : super(key: key);
@@ -69,115 +71,148 @@ class PurchaseItem extends HookConsumerWidget {
       }
     }, [updateWeight.text]);
 
-    String purItemName = purItem.name;
-    if (purchase.show_serno) {
-      purItemName = '${serno})   ' + purItemName;
-    }
-
     onPurItemTap() {
-      if (purchase.show_threestate) {
-        // false => NULL => true
-        if (purItem.bought == null) {
-          purItem.bought = true;
-        } else {
-          if (purItem.bought == true) {
-            purItem.bought = false;
-          } else {
-            purItem.bought = null;
+      // 0:unchecked => ? 2:unknown => ? 3:stop => 1:checked => 0
+      switch (purItem.bought) {
+        case 0:
+          if (purchase.show_state_unknown) {
+            purItem.bought = 2;
           }
-        }
-      } else {
-        bool nullMeansNo = purItem.bought == null ? false : purItem.bought!;
-        purItem.bought = !nullMeansNo;
+          if (purchase.show_state_stop) {
+            purItem.bought = 3;
+          }
+          break;
+
+        case 2:
+          if (purchase.show_state_stop) {
+            purItem.bought = 3;
+          } else {
+            purItem.bought = 1;
+          }
+          break;
+
+        case 3:
+          purItem.bought = 1;
+          break;
+
+        case 1:
+          purItem.bought = 0;
+          break;
       }
+      setBought(purItem.bought);
       recalculateTotalsSendToServer();
     }
 
-    return Row(
-      // mainAxisSize: MainAxisSize.min,
-      // mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Container(
-            padding:
-                EdgeInsets.fromLTRB(purchase.show_pgroup ? 10 : 0, 0, 10, 0),
-            child: IconButton(
-                color: Colors.grey,
-                padding: const EdgeInsets.all(0),
-                // iconSize: 20,
-                constraints: const BoxConstraints(maxHeight: 25),
-                onPressed: onPurItemTap,
-                icon: purItem.bought != null
-                    ? purItem.bought! == true
-                        ? const Icon(
-                            Icons.check_circle,
-                            color: Colors.lightGreenAccent,
-                          )
-                        : const Icon(Icons.check_circle_outline_rounded,
-                            color: Colors.grey)
-                    : const Icon(
-                        Icons.query_builder,
-                        color: Colors.yellowAccent,
-                      ))),
-        // const SizedBox(width: 3),
-        Expanded(
-            child: Container(
-                // color: Colors.lightBlueAccent,
-                padding: const EdgeInsets.fromLTRB(0, 2, 0, 0),
-                child: GestureDetector(
-                    // onLongPressDown: (details) {
-                    //   HapticFeedback.vibrate();
-                    //   HapticFeedback.vibrate();
-                    // },
-                    onTapUp: (details) => onPurItemTap,
-                    child: Text(purItemName,
-                        softWrap: true, style: purchaseStyle)))),
-        ...qntyColumns(purchase.show_qnty, purItem.qnty, purItem.punit_fpoint,
-            purItem.punit_brief),
-        optionalNumberInput(
-          purchase.show_qnty,
-          qntyColumnWidth,
-          qntyInputCtrl,
-          'Qnty',
-        ),
-        optionalNumberInput(
-          purchase.show_price,
-          priceColumnWidth,
-          priceInputCtrl,
-          'Price',
-        ),
-        optionalNumberInput(
-          purchase.show_weight,
-          weightColumnWidth,
-          weightInputCtrl,
-          'Weight',
-        ),
-      ],
-    );
+    return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 5),
+        child: Row(
+          // mainAxisSize: MainAxisSize.min,
+          // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            if (purchase.show_serno)
+              SizedBox(
+                  width: 30,
+                  child: Container(
+                    alignment: Alignment.centerRight,
+                    padding: const EdgeInsets.fromLTRB(0, 0, 10, 0),
+                    child: Text('$serno', style: sernoStyle),
+                  ))
+            else if (purchase.show_pgroup)
+              const SizedBox(width: 10),
+            Padding(
+                padding: const EdgeInsets.fromLTRB(0, 0, 10, 0),
+                child: IconButton(
+                    padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+                    constraints: const BoxConstraints(),
+                    iconSize: 22,
+                    onPressed: onPurItemTap,
+                    icon: iconByBought())),
+            Expanded(
+                child: Padding(
+                    padding: const EdgeInsets.fromLTRB(0, 7, 0, 10),
+                    child: GestureDetector(
+                        onLongPressDown: (details) {},
+                        onTapUp: (details) {
+                          onPurItemTap();
+                        },
+                        child: Text(purItem.name,
+                            softWrap: true, style: purchaseStyle)))),
+            ...qntyColumns(purchase.show_qnty, purItem.qnty,
+                purItem.punit_fpoint, purItem.punit_brief),
+            optionalNumberInput(
+              purchase.show_qnty,
+              qntyColumnWidth,
+              qntyInputCtrl,
+              'Qnty',
+            ),
+            optionalNumberInput(
+              purchase.show_price,
+              priceColumnWidth,
+              priceInputCtrl,
+              'Price',
+            ),
+            optionalNumberInput(
+              purchase.show_weight,
+              weightColumnWidth,
+              weightInputCtrl,
+              'Weight',
+            ),
+          ],
+        ));
   }
-}
 
-Widget optionalNumberInput(bool showNumberInput, double width,
-    TextEditingController textInputCtrl, String hintText) {
-  return showNumberInput
-      ? Container(
-          width: width,
-          decoration: textInputDecoration,
-          margin: textInputMargin,
-          child: TextField(
-              // textInputAction: TextInputAction.newline,
-              keyboardType: TextInputType.number,
-              minLines: 1,
-              maxLines: 1,
-              controller: textInputCtrl,
-              decoration: InputDecoration(
-                hintText: hintText,
-                hintStyle: textInputHintStyle,
-                // border: InputBorder.none,
-                contentPadding: textInputPadding,
-              ),
-              style: textInputStyle))
-      : const SizedBox();
+  Icon iconByBought() {
+    switch (purItem.bought) {
+      case 1:
+        return const Icon(
+          Icons.check_circle,
+          color: Colors.lightGreenAccent,
+        );
+
+      case 2:
+        return const Icon(
+          Icons.query_builder,
+          color: Colors.yellowAccent,
+        );
+
+      case 3:
+        return const Icon(
+          Icons.stop_circle_outlined,
+          color: Colors.red,
+        );
+
+      case 0:
+      default:
+        return const Icon(
+          Icons.check_circle_outline_rounded,
+          color: Colors.grey,
+        );
+    }
+  }
+
+  Widget optionalNumberInput(bool showNumberInput, double width,
+      TextEditingController textInputCtrl, String hintText) {
+    return showNumberInput
+        ? Container(
+            width: width,
+            decoration: textInputDecoration,
+            margin: textInputMargin,
+            child: TextField(
+                // textInputAction: TextInputAction.newline,
+                keyboardType: TextInputType.number,
+                minLines: 1,
+                maxLines: 1,
+                controller: textInputCtrl,
+                decoration: InputDecoration(
+                  hintText: hintText,
+                  hintStyle: textInputHintStyle,
+                  // border: InputBorder.none,
+                  contentPadding: textInputPadding,
+                ),
+                style: textInputStyle))
+        : const SizedBox();
+  }
 }
 
 List<Widget> qntyColumns(

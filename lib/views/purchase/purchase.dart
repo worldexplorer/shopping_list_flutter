@@ -123,7 +123,7 @@ class Purchase extends HookConsumerWidget {
         String pgroupCounters = pgroupName;
         final products = grouping.productsByPgroup[pgroupId] ?? [];
         if (products.isNotEmpty) {
-          pgroupCounters += ' (${purchase.purItems.length})';
+          pgroupCounters += ' (${products.length})';
         }
 
         ret.add(Text(pgroupCounters, softWrap: true, style: pGroupStyle));
@@ -136,6 +136,9 @@ class Purchase extends HookConsumerWidget {
             purchase: purchase,
             purItem: product,
             isMe: isMe,
+            setBought: (int newBought) {
+              product.bought = newBought;
+            },
             recalculateTotalsSendToServer: recalculateTotalsSendToServer,
             serno: serno++,
           ));
@@ -164,6 +167,9 @@ class Purchase extends HookConsumerWidget {
             purchase: purchase,
             purItem: x,
             isMe: isMe,
+            setBought: (int newBought) {
+              x.bought = newBought;
+            },
             recalculateTotalsSendToServer: recalculateTotalsSendToServer,
             serno: serno++,
           ));

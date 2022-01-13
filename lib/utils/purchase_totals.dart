@@ -10,7 +10,7 @@ class PurchaseTotals {
     tPrice = .0;
     tWeight = .0;
     for (var purItem in purchase.purItems) {
-      if (purItem.bought == null || purItem.bought! == false) {
+      if (purItem.bought != 1) {
         continue;
       }
       tQnty += purItem.bought_qnty ?? 0.0;

@@ -51,7 +51,7 @@ class PurchaseEdit extends HookConsumerWidget {
     addProduct(int? pgroup_id) {
       final newItemToFocus = PurItemDto(
         id: 0,
-        bought: false,
+        bought: 0,
         name: '',
         pgroup_id: pgroup_id,
       );
@@ -211,11 +211,24 @@ class PurchaseEdit extends HookConsumerWidget {
                     purchase.show_weight = newShowWeight;
                     ui.newPurchaseSettings.showWeight = newShowWeight;
                   }, ui),
-                  toggle('Three-state', purchase.show_threestate,
+                  toggle('Unknown state', purchase.show_state_unknown,
                       (bool newShowThreeState) {
-                    purchase.show_threestate = newShowThreeState;
-                    ui.newPurchaseSettings.showThreeState = newShowThreeState;
+                    purchase.show_state_unknown = newShowThreeState;
+                    ui.newPurchaseSettings.showStateUnknown = newShowThreeState;
                   }, ui),
+                  toggle('Stop state', purchase.show_state_stop,
+                      (bool newShowStateStop) {
+                    purchase.show_state_stop = newShowStateStop;
+                    ui.newPurchaseSettings.showStateStop = newShowStateStop;
+                  }, ui),
+                  // Padding(
+                  //     padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+                  //     child:
+                  ElevatedButton(
+                      child: const Icon(Icons.save,
+                          color: Colors.white, size: iconSize),
+                      onPressed: onSaveButtonPressed)
+                  // )
                 ]),
         ]);
   }
