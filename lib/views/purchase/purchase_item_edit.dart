@@ -12,17 +12,19 @@ import 'purchase_item.dart';
 class PurchaseItemEdit extends HookConsumerWidget {
   final PurchaseDto purchase;
   final PurItemDto purItem;
-  final Function() onTap;
-  final Function(String newName) onChanged;
-  final Function() onDeleted;
+  final Function() onTapNotifyFocused;
+  final Function(String newName) onChangedAddProduct;
+  final bool canDelete;
+  final Function() onDelete;
 
   const PurchaseItemEdit({
     Key? key,
     required this.purchase,
     required this.purItem,
-    required this.onTap,
-    required this.onChanged,
-    required this.onDeleted,
+    required this.onTapNotifyFocused,
+    required this.onChangedAddProduct,
+    required this.canDelete,
+    required this.onDelete,
   }) : super(key: key);
 
   @override
@@ -58,10 +60,10 @@ class PurchaseItemEdit extends HookConsumerWidget {
                     controller: nameInputCtrl,
                     onChanged: (String text) {
                       purItem.name = text;
-                      onChanged(text);
+                      onChangedAddProduct(text);
                       // ui.rebuild();
                     },
-                    onTap: onTap,
+                    onTap: onTapNotifyFocused,
                     decoration: InputDecoration(
                       hintText: 'Product to Purchase...',
                       hintStyle: textInputHintStyle,
@@ -72,22 +74,24 @@ class PurchaseItemEdit extends HookConsumerWidget {
         const SizedBox(width: 10),
         ...qntyColumns(purchase.show_qnty, purItem.qnty, purItem.punit_fpoint,
             purItem.punit_brief),
-        Padding(
-            padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-            child: IconButton(
-              padding: EdgeInsets.zero,
-              constraints: const BoxConstraints(),
-              iconSize: iconSize,
-              onPressed: () {
-                purchase.purItems.remove(purItem);
-                onDeleted();
-                ui.rebuild();
-              },
-              icon: const Icon(Icons.delete_outline_outlined,
-                  size: iconSize, color: Colors.blue),
-              enableFeedback: true,
-              // autofocus: true,
-            ))
+        canDelete
+            ? Padding(
+                padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+                child: IconButton(
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(),
+                  iconSize: iconSize,
+                  icon: const Icon(Icons.delete_outline_outlined,
+                      size: iconSize, color: Colors.blue),
+                  onPressed: () {
+                    purchase.purItems.remove(purItem);
+                    onDelete();
+                    ui.rebuild();
+                  },
+                  enableFeedback: true,
+                  // autofocus: true,
+                ))
+            : const SizedBox(width: iconSize),
       ],
     );
   }

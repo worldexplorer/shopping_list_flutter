@@ -13,6 +13,7 @@ class Grouping {
   int? emptyNamePgroupId;
 
   List<PurItemDto> purItems;
+
   Grouping(this.purItems) {
     buildGroups();
   }
@@ -156,6 +157,13 @@ class Grouping {
     shouldExist.add(product);
   }
 
+  canDeleteProduct(PurItemDto product, int pgroupId, String pgroupName) {
+    final thisPgroupHasJustOneProduct = productsByPgroup[pgroupId] == null ||
+        productsByPgroup[pgroupId]!.length <= 1;
+    final thisPgroupHasEmptyName = pgroupName.isEmpty;
+    return !(thisPgroupHasJustOneProduct && thisPgroupHasEmptyName);
+  }
+
   deleteProduct(PurItemDto product) {
     final shouldBeInt = product.pgroup_id;
     if (shouldBeInt == null) {
@@ -170,6 +178,19 @@ class Grouping {
       return;
     }
     shouldExist.remove(product);
+  }
+
+  void fillExistingPgroupNamesBeforeSave(List<PurItemDto> purItems) {
+    for (MapEntry<int, String> idPgroup in pgroupById.entries) {
+      final int pgroupId = idPgroup.key;
+      final String pgroupName = idPgroup.value;
+
+      productsByPgroup[pgroupId]?.forEach((product) {
+        if (product.pgroup_name != pgroupName) {
+          product.pgroup_name = pgroupName;
+        }
+      });
+    }
   }
 }
 

@@ -63,6 +63,9 @@ class PurchaseEdit extends HookConsumerWidget {
     }
 
     onSaveButtonPressed() {
+      if (purchase.show_pgroup) {
+        grouping.value.fillExistingPgroupNamesBeforeSave(purchase.purItems);
+      }
       removeEmptyPuritemsBeforeSave(purchase.show_pgroup, purchase.purItems);
       if (purchase.id == 0) {
         incoming.outgoingHandlers
@@ -178,57 +181,75 @@ class PurchaseEdit extends HookConsumerWidget {
           if (settingsExpanded.value)
             Wrap(
                 direction: Axis.horizontal,
-                alignment: WrapAlignment.spaceBetween,
-                spacing: 15,
-                runAlignment: WrapAlignment.spaceEvenly,
+                alignment: WrapAlignment.start,
+                spacing: 20,
+                runAlignment: WrapAlignment.start,
                 runSpacing: 5,
+                // Row(
+                //     mainAxisSize: MainAxisSize.max,
+                //     mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   // Text('Show: ', style: purchaseStyle),
                   // const SizedBox(width: 5),
-                  toggle('Groups', purchase.show_pgroup, (bool newShowGroups) {
-                    purchase.show_pgroup = newShowGroups;
-                    ui.newPurchaseSettings.showPgroups = newShowGroups;
-                    if (newShowGroups == false) {
-                      pgroupFocused.value = null;
-                      removeEmptyPuritemsLeaveOnlyLast(purchase.purItems);
-                    } else {
-                      pgroupFocused.value = grouping.value.lastGroup;
-                    }
-                  }, ui),
-                  toggle('Sequence', purchase.show_serno, (bool newShowSerno) {
-                    purchase.show_serno = newShowSerno;
-                    ui.newPurchaseSettings.showSerno = newShowSerno;
-                  }, ui),
-                  toggle('Quantity', purchase.show_qnty, (bool newShowQnty) {
-                    purchase.show_qnty = newShowQnty;
-                    ui.newPurchaseSettings.showQnty = newShowQnty;
-                  }, ui),
-                  toggle('Total', purchase.show_price, (bool newShowPrice) {
-                    purchase.show_price = newShowPrice;
-                    ui.newPurchaseSettings.showPrice = newShowPrice;
-                  }, ui),
-                  toggle('Weight', purchase.show_weight, (bool newShowWeight) {
-                    purchase.show_weight = newShowWeight;
-                    ui.newPurchaseSettings.showWeight = newShowWeight;
-                  }, ui),
-                  toggle('Unknown state', purchase.show_state_unknown,
-                      (bool newShowThreeState) {
-                    purchase.show_state_unknown = newShowThreeState;
-                    ui.newPurchaseSettings.showStateUnknown = newShowThreeState;
-                  }, ui),
-                  toggle('Stop state', purchase.show_state_stop,
-                      (bool newShowStateStop) {
-                    purchase.show_state_stop = newShowStateStop;
-                    ui.newPurchaseSettings.showStateStop = newShowStateStop;
-                  }, ui),
-                  // Padding(
-                  //     padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-                  //     child:
-                  ElevatedButton(
-                      child: const Icon(Icons.save,
-                          color: Colors.white, size: iconSize),
-                      onPressed: onSaveButtonPressed)
-                  // )
+                  Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        toggle('Groups', purchase.show_pgroup,
+                            (bool newShowGroups) {
+                          purchase.show_pgroup = newShowGroups;
+                          ui.newPurchaseSettings.showPgroups = newShowGroups;
+                          if (newShowGroups == false) {
+                            pgroupFocused.value = null;
+                            removeEmptyPuritemsLeaveOnlyLast(purchase.purItems);
+                          } else {
+                            pgroupFocused.value = grouping.value.lastGroup;
+                          }
+                        }, ui),
+                        // Padding(
+                        //     padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+                        //     child:
+                        toggle('Sequence', purchase.show_serno,
+                            (bool newShowSerno) {
+                          purchase.show_serno = newShowSerno;
+                          ui.newPurchaseSettings.showSerno = newShowSerno;
+                        }, ui),
+                        toggle('Waiting state', purchase.show_state_unknown,
+                            (bool newShowThreeState) {
+                          purchase.show_state_unknown = newShowThreeState;
+                          ui.newPurchaseSettings.showStateUnknown =
+                              newShowThreeState;
+                        }, ui),
+                        toggle('Stop state', purchase.show_state_stop,
+                            (bool newShowStateStop) {
+                          purchase.show_state_stop = newShowStateStop;
+                          ui.newPurchaseSettings.showStateStop =
+                              newShowStateStop;
+                        }, ui),
+                      ]),
+                  Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        ElevatedButton(
+                            child: const Icon(Icons.save,
+                                color: Colors.white, size: iconSize),
+                            onPressed: onSaveButtonPressed),
+                        // ),
+                        toggle('Quantity', purchase.show_qnty,
+                            (bool newShowQnty) {
+                          purchase.show_qnty = newShowQnty;
+                          ui.newPurchaseSettings.showQnty = newShowQnty;
+                        }, ui),
+                        toggle('Total', purchase.show_price,
+                            (bool newShowPrice) {
+                          purchase.show_price = newShowPrice;
+                          ui.newPurchaseSettings.showPrice = newShowPrice;
+                        }, ui),
+                        toggle('Weight', purchase.show_weight,
+                            (bool newShowWeight) {
+                          purchase.show_weight = newShowWeight;
+                          ui.newPurchaseSettings.showWeight = newShowWeight;
+                        }, ui),
+                      ]),
                 ]),
         ]);
   }
@@ -266,8 +287,8 @@ class PurchaseEdit extends HookConsumerWidget {
       UiState ui,
       ValueNotifier<int?> pgroupFocused,
       Function(int?) addProduct) {
+    final grouping = groupingNotifier.value;
     if (purchase.show_pgroup) {
-      final grouping = groupingNotifier.value;
       // grouping.buildGroups();
 
       final List<Widget> ret = [];
@@ -281,7 +302,7 @@ class PurchaseEdit extends HookConsumerWidget {
         ret.add(PgroupEdit(
             key: Key('${indexPgroup++}:$pgroupId'),
             name: pgroupName,
-            onFocused: () {
+            onTapNotifyFocused: () {
               pgroupFocused.value = pgroupId;
             },
             onChanged: (newName) {
@@ -306,17 +327,18 @@ class PurchaseEdit extends HookConsumerWidget {
                 '$indexPgroup:$pgroupId:${indexProduct++}:${product.product_id}'),
             purchase: purchase,
             purItem: product,
-            onTap: () {
+            onTapNotifyFocused: () {
               pgroupFocused.value = pgroupId;
             },
-            onChanged: (newName) {
+            onChangedAddProduct: (newName) {
               final shouldAddProductBelow =
                   grouping.productNameChanged(product);
               if (shouldAddProductBelow) {
                 addProduct(pgroupId);
               }
             },
-            onDeleted: () {
+            canDelete: grouping.canDeleteProduct(product, pgroupId, pgroupName),
+            onDelete: () {
               if (purchase.show_pgroup) {
                 grouping.deleteProduct(product);
               }
@@ -331,16 +353,17 @@ class PurchaseEdit extends HookConsumerWidget {
             key: Key('${i++}:${x.id}:${x.pgroup_id}:${x.product_id}'),
             purchase: purchase,
             purItem: x,
-            onTap: () {
+            onTapNotifyFocused: () {
               pgroupFocused.value = null;
             },
-            onChanged: (newName) {
+            onChangedAddProduct: (newName) {
               final shouldAddProduct = allPurItemsHaveName(purchase.purItems);
               if (shouldAddProduct) {
                 addProduct(null);
               }
             },
-            onDeleted: () {},
+            canDelete: true,
+            onDelete: () {},
           ));
 
       // ListView.builder(

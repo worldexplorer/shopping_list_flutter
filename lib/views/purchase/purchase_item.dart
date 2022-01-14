@@ -103,63 +103,67 @@ class PurchaseItem extends HookConsumerWidget {
       recalculateTotalsSendToServer();
     }
 
-    return Padding(
-        padding: const EdgeInsets.symmetric(vertical: 5),
-        child: Row(
-          // mainAxisSize: MainAxisSize.min,
-          // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            if (purchase.show_serno)
-              SizedBox(
-                  width: 30,
-                  child: Container(
-                    alignment: Alignment.centerRight,
-                    padding: const EdgeInsets.fromLTRB(0, 0, 10, 0),
-                    child: Text('$serno', style: sernoStyle),
-                  ))
-            else if (purchase.show_pgroup)
-              const SizedBox(width: 10),
-            Padding(
+    return
+        // Padding(
+        //   padding: const EdgeInsets.symmetric(vertical: 5),
+        //   child:
+        Row(
+      // mainAxisSize: MainAxisSize.min,
+      // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        if (purchase.show_serno)
+          SizedBox(
+              width: 30,
+              child: Container(
+                alignment: Alignment.centerRight,
                 padding: const EdgeInsets.fromLTRB(0, 0, 10, 0),
-                child: IconButton(
-                    padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-                    constraints: const BoxConstraints(),
-                    iconSize: 22,
-                    onPressed: onPurItemTap,
-                    icon: iconByBought())),
-            Expanded(
-                child: Padding(
-                    padding: const EdgeInsets.fromLTRB(0, 7, 0, 10),
-                    child: GestureDetector(
-                        onLongPressDown: (details) {},
-                        onTapUp: (details) {
-                          onPurItemTap();
-                        },
-                        child: Text(purItem.name,
-                            softWrap: true, style: purchaseStyle)))),
-            ...qntyColumns(purchase.show_qnty, purItem.qnty,
-                purItem.punit_fpoint, purItem.punit_brief),
-            optionalNumberInput(
-              purchase.show_qnty,
-              qntyColumnWidth,
-              qntyInputCtrl,
-              'Qnty',
-            ),
-            optionalNumberInput(
-              purchase.show_price,
-              priceColumnWidth,
-              priceInputCtrl,
-              'Price',
-            ),
-            optionalNumberInput(
-              purchase.show_weight,
-              weightColumnWidth,
-              weightInputCtrl,
-              'Weight',
-            ),
-          ],
-        ));
+                child: Text('$serno', style: sernoStyle),
+              ))
+        else if (purchase.show_pgroup)
+          const SizedBox(width: 10),
+        Padding(
+            padding: const EdgeInsets.fromLTRB(0, 0, 10, 0),
+            child: IconButton(
+                padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+                constraints: const BoxConstraints(),
+                iconSize: 22,
+                onPressed: onPurItemTap,
+                icon: iconByBought())),
+        Expanded(
+            child: Padding(
+                padding: const EdgeInsets.fromLTRB(0, 7, 0, 10),
+                child: GestureDetector(
+                    onLongPressDown: (details) {},
+                    onTapUp: (details) {
+                      onPurItemTap();
+                    },
+                    child: Text(purItem.name,
+                        softWrap: true, style: purchaseStyle)))),
+        ...qntyColumns(purchase.show_qnty, purItem.qnty, purItem.punit_fpoint,
+            purItem.punit_brief),
+        optionalNumberInput(
+          purchase.show_qnty,
+          qntyColumnWidth,
+          qntyInputCtrl,
+          'Qnty',
+        ),
+        optionalNumberInput(
+          purchase.show_price,
+          priceColumnWidth,
+          priceInputCtrl,
+          'Price',
+        ),
+        optionalNumberInput(
+          purchase.show_weight,
+          weightColumnWidth,
+          weightInputCtrl,
+          'Weight',
+        ),
+      ],
+    )
+        // )
+        ;
   }
 
   Icon iconByBought() {

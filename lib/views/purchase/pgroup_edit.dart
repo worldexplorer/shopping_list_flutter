@@ -8,7 +8,7 @@ import '../../utils/ui_state.dart';
 class PgroupEdit extends HookConsumerWidget {
   // final int id;
   final String name;
-  final Function() onFocused;
+  final Function() onTapNotifyFocused;
   final Function(String newName) onChanged;
   final bool canDelete;
   final Function() onDelete;
@@ -21,7 +21,7 @@ class PgroupEdit extends HookConsumerWidget {
     required this.onChanged,
     required this.canDelete,
     required this.onDelete,
-    required this.onFocused,
+    required this.onTapNotifyFocused,
     required this.hasDragHandle,
   }) : super(key: key);
 
@@ -52,7 +52,7 @@ class PgroupEdit extends HookConsumerWidget {
                     maxLines: 3,
                     controller: nameInputCtrl,
                     onChanged: onChanged,
-                    onTap: onFocused,
+                    onTap: onTapNotifyFocused,
                     decoration: InputDecoration(
                       hintText: 'Group Name...',
                       hintStyle: textInputHintStyle,
@@ -65,14 +65,15 @@ class PgroupEdit extends HookConsumerWidget {
             ? Padding(
                 padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
                 child: IconButton(
-                    padding: EdgeInsets.zero,
-                    constraints: const BoxConstraints(),
-                    iconSize: iconSize,
-                    icon: const Icon(Icons.delete_outline_outlined,
-                        color: Colors.blue),
-                    enableFeedback: true,
-                    // autofocus: true,
-                    onPressed: onDelete))
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(),
+                  iconSize: iconSize,
+                  icon: const Icon(Icons.delete_outline_outlined,
+                      color: Colors.blue),
+                  onPressed: onDelete,
+                  enableFeedback: true,
+                  // autofocus: true,
+                ))
             : const SizedBox(width: iconSize),
       ],
     );
