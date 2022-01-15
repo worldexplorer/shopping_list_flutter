@@ -189,7 +189,21 @@ class Grouping {
         if (product.pgroup_name != pgroupName) {
           product.pgroup_name = pgroupName;
         }
+        if (product.product_name == null) {
+          product.product_name = '';
+        }
       });
+    }
+  }
+
+  void fillChangedProductNamesBeforeSave(List<PurItemDto> purItems) {
+    for (var purItem in purItems) {
+      if (purItem.product_id == null) {
+        continue;
+      }
+      if (purItem.product_name != purItem.name) {
+        purItem.product_name = purItem.name;
+      }
     }
   }
 }
@@ -219,9 +233,9 @@ int removeEmptyPuritemsBeforeSave(bool showPgroup, List<PurItemDto> items) {
     List<PurItemDto> withEmptyNames = items
         .where((x) =>
             //x.product_name == newProductName && (x.product_id ?? -999) < 0
-            x.id == 0)
+            x.id == 0 && x.name == '')
         .toList();
-    for (int i = 0; i < withEmptyNames.length - 1; i++) {
+    for (int i = 0; i <= withEmptyNames.length - 1; i++) {
       items.remove(withEmptyNames[i]);
       removed++;
     }
@@ -229,9 +243,9 @@ int removeEmptyPuritemsBeforeSave(bool showPgroup, List<PurItemDto> items) {
     List<PurItemDto> withEmptyNames = items
         .where((x) =>
             // x.name == newProductName &&
-            x.id == 0)
+            x.id == 0 && x.name == '')
         .toList();
-    for (int i = 0; i < withEmptyNames.length - 1; i++) {
+    for (int i = 0; i <= withEmptyNames.length - 1; i++) {
       items.remove(withEmptyNames[i]);
       removed++;
     }

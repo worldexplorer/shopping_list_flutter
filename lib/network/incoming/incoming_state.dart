@@ -193,11 +193,20 @@ class IncomingState extends ChangeNotifier {
     return log;
   }
 
-  MessageItem? _newPurchaseItem;
-  MessageItem? get newPurchaseItem => _newPurchaseItem;
-  set newPurchaseItem(MessageItem? val) {
-    _newPurchaseItem = val;
+  MessageItem? _newPurchaseMessageItem;
+  MessageItem? get newPurchaseMessageItem => _newPurchaseMessageItem;
+  set newPurchaseMessageItem(MessageItem? val) {
+    _newPurchaseMessageItem = val;
     notifyListeners();
+  }
+
+  bool editingNewPurchase(MessageItem mi) {
+    return newPurchaseMessageItem != null && newPurchaseMessageItem == mi;
+  }
+
+  thisPurchaseIsNew(PurchaseDto purchaseDto) {
+    return newPurchaseMessageItem?.message != null &&
+        newPurchaseMessageItem!.message.purchase == purchaseDto;
   }
 
   addEmptyPurchase(NewPurchaseSettings newPurchaseSettings) {
@@ -250,7 +259,7 @@ class IncomingState extends ChangeNotifier {
       message: newMessage,
     );
 
-    newPurchaseItem = widget;
+    newPurchaseMessageItem = widget;
   }
 
   final Map<int, RoomDto> roomsById = <int, RoomDto>{};

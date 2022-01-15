@@ -42,8 +42,8 @@ class Purchase extends HookConsumerWidget {
       // ui.rebuild();
     }
 
-    int purItemsChecked =
-        purchase.purItems.where((x) => x.bought == true).length;
+    int purItemsCheckedCounter =
+        purchase.purItems.where((x) => x.bought == BOUGHT_CHECKED).length;
 
     return Column(
         // mainAxisSize: MainAxisSize.min,
@@ -60,14 +60,12 @@ class Purchase extends HookConsumerWidget {
               mainAxisSize: MainAxisSize.max,
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                const SizedBox(width: 20),
-                Expanded(
-                    child: purItemsChecked > 0
-                        ? Text(
-                            '$purItemsChecked / ${purchase.purItems.length} items checked',
-                            softWrap: true,
-                            style: totalsStyle)
-                        : const Divider()),
+                const Spacer(),
+                if (purItemsCheckedCounter > 0)
+                  Text(
+                      '$purItemsCheckedCounter / ${purchase.purItems.length} items checked',
+                      softWrap: true,
+                      style: totalsStyle),
                 ...visualizeTotals(purchase, totals),
               ]),
         ]);

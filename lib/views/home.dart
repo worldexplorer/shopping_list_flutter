@@ -69,25 +69,29 @@ class Home extends HookConsumerWidget {
                 borderRadius: const BorderRadius.all(Radius.circular(40)),
                 // elevation: 8,
                 color: menuBackgroundColor,
-                child: GestureDetector(
-                  // onHorizontalDragDown: (DragDownDetails details) {
-                  onTap: () {
-                    if (!ui.isMenuVisible) {
-                      return;
-                    }
-                    if (menuVisibleController.isAnimating) {
-                      return;
-                    }
-                    // menuVisibleController.reverse();
-                    ui.toMenuAndBack();
-                  },
-                  child: IgnorePointer(
-                    // https://stackoverflow.com/questions/50600747/flutter-ignore-touch-events-on-a-widget
-                    ignoring: !ui.isMenuVisible,
-                    child: const ChatWrapperSlivers(),
-                    // child: const ChatWrapperAppbar(),
-                  ),
+                child:
+                    // GestureDetector(
+                    //   // onHorizontalDragDown: (DragDownDetails details) {
+                    //   onTap: () {
+                    //      TODO: limit sensitivity to 1 level;
+                    //      when UNCOMMENTED, tap on toggles panel is intercepted here
+                    //     if (!ui.isMenuVisible) {
+                    //       return;
+                    //     }
+                    //     if (menuVisibleController.isAnimating) {
+                    //       return;
+                    //     }
+                    //     // menuVisibleController.reverse();
+                    //     ui.toMenuAndBack();
+                    //   },
+                    //   child:
+                    IgnorePointer(
+                  // https://stackoverflow.com/questions/50600747/flutter-ignore-touch-events-on-a-widget
+                  ignoring: !ui.isMenuVisible,
+                  child: const ChatWrapperSlivers(),
+                  // child: const ChatWrapperAppbar(),
                 ),
+                // ),
               ),
             ),
           ),

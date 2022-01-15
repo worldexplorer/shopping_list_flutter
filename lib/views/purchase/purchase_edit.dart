@@ -43,10 +43,8 @@ class PurchaseEdit extends HookConsumerWidget {
     String btnLabelCancelPurchase = 'Cancel';
     if (widthAfterRebuild > wideEnough) {
       btnLabelCancelPurchase +=
-          (incoming.newPurchaseItem != null ? ' Purchase' : ' Editing');
+          (incoming.newPurchaseMessageItem != null ? ' Purchase' : ' Editing');
     }
-
-    double addCancelSpace = (widthAfterRebuild > wideEnough) ? 50 : 20;
 
     addProduct(int? pgroup_id) {
       final newItemToFocus = PurItemDto(
@@ -65,13 +63,14 @@ class PurchaseEdit extends HookConsumerWidget {
     onSaveButtonPressed() {
       if (purchase.show_pgroup) {
         grouping.value.fillExistingPgroupNamesBeforeSave(purchase.purItems);
+        grouping.value.fillChangedProductNamesBeforeSave(purchase.purItems);
       }
       removeEmptyPuritemsBeforeSave(purchase.show_pgroup, purchase.purItems);
       if (purchase.id == 0) {
         incoming.outgoingHandlers
             .sendNewPurchase(purchase, ui.isReplyingToMessageId);
         //TODO: move to incomingHandlers.onPurchaseCreated
-        incoming.newPurchaseItem = null;
+        incoming.newPurchaseMessageItem = null;
       } else {
         try {
           incoming.outgoingHandlers.sendEditPurchase(purchase);
@@ -136,58 +135,16 @@ class PurchaseEdit extends HookConsumerWidget {
           const SizedBox(height: 5),
           ...flatOrGrouped(grouping, ui, pgroupFocused, addProduct),
           const SizedBox(height: 5),
-          if (incoming.newPurchaseItem != null)
+          if (settingsExpanded.value)
+            // Wrap(
+            //     direction: Axis.horizontal,
+            //     alignment: WrapAlignment.start,
+            //     spacing: 20,
+            //     runAlignment: WrapAlignment.start,
+            //     runSpacing: 5,
             Row(
                 mainAxisSize: MainAxisSize.max,
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  SizedBox(width: addCancelSpace),
-                  ElevatedButton(
-                    onPressed: () {
-                      incoming.newPurchaseItem = null;
-                      // } else {
-                      //   ui.messagesSelected.remove(messageId);
-                      //   ui.rebuild();
-                      //
-                      //   final msgItem = incoming.messageItemsById[messageId];
-                      //   if (msgItem != null) {
-                      //     msgItem.selected = false;
-                      //   }
-                      // }
-                    },
-                    child: Row(children: [
-                      const Icon(Icons.clear,
-                          size: iconSize, color: Colors.white),
-                      const SizedBox(width: 10),
-                      Text(btnLabelCancelPurchase, style: purchaseStyle),
-                    ]),
-                  ),
-                  const SizedBox(width: 10),
-                  IconButton(
-                      icon: Icon(
-                          settingsExpanded.value
-                              ? Icons.arrow_drop_up_outlined
-                              : Icons.arrow_drop_down_outlined,
-                          size: 32,
-                          color: Colors.blue),
-                      enableFeedback: true,
-                      // autofocus: true,
-                      onPressed: () {
-                        settingsExpanded.value = !settingsExpanded.value;
-                      }),
-                ]),
-          // const SizedBox(height: 5),
-          const Divider(height: 10, thickness: 1, indent: 3),
-          if (settingsExpanded.value)
-            Wrap(
-                direction: Axis.horizontal,
-                alignment: WrapAlignment.start,
-                spacing: 20,
-                runAlignment: WrapAlignment.start,
-                runSpacing: 5,
-                // Row(
-                //     mainAxisSize: MainAxisSize.max,
-                //     mainAxisAlignment: MainAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   // Text('Show: ', style: purchaseStyle),
                   // const SizedBox(width: 5),
@@ -226,14 +183,21 @@ class PurchaseEdit extends HookConsumerWidget {
                               newShowStateStop;
                         }, ui),
                       ]),
-                  Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        ElevatedButton(
-                            child: const Icon(Icons.save,
-                                color: Colors.white, size: iconSize),
-                            onPressed: onSaveButtonPressed),
-                        // ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                      child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                        Row(
+                            mainAxisSize: MainAxisSize.max,
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              const Spacer(),
+                              ElevatedButton(
+                                  child: const Icon(Icons.save,
+                                      color: Colors.white, size: iconSize),
+                                  onPressed: onSaveButtonPressed),
+                            ]),
                         toggle('Quantity', purchase.show_qnty,
                             (bool newShowQnty) {
                           purchase.show_qnty = newShowQnty;
@@ -249,8 +213,54 @@ class PurchaseEdit extends HookConsumerWidget {
                           purchase.show_weight = newShowWeight;
                           ui.newPurchaseSettings.showWeight = newShowWeight;
                         }, ui),
-                      ]),
+                      ])),
                 ]),
+          // if (settingsExpanded.value)
+          //   const Divider(height: 10, thickness: 1, indent: 3),
+          // if (settingsExpanded.value) const SizedBox(height: 5),
+          Row(
+              mainAxisSize: MainAxisSize.max,
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                if (incoming.thisPurchaseIsNew(purchase)) ...[
+                  const SizedBox(
+                      width: 10), // away from left round phone corner
+                  ElevatedButton(
+                    onPressed: () {
+                      if (incoming.newPurchaseMessageItem != null) {
+                        incoming.newPurchaseMessageItem = null;
+                      } else {
+                        ui.messagesSelected.remove(messageId);
+                        ui.rebuild();
+
+                        final msgItem = incoming.messageItemsById[messageId];
+                        if (msgItem != null) {
+                          msgItem.selected = false;
+                        }
+                      }
+                    },
+                    child: Row(children: [
+                      const Icon(Icons.clear,
+                          size: iconSize, color: Colors.white),
+                      const SizedBox(width: 10),
+                      Text(btnLabelCancelPurchase, style: purchaseStyle),
+                    ]),
+                  ),
+                  const Spacer()
+                ],
+                IconButton(
+                    icon: Icon(
+                        settingsExpanded.value
+                            ? Icons.arrow_drop_up_outlined
+                            : Icons.arrow_drop_down_outlined,
+                        size: 32,
+                        color: Colors.blue),
+                    enableFeedback: true,
+                    // autofocus: true,
+                    onPressed: () {
+                      settingsExpanded.value = !settingsExpanded.value;
+                    }),
+              ]),
         ]);
   }
 

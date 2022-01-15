@@ -127,8 +127,8 @@ class ChatWrapperSlivers extends HookConsumerWidget {
             hasScrollBody: true,
             child: Column(mainAxisSize: MainAxisSize.max, children: [
               const Expanded(child: ChatMessages()),
-              incoming.newPurchaseItem != null
-                  ? incoming.newPurchaseItem!
+              incoming.newPurchaseMessageItem != null
+                  ? incoming.newPurchaseMessageItem!
                   : const MessageInput()
             ]),
           )

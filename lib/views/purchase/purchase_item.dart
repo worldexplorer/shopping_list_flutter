@@ -72,33 +72,9 @@ class PurchaseItem extends HookConsumerWidget {
     }, [updateWeight.text]);
 
     onPurItemTap() {
-      // 0:unchecked => ? 2:unknown => ? 3:stop => 1:checked => 0
-      switch (purItem.bought) {
-        case 0:
-          if (purchase.show_state_unknown) {
-            purItem.bought = 2;
-          }
-          if (purchase.show_state_stop) {
-            purItem.bought = 3;
-          }
-          break;
-
-        case 2:
-          if (purchase.show_state_stop) {
-            purItem.bought = 3;
-          } else {
-            purItem.bought = 1;
-          }
-          break;
-
-        case 3:
-          purItem.bought = 1;
-          break;
-
-        case 1:
-          purItem.bought = 0;
-          break;
-      }
+      final nextBoughtCheckedState = cycle0231(purItem.bought,
+          purchase.show_state_unknown, purchase.show_state_stop);
+      purItem.bought = nextBoughtCheckedState;
       setBought(purItem.bought);
       recalculateTotalsSendToServer();
     }
@@ -129,10 +105,10 @@ class PurchaseItem extends HookConsumerWidget {
                 constraints: const BoxConstraints(),
                 iconSize: 22,
                 onPressed: onPurItemTap,
-                icon: iconByBought())),
+                icon: iconByBought(purItem.bought))),
         Expanded(
             child: Padding(
-                padding: const EdgeInsets.fromLTRB(0, 7, 0, 10),
+                padding: const EdgeInsets.fromLTRB(0, 8, 0, 8),
                 child: GestureDetector(
                     onLongPressDown: (details) {},
                     onTapUp: (details) {
@@ -166,27 +142,27 @@ class PurchaseItem extends HookConsumerWidget {
         ;
   }
 
-  Icon iconByBought() {
-    switch (purItem.bought) {
-      case 1:
+  Icon iconByBought(int bought) {
+    switch (bought) {
+      case BOUGHT_CHECKED:
         return const Icon(
           Icons.check_circle,
           color: Colors.lightGreenAccent,
         );
 
-      case 2:
+      case BOUGHT_UNKNOWN:
         return const Icon(
           Icons.query_builder,
           color: Colors.yellowAccent,
         );
 
-      case 3:
+      case BOUGHT_STOP:
         return const Icon(
           Icons.stop_circle_outlined,
           color: Colors.red,
         );
 
-      case 0:
+      case BOUGHT_UNCHECKED:
       default:
         return const Icon(
           Icons.check_circle_outline_rounded,
@@ -236,4 +212,64 @@ List<Widget> qntyColumns(
       const SizedBox(width: 3),
     ];
   }
+}
+
+const int BOUGHT_UNCHECKED = 0;
+const int BOUGHT_CHECKED = 1;
+const int BOUGHT_UNKNOWN = 2;
+const int BOUGHT_STOP = 3;
+
+int cycle0123(int current, bool show_unknown, bool show_stop) {
+  // 0:unchecked => 1:checked => 2:unknown => 3:stop => 0
+  switch (current) {
+    case BOUGHT_UNCHECKED:
+      return BOUGHT_CHECKED;
+
+    case BOUGHT_CHECKED:
+      if (show_unknown) {
+        return BOUGHT_UNKNOWN;
+      }
+      if (show_stop) {
+        return BOUGHT_STOP;
+      }
+      return BOUGHT_UNCHECKED;
+
+    case BOUGHT_UNKNOWN:
+      if (show_stop) {
+        return BOUGHT_STOP;
+      }
+      return BOUGHT_UNCHECKED;
+
+    case BOUGHT_STOP:
+      return BOUGHT_UNCHECKED;
+  }
+
+  return BOUGHT_UNCHECKED;
+}
+
+int cycle0231(current, bool show_unknown, bool show_stop) {
+  // 0:unchecked => 2:unknown => 3:stop => 1:checked => 0
+  switch (current) {
+    case BOUGHT_UNCHECKED:
+      if (show_unknown) {
+        return BOUGHT_UNKNOWN;
+      }
+      if (show_stop) {
+        return BOUGHT_STOP;
+      }
+      return BOUGHT_CHECKED;
+
+    case BOUGHT_UNKNOWN:
+      if (show_stop) {
+        return BOUGHT_STOP;
+      }
+      return BOUGHT_CHECKED;
+
+    case BOUGHT_STOP:
+      return BOUGHT_CHECKED;
+
+    case BOUGHT_CHECKED:
+      return BOUGHT_UNCHECKED;
+  }
+  return BOUGHT_UNCHECKED;
 }

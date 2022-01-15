@@ -49,8 +49,8 @@ class UiState extends ChangeNotifier {
 class NewPurchaseSettings {
   bool showPgroups = true;
   bool showSerno = true;
-  bool showQnty = false;
-  bool showPrice = true;
+  bool showQnty = true;
+  bool showPrice = false;
   bool showWeight = false;
   bool showStateUnknown = true;
   bool showStateStop = true;

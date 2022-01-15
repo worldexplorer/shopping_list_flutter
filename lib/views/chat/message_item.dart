@@ -36,16 +36,14 @@ class MessageItem extends ConsumerWidget {
     final bool allParticipantsReceived = personsUnread == 0;
 
     final ui = ref.watch(uiStateProvider);
-    final inEditMode = ui.isSingleSelected(message.id);
-    final editingNewPurchase =
-        incoming.newPurchaseItem != null && incoming.newPurchaseItem == this;
+    final inMessageEditMode = ui.isSingleSelected(message.id);
 
     return Column(
       crossAxisAlignment:
           isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
       children: [
         const SizedBox(height: 6),
-        !editingNewPurchase
+        !incoming.editingNewPurchase(this)
             ? Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 10),
                 child: Text(
@@ -80,7 +78,7 @@ class MessageItem extends ConsumerWidget {
                       isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
                   children: [
                     message.purchase != null
-                        ? inEditMode || editingNewPurchase
+                        ? inMessageEditMode || incoming.editingNewPurchase(this)
                             ? SingleChildScrollView(
                                 scrollDirection: Axis.vertical,
                                 child: PurchaseEdit(
@@ -98,7 +96,7 @@ class MessageItem extends ConsumerWidget {
                               fontSize: 15,
                             ),
                           ),
-                    ...messageStatus(editingNewPurchase,
+                    ...messageStatus(incoming.editingNewPurchase(this),
                         allParticipantsReceived, personReadStatus),
                   ],
                 ),
