@@ -60,12 +60,14 @@ class Purchase extends HookConsumerWidget {
               mainAxisSize: MainAxisSize.max,
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                const Spacer(),
                 if (purItemsCheckedCounter > 0)
-                  Text(
-                      '$purItemsCheckedCounter / ${purchase.purItems.length} items checked',
-                      softWrap: true,
-                      style: totalsStyle),
+                  Padding(
+                      padding: const EdgeInsets.fromLTRB(20, 5, 0, 0),
+                      child: Text(
+                          '$purItemsCheckedCounter / ${purchase.purItems.length} items checked',
+                          softWrap: true,
+                          style: totalsStyle)),
+                const Spacer(),
                 ...visualizeTotals(purchase, totals),
               ]),
         ]);

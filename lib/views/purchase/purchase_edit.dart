@@ -89,6 +89,20 @@ class PurchaseEdit extends HookConsumerWidget {
       }
     }
 
+    onCancelButtonPressed() {
+      if (incoming.newPurchaseMessageItem != null) {
+        incoming.newPurchaseMessageItem = null;
+      } else {
+        ui.messagesSelected.remove(messageId);
+        ui.rebuild();
+
+        final msgItem = incoming.messageItemsById[messageId];
+        if (msgItem != null) {
+          msgItem.selected = false;
+        }
+      }
+    }
+
     return Column(
         mainAxisSize: MainAxisSize.max,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -183,84 +197,87 @@ class PurchaseEdit extends HookConsumerWidget {
                               newShowStateStop;
                         }, ui),
                       ]),
-                  const SizedBox(width: 10),
                   Expanded(
                       child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
                         Row(
                             mainAxisSize: MainAxisSize.max,
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: [
                               const Spacer(),
+                              if (!incoming.thisPurchaseIsNew(purchase))
+                                ElevatedButton(
+                                    child: const Icon(Icons.undo_rounded,
+                                        color: Colors.white, size: iconSize),
+                                    onPressed: onCancelButtonPressed),
+                              const SizedBox(width: 10),
                               ElevatedButton(
                                   child: const Icon(Icons.save,
                                       color: Colors.white, size: iconSize),
                                   onPressed: onSaveButtonPressed),
                             ]),
-                        toggle('Quantity', purchase.show_qnty,
-                            (bool newShowQnty) {
-                          purchase.show_qnty = newShowQnty;
-                          ui.newPurchaseSettings.showQnty = newShowQnty;
-                        }, ui),
-                        toggle('Total', purchase.show_price,
-                            (bool newShowPrice) {
-                          purchase.show_price = newShowPrice;
-                          ui.newPurchaseSettings.showPrice = newShowPrice;
-                        }, ui),
-                        toggle('Weight', purchase.show_weight,
-                            (bool newShowWeight) {
-                          purchase.show_weight = newShowWeight;
-                          ui.newPurchaseSettings.showWeight = newShowWeight;
-                        }, ui),
+                        Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 20),
+                            child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  toggle('Quantity', purchase.show_qnty,
+                                      (bool newShowQnty) {
+                                    purchase.show_qnty = newShowQnty;
+                                    ui.newPurchaseSettings.showQnty =
+                                        newShowQnty;
+                                  }, ui),
+                                  toggle('Total', purchase.show_price,
+                                      (bool newShowPrice) {
+                                    purchase.show_price = newShowPrice;
+                                    ui.newPurchaseSettings.showPrice =
+                                        newShowPrice;
+                                  }, ui),
+                                  toggle('Weight', purchase.show_weight,
+                                      (bool newShowWeight) {
+                                    purchase.show_weight = newShowWeight;
+                                    ui.newPurchaseSettings.showWeight =
+                                        newShowWeight;
+                                  }, ui)
+                                ])),
                       ])),
                 ]),
           // if (settingsExpanded.value)
           //   const Divider(height: 10, thickness: 1, indent: 3),
           // if (settingsExpanded.value) const SizedBox(height: 5),
-          Row(
-              mainAxisSize: MainAxisSize.max,
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                if (incoming.thisPurchaseIsNew(purchase)) ...[
-                  const SizedBox(
-                      width: 10), // away from left round phone corner
-                  ElevatedButton(
-                    onPressed: () {
-                      if (incoming.newPurchaseMessageItem != null) {
-                        incoming.newPurchaseMessageItem = null;
-                      } else {
-                        ui.messagesSelected.remove(messageId);
-                        ui.rebuild();
-
-                        final msgItem = incoming.messageItemsById[messageId];
-                        if (msgItem != null) {
-                          msgItem.selected = false;
-                        }
-                      }
-                    },
-                    child: Row(children: [
-                      const Icon(Icons.clear,
-                          size: iconSize, color: Colors.white),
-                      const SizedBox(width: 10),
-                      Text(btnLabelCancelPurchase, style: purchaseStyle),
-                    ]),
-                  ),
-                  const Spacer()
-                ],
-                IconButton(
-                    icon: Icon(
-                        settingsExpanded.value
-                            ? Icons.arrow_drop_up_outlined
-                            : Icons.arrow_drop_down_outlined,
-                        size: 32,
-                        color: Colors.blue),
-                    enableFeedback: true,
-                    // autofocus: true,
-                    onPressed: () {
-                      settingsExpanded.value = !settingsExpanded.value;
-                    }),
-              ]),
+          if (incoming.thisPurchaseIsNew(purchase))
+            Row(
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  if (incoming.thisPurchaseIsNew(purchase)) ...[
+                    const SizedBox(
+                        width: 10), // away from left round phone corner
+                    ElevatedButton(
+                      onPressed: onCancelButtonPressed,
+                      child: Row(children: [
+                        const Icon(Icons.clear,
+                            size: iconSize, color: Colors.white),
+                        const SizedBox(width: 10),
+                        Text(btnLabelCancelPurchase, style: purchaseStyle),
+                      ]),
+                    ),
+                    const Spacer()
+                  ],
+                  IconButton(
+                      icon: Icon(
+                          settingsExpanded.value
+                              ? Icons.arrow_drop_up_outlined
+                              : Icons.arrow_drop_down_outlined,
+                          size: 32,
+                          color: Colors.blue),
+                      enableFeedback: true,
+                      // autofocus: true,
+                      onPressed: () {
+                        settingsExpanded.value = !settingsExpanded.value;
+                      }),
+                ]),
         ]);
   }
 
