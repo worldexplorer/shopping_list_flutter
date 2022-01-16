@@ -3,6 +3,7 @@
 // $ flutter pub run build_runner watch
 
 import 'package:json_annotation/json_annotation.dart';
+import 'package:shopping_list_flutter/network/incoming/pur_item_dto.dart';
 
 part 'new_pur_item_dto.g.dart';
 
@@ -11,7 +12,7 @@ part 'new_pur_item_dto.g.dart';
     createFactory: true,
     createToJson: true,
     explicitToJson: true,
-    disallowUnrecognizedKeys: true,
+    disallowUnrecognizedKeys: false,
     includeIfNull: true)
 class NewPurItemDto {
   String name;
@@ -44,6 +45,22 @@ class NewPurItemDto {
     this.punit_brief,
     this.punit_fpoint,
   });
+
+  static NewPurItemDto fromPurItem(PurItemDto purItem) {
+    return NewPurItemDto(
+      name: purItem.name,
+      qnty: purItem.qnty,
+      comment: purItem.comment,
+      pgroup_id: purItem.pgroup_id,
+      pgroup_name: purItem.pgroup_name,
+      product_id: purItem.product_id,
+      product_name: purItem.product_name,
+      punit_id: purItem.punit_id,
+      punit_name: purItem.punit_name,
+      punit_brief: purItem.punit_brief,
+      punit_fpoint: purItem.punit_fpoint,
+    );
+  }
 
   factory NewPurItemDto.fromJson(Map<String, dynamic> json) =>
       _$NewPurItemDtoFromJson(json);

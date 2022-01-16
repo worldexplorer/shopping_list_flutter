@@ -3,6 +3,7 @@
 // $ flutter pub run build_runner watch
 
 import 'package:json_annotation/json_annotation.dart';
+import 'package:shopping_list_flutter/network/incoming/pur_item_dto.dart';
 
 part 'pur_item_filled_dto.g.dart';
 
@@ -36,6 +37,19 @@ class PurItemFilledDto {
     this.bought_weight,
     this.comment,
   });
+
+  static PurItemFilledDto fromPurItem(PurItemDto purItem) {
+    return PurItemFilledDto(
+        id: purItem.id,
+        // room: purchase.room,
+        // message: purchase.message,
+        // purchase: purchase.id,
+        bought: purItem.bought,
+        bought_qnty: purItem.bought_qnty,
+        bought_price: purItem.bought_price,
+        bought_weight: purItem.bought_weight,
+        comment: purItem.comment);
+  }
 
   factory PurItemFilledDto.fromJson(Map<String, dynamic> json) =>
       _$PurItemFilledDtoFromJson(json);

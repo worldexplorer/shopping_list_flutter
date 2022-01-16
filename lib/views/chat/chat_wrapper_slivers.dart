@@ -119,9 +119,10 @@ class ChatWrapperSlivers extends HookConsumerWidget {
                 ),
               ],
               bottom: PreferredSize(
-                preferredSize: Size.fromHeight(debugExpanded.value ? 400 : 0),
-                child:
-                    debugExpanded.value ? Expanded(child: Log()) : Container(),
+                preferredSize: Size.fromHeight(debugExpanded.value ? 200 : 0),
+                child: debugExpanded.value
+                    ? const Expanded(child: Log())
+                    : Container(),
               )),
           SliverFillRemaining(
             hasScrollBody: true,

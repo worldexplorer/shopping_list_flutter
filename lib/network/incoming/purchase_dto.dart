@@ -3,40 +3,30 @@
 // $ flutter pub run build_runner watch
 
 import 'package:json_annotation/json_annotation.dart';
+import '../outgoing/edit_purchase_dto.dart';
 
-import 'pur_item_dto.dart';
+// import 'package:shopping_list_flutter/utils/checked_convert.dart';
+// import 'pur_item_dto.dart';
 
 part 'purchase_dto.g.dart';
 
 @JsonSerializable(
-    checked: true,
+    checked: false,
     createFactory: true,
     createToJson: true,
     explicitToJson: true,
-    disallowUnrecognizedKeys: true,
+    disallowUnrecognizedKeys: false,
     includeIfNull: true)
-class PurchaseDto {
-  int id;
+class PurchaseDto extends EditPurchaseDto {
   DateTime date_created;
   DateTime date_updated;
-  String name;
 
-  int room;
-  int message;
-
-  bool show_pgroup;
-  bool show_serno;
-  bool show_qnty;
-  bool show_price;
-  bool show_weight;
-  bool show_state_unknown;
-  bool show_state_stop;
-
+  int? replyto_id;
   int? copiedfrom_id;
 
   int person_created;
   String person_created_name;
-  List<int> persons_can_edit;
+
   bool purchased;
   int? person_purchased;
   String? person_purchased_name;
@@ -44,35 +34,86 @@ class PurchaseDto {
   double? price_total;
   double? weight_total;
 
-  List<PurItemDto> purItems;
-
   PurchaseDto({
-    required this.id,
+    required id,
     required this.date_created,
     required this.date_updated,
-    required this.name,
-    required this.room,
-    required this.message,
-    required this.show_pgroup,
-    required this.show_serno,
-    required this.show_qnty,
-    required this.show_price,
-    required this.show_weight,
-    required this.show_state_unknown,
-    required this.show_state_stop,
-    required this.copiedfrom_id,
+    required name,
+    required room,
+    required message,
+    required show_pgroup,
+    required show_serno,
+    required show_qnty,
+    required show_price,
+    required show_weight,
+    required show_state_unknown,
+    required show_state_stop,
+    required replyto_id,
+    required copiedfrom_id,
     required this.person_created,
     required this.person_created_name,
-    required this.persons_can_edit,
+    required persons_can_edit,
     required this.purchased,
     this.person_purchased,
     this.person_purchased_name,
     this.price_total,
     this.weight_total,
-    required this.purItems,
-  });
+    required purItems,
+  }) : super(
+          id: id,
+          name: name,
+          room: room,
+          message: message,
+          show_pgroup: show_pgroup,
+          show_serno: show_serno,
+          show_qnty: show_qnty,
+          show_price: show_price,
+          show_weight: show_weight,
+          show_state_unknown: show_state_unknown,
+          show_state_stop: show_state_stop,
+          persons_can_edit: persons_can_edit,
+          purItems: purItems,
+        );
 
-  factory PurchaseDto.fromJson(Map<String, dynamic> json) =>
-      _$PurchaseDtoFromJson(json);
+  factory PurchaseDto.fromJson(Map<String, dynamic> json) {
+    // return _$PurchaseDtoFromJson(BasePurchaseDto.fromJson(json).toJson());
+    try {
+      // final purItemsJson = json['purItems'];
+      //   if (purItemsJson != null) {
+      //     // otherwise [type 'List<dynamic>' is not a subtype of type 'List<int>'] in runtime
+      //     List<PurItemDto> purItems = (purItemsJson as List<dynamic>).map((e) {
+      //       try {
+      //         //copypaste from Base
+      //         PurItemDto purItem = PurItemDto.fromJson(e as Map<String, dynamic>);
+      //         return purItem;
+      //       } on CheckedFromJsonException {
+      //         rethrow;
+      //       } catch (e) {
+      //         rethrow;
+      //       }
+      //     }).toList();
+
+      final base = EditPurchaseDto.fromJson(json);
+      // final baseJson = base.toJson();
+      // baseJson.forEach((key, value) {
+      //   json.update(key, (_) => value, ifAbsent: () => value);
+      // });
+
+      // conversion generated for base class EditPurchaseDto should be exactly same in subclass PurchaseDto
+      // fillConverted(
+      //     json,
+      //     'purItems',
+      //     (v) => (v as List<dynamic>)
+      //         .map((e) => PurItemDto.fromJson(e as Map<String, dynamic>))
+      //         .toList());
+
+      json['purItems'] = base.purItems;
+      return _$PurchaseDtoFromJson(json);
+      // } on CheckedFromJsonException {
+      //   rethrow;
+    } catch (e) {
+      rethrow;
+    }
+  }
   Map<String, dynamic> toJson() => _$PurchaseDtoToJson(this);
 }

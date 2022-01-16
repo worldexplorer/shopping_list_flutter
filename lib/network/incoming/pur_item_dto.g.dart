@@ -6,59 +6,27 @@ part of 'pur_item_dto.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-PurItemDto _$PurItemDtoFromJson(Map<String, dynamic> json) => $checkedCreate(
-      'PurItemDto',
-      json,
-      ($checkedConvert) {
-        $checkKeys(
-          json,
-          allowedKeys: const [
-            'id',
-            'name',
-            'qnty',
-            'comment',
-            'pgroup_id',
-            'pgroup_name',
-            'product_id',
-            'product_name',
-            'punit_id',
-            'punit_name',
-            'punit_brief',
-            'punit_fpoint',
-            'bought',
-            'bought_qnty',
-            'bought_price',
-            'bought_weight'
-          ],
-        );
-        final val = PurItemDto(
-          id: $checkedConvert('id', (v) => v as int),
-          name: $checkedConvert('name', (v) => v as String),
-          qnty: $checkedConvert('qnty', (v) => (v as num?)?.toDouble()),
-          comment: $checkedConvert('comment', (v) => v as String?),
-          pgroup_id: $checkedConvert('pgroup_id', (v) => v as int?),
-          pgroup_name: $checkedConvert('pgroup_name', (v) => v as String?),
-          product_id: $checkedConvert('product_id', (v) => v as int?),
-          product_name: $checkedConvert('product_name', (v) => v as String?),
-          punit_id: $checkedConvert('punit_id', (v) => v as int?),
-          punit_name: $checkedConvert('punit_name', (v) => v as String?),
-          punit_brief: $checkedConvert('punit_brief', (v) => v as String?),
-          punit_fpoint: $checkedConvert('punit_fpoint', (v) => v as bool?),
-          bought: $checkedConvert('bought', (v) => v as int),
-          bought_qnty:
-              $checkedConvert('bought_qnty', (v) => (v as num?)?.toDouble()),
-          bought_price:
-              $checkedConvert('bought_price', (v) => (v as num?)?.toDouble()),
-          bought_weight:
-              $checkedConvert('bought_weight', (v) => (v as num?)?.toDouble()),
-        );
-        return val;
-      },
+PurItemDto _$PurItemDtoFromJson(Map<String, dynamic> json) => PurItemDto(
+      name: json['name'],
+      qnty: json['qnty'],
+      comment: json['comment'],
+      pgroup_id: json['pgroup_id'],
+      pgroup_name: json['pgroup_name'],
+      product_id: json['product_id'],
+      product_name: json['product_name'],
+      punit_id: json['punit_id'],
+      punit_name: json['punit_name'],
+      punit_brief: json['punit_brief'],
+      punit_fpoint: json['punit_fpoint'],
+      id: json['id'] as int,
+      bought: json['bought'] as int,
+      bought_qnty: (json['bought_qnty'] as num?)?.toDouble(),
+      bought_price: (json['bought_price'] as num?)?.toDouble(),
+      bought_weight: (json['bought_weight'] as num?)?.toDouble(),
     );
 
 Map<String, dynamic> _$PurItemDtoToJson(PurItemDto instance) =>
     <String, dynamic>{
-      'id': instance.id,
       'name': instance.name,
       'qnty': instance.qnty,
       'comment': instance.comment,
@@ -70,6 +38,7 @@ Map<String, dynamic> _$PurItemDtoToJson(PurItemDto instance) =>
       'punit_name': instance.punit_name,
       'punit_brief': instance.punit_brief,
       'punit_fpoint': instance.punit_fpoint,
+      'id': instance.id,
       'bought': instance.bought,
       'bought_qnty': instance.bought_qnty,
       'bought_price': instance.bought_price,

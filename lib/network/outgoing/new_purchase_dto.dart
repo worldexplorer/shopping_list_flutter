@@ -3,6 +3,8 @@
 // $ flutter pub run build_runner watch
 
 import 'package:json_annotation/json_annotation.dart';
+import 'package:shopping_list_flutter/network/incoming/purchase_dto.dart';
+import 'base_purchase_dto.dart';
 import 'new_pur_item_dto.dart';
 
 part 'new_purchase_dto.g.dart';
@@ -14,39 +16,59 @@ part 'new_purchase_dto.g.dart';
     explicitToJson: true,
     disallowUnrecognizedKeys: true,
     includeIfNull: true)
-class NewPurchaseDto {
-  String name;
-
-  int room;
-  int message;
-
-  bool show_pgroup;
-  bool show_qnty;
-  bool show_price;
-  bool show_weight;
-  bool show_state_unknown;
-  bool show_state_stop;
-
+class NewPurchaseDto extends BasePurchaseDto {
+  int? replyto_id;
   int? copiedfrom_id;
-
-  List<int> persons_can_edit;
 
   List<NewPurItemDto> newPurItems;
 
   NewPurchaseDto({
-    required this.name,
-    required this.room,
-    required this.message,
-    required this.show_pgroup,
-    required this.show_qnty,
-    required this.show_price,
-    required this.show_weight,
-    required this.show_state_unknown,
-    required this.show_state_stop,
+    required name,
+    required room,
+    required message,
+    required show_pgroup,
+    required show_serno,
+    required show_qnty,
+    required show_price,
+    required show_weight,
+    required show_state_unknown,
+    required show_state_stop,
+    required this.replyto_id,
     required this.copiedfrom_id,
-    required this.persons_can_edit,
+    required persons_can_edit,
     required this.newPurItems,
-  });
+  }) : super(
+          name: name,
+          room: room,
+          message: message,
+          show_pgroup: show_pgroup,
+          show_serno: show_serno,
+          show_qnty: show_qnty,
+          show_price: show_price,
+          show_weight: show_weight,
+          show_state_unknown: show_state_unknown,
+          show_state_stop: show_state_stop,
+          persons_can_edit: persons_can_edit,
+        );
+
+  factory NewPurchaseDto.fromPurchaseDto(PurchaseDto purchase) {
+    return NewPurchaseDto(
+      name: purchase.name,
+      room: purchase.room,
+      message: purchase.message,
+      show_pgroup: purchase.show_pgroup,
+      show_serno: purchase.show_serno,
+      show_qnty: purchase.show_qnty,
+      show_price: purchase.show_price,
+      show_weight: purchase.show_weight,
+      show_state_unknown: purchase.show_state_unknown,
+      show_state_stop: purchase.show_state_stop,
+      replyto_id: purchase.replyto_id,
+      copiedfrom_id: purchase.copiedfrom_id,
+      persons_can_edit: purchase.persons_can_edit,
+      newPurItems: purchase.purItems.map(NewPurItemDto.fromPurItem).toList(),
+    );
+  }
 
   factory NewPurchaseDto.fromJson(Map<String, dynamic> json) =>
       _$NewPurchaseDtoFromJson(json);

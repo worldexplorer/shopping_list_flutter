@@ -224,6 +224,7 @@ class IncomingState extends ChangeNotifier {
       show_weight: newPurchaseSettings.showWeight,
       show_state_unknown: newPurchaseSettings.showStateUnknown,
       show_state_stop: newPurchaseSettings.showStateStop,
+      replyto_id: null,
       copiedfrom_id: null,
       person_created: userId,
       person_created_name: userName,

@@ -11,22 +11,6 @@ NewPurItemDto _$NewPurItemDtoFromJson(Map<String, dynamic> json) =>
       'NewPurItemDto',
       json,
       ($checkedConvert) {
-        $checkKeys(
-          json,
-          allowedKeys: const [
-            'name',
-            'qnty',
-            'comment',
-            'pgroup_id',
-            'pgroup_name',
-            'product_id',
-            'product_name',
-            'punit_id',
-            'punit_name',
-            'punit_brief',
-            'punit_fpoint'
-          ],
-        );
         final val = NewPurItemDto(
           name: $checkedConvert('name', (v) => v as String),
           qnty: $checkedConvert('qnty', (v) => (v as num?)?.toDouble()),

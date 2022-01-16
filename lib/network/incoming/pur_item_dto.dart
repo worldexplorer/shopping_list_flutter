@@ -3,37 +3,22 @@
 // $ flutter pub run build_runner watch
 
 import 'package:json_annotation/json_annotation.dart';
+import 'package:shopping_list_flutter/network/outgoing/new_pur_item_dto.dart';
+import 'package:shopping_list_flutter/utils/checked_convert.dart';
 
 part 'pur_item_dto.g.dart';
 
 @JsonSerializable(
-    checked: true,
+    checked: false,
     createFactory: true,
     createToJson: true,
     explicitToJson: true,
-    disallowUnrecognizedKeys: true,
+    disallowUnrecognizedKeys: false,
     includeIfNull: true)
-class PurItemDto {
+class PurItemDto extends NewPurItemDto {
   int id;
   // DateTime date_created;
   // DateTime date_updated;
-
-  String name;
-  double? qnty;
-
-  String? comment;
-
-  int? pgroup_id;
-  String? pgroup_name;
-
-  int? product_id;
-  String? product_name;
-
-  int? punit_id;
-  String? punit_name;
-
-  String? punit_brief;
-  bool? punit_fpoint;
 
   int bought;
   double? bought_qnty;
@@ -41,27 +26,67 @@ class PurItemDto {
   double? bought_weight;
 
   PurItemDto({
+    required name,
+    qnty,
+    comment,
+    pgroup_id,
+    pgroup_name,
+    product_id,
+    product_name,
+    punit_id,
+    punit_name,
+    punit_brief,
+    punit_fpoint,
     required this.id,
     // required this.date_created,
     // required this.date_updated,
-    required this.name,
-    this.qnty,
-    this.comment,
-    this.pgroup_id,
-    this.pgroup_name,
-    this.product_id,
-    this.product_name,
-    this.punit_id,
-    this.punit_name,
-    this.punit_brief,
-    this.punit_fpoint,
     required this.bought,
     this.bought_qnty,
     this.bought_price,
     this.bought_weight,
-  });
+  }) : super(
+          name: name,
+          qnty: qnty,
+          comment: comment,
+          pgroup_id: pgroup_id,
+          pgroup_name: pgroup_name,
+          product_id: product_id,
+          product_name: product_name,
+          punit_id: punit_id,
+          punit_name: punit_name,
+          punit_brief: punit_brief,
+          punit_fpoint: punit_fpoint,
+        );
 
-  factory PurItemDto.fromJson(Map<String, dynamic> json) =>
-      _$PurItemDtoFromJson(json);
+  factory PurItemDto.fromJson(Map<String, dynamic> json) {
+    // return _$PurItemDtoFromJson(NewPurItemDto.fromJson(json).toJson());
+    try {
+      //   final qntyJson = json['qnty'];
+      //   if (qntyJson != null) {
+      //     // otherwise "double? can not be filled from int" in runtime
+      //     try {
+      //       // copypaste from _$NewPurItemDtoFromJson
+      //       double? qnty = (qntyJson as num?)?.toDouble();
+      //       // conversion generated for base class NewPurItemDto should be exactly same in subclass PurItemDto
+      //       json['qnty'] = qnty;
+      //     } catch (e) {
+      //       rethrow;
+      //     }
+      //   }
+
+      // checkedConvert(json, 'qnty', (v) => (v as num?)?.toDouble());
+
+      final base = NewPurItemDto.fromJson(json);
+      final baseJson = base.toJson();
+      baseJson.forEach((key, value) {
+        json.update(key, (_) => value, ifAbsent: () => value);
+      });
+      return _$PurItemDtoFromJson(json);
+    } on CheckedFromJsonException {
+      rethrow;
+    } catch (e) {
+      rethrow;
+    }
+  }
   Map<String, dynamic> toJson() => _$PurItemDtoToJson(this);
 }

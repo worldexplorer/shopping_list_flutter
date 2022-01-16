@@ -7,13 +7,12 @@ import '../../utils/static_logger.dart';
 import 'archive_messages_dto.dart';
 import 'delete_messages_dto.dart';
 import 'edit_message_dto.dart';
+import 'edit_purchase_dto.dart';
 import 'login_dto.dart';
 import 'new_message_dto.dart';
 import 'get_messages_dto.dart';
 import 'mark_message_read_dto.dart';
-import 'new_pur_item_dto.dart';
 import 'new_purchase_dto.dart';
-import 'pur_item_filled_dto.dart';
 import 'purchase_filled_dto.dart';
 
 class OutgoingHandlers {
@@ -22,11 +21,19 @@ class OutgoingHandlers {
 
   OutgoingHandlers(this.connectionState, this.incomingState);
 
+  bool isConnected(String msig) {
+    if (connectionState.socketConnected) return true;
+
+    final msg = '$msig: ${connectionState.socketId}';
+    StaticLogger.append(msg);
+    incomingState.serverError = msg;
+    return false;
+  }
+
   sendLogin(String phone) {
-    if (!connectionState.socketConnected) {
-      StaticLogger.append('sendLogin($phone): ${connectionState.socketId}');
-      return;
-    }
+    final msig = 'sendLogin($phone)';
+    if (!isConnected(msig)) return;
+
     final json = LoginDto(
       phone: phone,
     ).toJson();
@@ -49,8 +56,11 @@ class OutgoingHandlers {
   }
 
   sendMessage(String msg, int? isReplyingToMessageId) {
+    final msig = 'sendMessage($msg)';
+    if (!isConnected(msig)) return;
+
     if (!connectionState.socketConnected) {
-      StaticLogger.append('sendMessage($msg): ${connectionState.socketId}');
+      StaticLogger.append(': ${connectionState.socketId}');
       return;
     }
 
@@ -67,10 +77,8 @@ class OutgoingHandlers {
   }
 
   sendEditMessage(int messageId, String msg) {
-    if (!connectionState.socketConnected) {
-      StaticLogger.append('sendEditMessage($msg): ${connectionState.socketId}');
-      return;
-    }
+    final msig = 'sendEditMessage($msg)';
+    if (!isConnected(msig)) return;
 
     sendTyping(false);
 
@@ -101,11 +109,8 @@ class OutgoingHandlers {
   }
 
   _sendMarkMessagesRead(List<int> messageIds, int userId) {
-    if (!connectionState.socketConnected) {
-      StaticLogger.append(
-          'sendMarkMessagesRead($messageIds): ${connectionState.socketId}');
-      return;
-    }
+    final msig = 'sendMarkMessagesRead($messageIds)';
+    if (!isConnected(msig)) return;
 
     final json = MarkMessagesReadDto(
       messageIds: messageIds,
@@ -117,11 +122,8 @@ class OutgoingHandlers {
 
   sendArchiveMessages(List<int> messageIds, int userId,
       [bool archived = true]) {
-    if (!connectionState.socketConnected) {
-      StaticLogger.append(
-          'sendArchiveMessages($messageIds): ${connectionState.socketId}');
-      return;
-    }
+    final msig = 'sendArchiveMessages($messageIds)';
+    if (!isConnected(msig)) return;
 
     final json = ArchiveMessagesDto(
       messageIds: messageIds,
@@ -133,11 +135,8 @@ class OutgoingHandlers {
   }
 
   sendDeleteMessages(List<int> messageIds, int userId) {
-    if (!connectionState.socketConnected) {
-      StaticLogger.append(
-          'sendDeleteMessages($messageIds): ${connectionState.socketId}');
-      return;
-    }
+    final msig = 'sendDeleteMessages($messageIds)';
+    if (!isConnected(msig)) return;
 
     final json = DeleteMessagesDto(
       messageIds: messageIds,
@@ -148,11 +147,9 @@ class OutgoingHandlers {
   }
 
   sendGetMessages(int roomId, [int fromMessageId = 0, bool archived = false]) {
-    if (!connectionState.socketConnected) {
-      StaticLogger.append(
-          'sendRoomChange($roomId): ${connectionState.socketId}');
-      return;
-    }
+    final msig = 'sendRoomChange($roomId)';
+    if (!isConnected(msig)) return;
+
     final json = GetMessagesDto(
       room: roomId,
       fromMessageId: fromMessageId,
@@ -164,50 +161,19 @@ class OutgoingHandlers {
   }
 
   void sendNewPurchase(PurchaseDto purchase, isReplyingToMessageId) {
-    if (!connectionState.socketConnected) {
-      StaticLogger.append(
-          'sendNewPurchase(${purchase.room}): ${connectionState.socketId}');
-      return;
-    }
-    final json = NewPurchaseDto(
-      name: purchase.name,
-      room: purchase.room,
-      message: purchase.message,
-      show_pgroup: purchase.show_pgroup,
-      show_price: purchase.show_price,
-      show_qnty: purchase.show_qnty,
-      show_weight: purchase.show_weight,
-      show_state_unknown: purchase.show_state_unknown,
-      show_state_stop: purchase.show_state_stop,
-      copiedfrom_id: purchase.copiedfrom_id,
-      persons_can_edit: purchase.persons_can_edit,
-      newPurItems: purchase.purItems.map((x) {
-        return NewPurItemDto(
-          name: x.name,
-          qnty: x.qnty,
-          comment: x.comment,
-          pgroup_id: x.pgroup_id,
-          pgroup_name: x.pgroup_name,
-          product_id: x.product_id,
-          product_name: x.product_name,
-          punit_id: x.punit_id,
-          punit_name: x.punit_name,
-          punit_brief: x.punit_brief,
-          punit_fpoint: x.punit_fpoint,
-        );
-      }).toList(),
-    ).toJson();
+    final msig = 'sendNewPurchase($purchase.room)';
+    if (!isConnected(msig)) return;
+
+    final json = NewPurchaseDto.fromPurchaseDto(purchase).toJson();
     connectionState.socket.emit("newPurchase", json);
     StaticLogger.append('<< NEW_PURCHASE [$json]');
   }
 
   void sendEditPurchase(PurchaseDto purchase) {
-    if (!connectionState.socketConnected) {
-      StaticLogger.append(
-          'sendEditPurchase${purchase.room}): ${connectionState.socketId}');
-      return;
-    }
-    final json = purchase.toJson();
+    final msig = 'sendEditPurchase($purchase.room)';
+    if (!isConnected(msig)) return;
+
+    final json = EditPurchaseDto.fromPurchaseDto(purchase).toJson();
     connectionState.socket.emit("editPurchase", json);
     StaticLogger.append('<< EDIT_PURCHASE [$json]');
   }
@@ -215,32 +181,10 @@ class OutgoingHandlers {
   void sendFillPurchase(PurchaseDto purchase) {
     final String ident =
         'id[${purchase.id}]:room[${purchase.room}]:message[${purchase.message}]';
-    if (!connectionState.socketConnected) {
-      StaticLogger.append(
-          'sendFillPurchase($ident): ${connectionState.socketId}');
-      return;
-    }
+    final msig = 'sendFillPurchase($purchase.room)';
+    if (!isConnected(msig)) return;
 
-    final purchaseFilled = PurchaseFilledDto(
-      id: purchase.id,
-      room: purchase.room,
-      message: purchase.message,
-      purchased: purchase.purchased,
-      price_total: purchase.price_total,
-      weight_total: purchase.weight_total,
-      purItemsFilled: purchase.purItems.map((purItem) {
-        return PurItemFilledDto(
-            id: purItem.id,
-            // room: purchase.room,
-            // message: purchase.message,
-            // purchase: purchase.id,
-            bought: purItem.bought,
-            bought_qnty: purItem.bought_qnty,
-            bought_price: purItem.bought_price,
-            bought_weight: purItem.bought_weight,
-            comment: purItem.comment);
-      }).toList(),
-    );
+    final purchaseFilled = PurchaseFilledDto.fromPurchaseDto(purchase);
     final json = purchaseFilled.toJson();
     connectionState.socket.emit("fillPurchase", json);
     StaticLogger.append('<< FILL_PURCHASE [$json]');

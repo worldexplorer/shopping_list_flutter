@@ -8,12 +8,7 @@ import 'package:shopping_list_flutter/utils/ui_state.dart';
 import 'package:shopping_list_flutter/widget/context_menu.dart';
 
 class Log extends HookConsumerWidget {
-  TextStyle ctxMenuItemTextStyle = GoogleFonts.poppins(
-    color: Colors.white.withOpacity(0.8),
-    fontSize: 15,
-  );
-
-  Log({Key? key}) : super(key: key);
+  const Log({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
