@@ -63,12 +63,12 @@ class IncomingState extends ChangeNotifier {
   bool messageAddOrEdit(MessageDto msg, String msig) {
     bool addedOrChanged = false;
 
-    final prevMsg = messagesById[msg.id];
+    final MessageDto? prevMsg = messagesById[msg.id];
     if (prevMsg == null) {
       final widget = MessageItem(
         key: Key(msg.id.toString()),
         isMe: isMyUserId(msg.user),
-        message: msg,
+        message: msg.clone(),
       );
 
       messagesById[msg.id] = msg;
@@ -131,7 +131,18 @@ class IncomingState extends ChangeNotifier {
       var widget = messageItemsById[msg.id];
       if (widget != null) {
         // no need to find widget in messageItems and re-insert a new instance
-        widget.message = msg;
+        //v1 widget.message = msg;
+        //v2
+        final widget = MessageItem(
+          key: Key(msg.id.toString()),
+          isMe: isMyUserId(msg.user),
+          message: msg.clone(),
+        );
+        messageItemsById[msg.id] = widget;
+        StaticLogger.append('         REPLACED $msig: widget.message');
+      } else {
+        StaticLogger.append(
+            '         NO_PURCHASE_FOUND_FOR $msig: widget.message STAYS THE SAME');
       }
     }
 

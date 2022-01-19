@@ -11,17 +11,15 @@ import '../../views/purchase/purchase.dart';
 import '../../views/purchase/purchase_edit.dart';
 
 class MessageItem extends ConsumerWidget {
-  MessageDto message;
+  final MessageDto message;
   final bool isMe;
   bool selected;
-  bool dismissed;
 
   MessageItem({
     Key? key,
     required this.message,
     this.isMe = false,
     this.selected = false,
-    this.dismissed = false,
   }) : super(key: key);
 
   @override
@@ -82,7 +80,8 @@ class MessageItem extends ConsumerWidget {
                             ? SingleChildScrollView(
                                 scrollDirection: Axis.vertical,
                                 child: PurchaseEdit(
-                                  purchase: message.purchase!,
+                                  // after SAVE, Purchase() will receive a new incoming...message.purchase
+                                  purchase: message.purchase!.clone(),
                                   messageId: message.id,
                                 ))
                             : Purchase(

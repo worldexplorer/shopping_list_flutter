@@ -103,6 +103,7 @@ class IncomingHandlers {
 
       if (rebuildUi) {
         incomingState.notifyListeners();
+        StaticLogger.append('         UI REBUILT onMessage()');
       }
     } catch (e) {
       StaticLogger.append('      FAILED onMessage(): ${e.toString()}');

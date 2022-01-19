@@ -94,12 +94,13 @@ class PurchaseEdit extends HookConsumerWidget {
         incoming.newPurchaseMessageItem = null;
       } else {
         ui.messagesSelected.remove(messageId);
-        ui.rebuild();
 
         final msgItem = incoming.messageItemsById[messageId];
         if (msgItem != null) {
           msgItem.selected = false;
         }
+
+        ui.rebuild();
       }
     }
 

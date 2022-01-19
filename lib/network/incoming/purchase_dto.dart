@@ -75,6 +75,10 @@ class PurchaseDto extends EditPurchaseDto {
           purItems: purItems,
         );
 
+  PurchaseDto clone() {
+    return PurchaseDto.fromJson(toJson());
+  }
+
   factory PurchaseDto.fromJson(Map<String, dynamic> json) {
     // return _$PurchaseDtoFromJson(BasePurchaseDto.fromJson(json).toJson());
     try {

@@ -53,6 +53,10 @@ class MessageDto {
     required this.purchase,
   });
 
+  MessageDto clone() {
+    return MessageDto.fromJson(toJson());
+  }
+
   factory MessageDto.fromJson(Map<String, dynamic> json) =>
       _$MessageDtoFromJson(json);
   Map<String, dynamic> toJson() => _$MessageDtoToJson(this);

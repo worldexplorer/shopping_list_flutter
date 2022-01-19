@@ -16,6 +16,7 @@ part 'pur_item_filled_dto.g.dart';
     includeIfNull: true)
 class PurItemFilledDto {
   int id;
+  String name;
   // int room;
   // int message;
   // int purchase;
@@ -28,6 +29,7 @@ class PurItemFilledDto {
 
   PurItemFilledDto({
     required this.id,
+    required this.name,
     // required this.room,
     // required this.message,
     // required this.purchase,
@@ -41,6 +43,7 @@ class PurItemFilledDto {
   static PurItemFilledDto fromPurItem(PurItemDto purItem) {
     return PurItemFilledDto(
         id: purItem.id,
+        name: purItem.name,
         // room: purchase.room,
         // message: purchase.message,
         // purchase: purchase.id,

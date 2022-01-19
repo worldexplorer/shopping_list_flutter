@@ -39,7 +39,7 @@ class Purchase extends HookConsumerWidget {
     recalculateTotalsSendToServer() {
       // recalculateTotals();
       incoming.outgoingHandlers.sendFillPurchase(purchase);
-      // ui.rebuild();
+      ui.rebuild();
     }
 
     int purItemsCheckedCounter =
@@ -121,23 +121,24 @@ class Purchase extends HookConsumerWidget {
         final String pgroupName = idPgroup.value;
 
         String pgroupCounters = pgroupName;
-        final products = grouping.productsByPgroup[pgroupId] ?? [];
-        if (products.isNotEmpty) {
-          pgroupCounters += ' (${products.length})';
-        }
+        final purItems = grouping.productsByPgroup[pgroupId] ?? [];
+        // if (products.isNotEmpty) {
+        //   pgroupCounters += ' (${products.length})';
+        // }
 
         ret.add(Text(pgroupCounters, softWrap: true, style: pGroupStyle));
 
         int indexProduct = 0;
-        for (PurItemDto product in products) {
+        for (PurItemDto purItem in purItems) {
           ret.add(PurchaseItem(
             key: Key(
-                '$indexPgroup:$pgroupId:${indexProduct++}:${product.product_id}'),
+                '$indexPgroup:$pgroupId:${indexProduct++}:${purItem.product_id}'),
             purchase: purchase,
-            purItem: product,
+            purItem: purItem,
             isMe: isMe,
             setBought: (int newBought) {
-              product.bought = newBought;
+              purItem.bought = newBought;
+              recalculateTotalsSendToServer();
             },
             recalculateTotalsSendToServer: recalculateTotalsSendToServer,
             serno: serno++,
@@ -162,13 +163,14 @@ class Purchase extends HookConsumerWidget {
       // ),
 
       int i = 1;
-      return purchase.purItems.map((x) => PurchaseItem(
-            key: Key('${i++}:${x.id}:${x.pgroup_id}:${x.product_id}'),
+      return purchase.purItems.map((purItem) => PurchaseItem(
+            key: Key(
+                '${i++}:${purItem.id}:${purItem.pgroup_id}:${purItem.product_id}'),
             purchase: purchase,
-            purItem: x,
+            purItem: purItem,
             isMe: isMe,
             setBought: (int newBought) {
-              x.bought = newBought;
+              purItem.bought = newBought;
             },
             recalculateTotalsSendToServer: recalculateTotalsSendToServer,
             serno: serno++,

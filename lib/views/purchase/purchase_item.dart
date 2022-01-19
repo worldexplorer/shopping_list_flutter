@@ -72,11 +72,12 @@ class PurchaseItem extends HookConsumerWidget {
     }, [updateWeight.text]);
 
     onPurItemTap() {
-      final nextBoughtCheckedState = cycle0231(purItem.bought,
-          purchase.show_state_unknown, purchase.show_state_stop);
-      purItem.bought = nextBoughtCheckedState;
-      setBought(purItem.bought);
-      recalculateTotalsSendToServer();
+      final prevBought = purItem.bought;
+      final nextBought = cycle0123(
+          prevBought, purchase.show_state_unknown, purchase.show_state_stop);
+      // purItem.bought = nextBoughtCheckedState;
+      setBought(nextBought);
+      // recalculateTotalsSendToServer();
     }
 
     return
