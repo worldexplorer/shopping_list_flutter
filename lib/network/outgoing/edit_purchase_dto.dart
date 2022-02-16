@@ -4,6 +4,7 @@
 
 import 'package:json_annotation/json_annotation.dart';
 import 'package:shopping_list_flutter/network/incoming/purchase_dto.dart';
+
 import '../incoming/pur_item_dto.dart';
 import 'base_purchase_dto.dart';
 
@@ -33,6 +34,7 @@ class EditPurchaseDto extends BasePurchaseDto {
     required show_state_unknown,
     required show_state_stop,
     required persons_can_edit,
+    required persons_can_fill,
     required this.purItems,
   }) : super(
           name: name,
@@ -46,6 +48,7 @@ class EditPurchaseDto extends BasePurchaseDto {
           show_state_unknown: show_state_unknown,
           show_state_stop: show_state_stop,
           persons_can_edit: persons_can_edit,
+          persons_can_fill: persons_can_fill,
         );
 
   static EditPurchaseDto fromPurchaseDto(PurchaseDto purchase) {
@@ -62,6 +65,7 @@ class EditPurchaseDto extends BasePurchaseDto {
       show_state_unknown: purchase.show_state_unknown,
       show_state_stop: purchase.show_state_stop,
       persons_can_edit: purchase.persons_can_edit,
+      persons_can_fill: purchase.persons_can_fill,
       purItems: purchase.purItems,
     );
   }

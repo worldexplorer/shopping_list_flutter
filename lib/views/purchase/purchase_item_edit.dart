@@ -65,7 +65,7 @@ class PurchaseItemEdit extends HookConsumerWidget {
                     },
                     onTap: onTapNotifyFocused,
                     decoration: InputDecoration(
-                      hintText: 'Product to Purchase...',
+                      hintText: 'Product to purchase...',
                       hintStyle: textInputHintStyle,
                       // border: InputBorder.none,
                       contentPadding: textInputPadding,

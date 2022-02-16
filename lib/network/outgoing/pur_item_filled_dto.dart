@@ -4,6 +4,7 @@
 
 import 'package:json_annotation/json_annotation.dart';
 import 'package:shopping_list_flutter/network/incoming/pur_item_dto.dart';
+import 'package:shopping_list_flutter/network/incoming/purchase_dto.dart';
 
 part 'pur_item_filled_dto.g.dart';
 
@@ -17,9 +18,9 @@ part 'pur_item_filled_dto.g.dart';
 class PurItemFilledDto {
   int id;
   String name;
-  // int room;
-  // int message;
-  // int purchase;
+  int room;
+  int message;
+  int purchase;
 
   int bought;
   double? bought_qnty;
@@ -30,9 +31,9 @@ class PurItemFilledDto {
   PurItemFilledDto({
     required this.id,
     required this.name,
-    // required this.room,
-    // required this.message,
-    // required this.purchase,
+    required this.room,
+    required this.message,
+    required this.purchase,
     required this.bought,
     this.bought_qnty,
     this.bought_price,
@@ -40,13 +41,14 @@ class PurItemFilledDto {
     this.comment,
   });
 
-  static PurItemFilledDto fromPurItem(PurItemDto purItem) {
+  static PurItemFilledDto fromPurItem(
+      PurItemDto purItem, PurchaseDto purchase) {
     return PurItemFilledDto(
         id: purItem.id,
         name: purItem.name,
-        // room: purchase.room,
-        // message: purchase.message,
-        // purchase: purchase.id,
+        room: purchase.room,
+        message: purchase.message,
+        purchase: purchase.id,
         bought: purItem.bought,
         bought_qnty: purItem.bought_qnty,
         bought_price: purItem.bought_price,

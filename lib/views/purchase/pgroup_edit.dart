@@ -54,7 +54,7 @@ class PgroupEdit extends HookConsumerWidget {
                     onChanged: onChanged,
                     onTap: onTapNotifyFocused,
                     decoration: InputDecoration(
-                      hintText: 'Group Name...',
+                      hintText: 'Group name...',
                       hintStyle: textInputHintStyle,
                       // border: InputBorder.none,
                       contentPadding: textInputPadding,

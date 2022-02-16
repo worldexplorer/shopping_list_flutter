@@ -3,6 +3,7 @@
 // $ flutter pub run build_runner watch
 
 import 'package:json_annotation/json_annotation.dart';
+
 import '../outgoing/edit_purchase_dto.dart';
 
 // import 'package:shopping_list_flutter/utils/checked_convert.dart';
@@ -53,6 +54,7 @@ class PurchaseDto extends EditPurchaseDto {
     required this.person_created,
     required this.person_created_name,
     required persons_can_edit,
+    required persons_can_fill,
     required this.purchased,
     this.person_purchased,
     this.person_purchased_name,
@@ -72,6 +74,7 @@ class PurchaseDto extends EditPurchaseDto {
           show_state_unknown: show_state_unknown,
           show_state_stop: show_state_stop,
           persons_can_edit: persons_can_edit,
+          persons_can_fill: persons_can_fill,
           purItems: purItems,
         );
 

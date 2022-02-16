@@ -25,6 +25,8 @@ BasePurchaseDto _$BasePurchaseDtoFromJson(Map<String, dynamic> json) =>
           show_state_stop: $checkedConvert('show_state_stop', (v) => v as bool),
           persons_can_edit: $checkedConvert('persons_can_edit',
               (v) => (v as List<dynamic>).map((e) => e as int).toList()),
+          persons_can_fill: $checkedConvert('persons_can_fill',
+              (v) => (v as List<dynamic>).map((e) => e as int).toList()),
         );
         return val;
       },
@@ -43,4 +45,5 @@ Map<String, dynamic> _$BasePurchaseDtoToJson(BasePurchaseDto instance) =>
       'show_state_unknown': instance.show_state_unknown,
       'show_state_stop': instance.show_state_stop,
       'persons_can_edit': instance.persons_can_edit,
+      'persons_can_fill': instance.persons_can_fill,
     };

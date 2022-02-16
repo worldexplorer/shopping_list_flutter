@@ -16,6 +16,9 @@ PurItemFilledDto _$PurItemFilledDtoFromJson(Map<String, dynamic> json) =>
           allowedKeys: const [
             'id',
             'name',
+            'room',
+            'message',
+            'purchase',
             'bought',
             'bought_qnty',
             'bought_price',
@@ -26,6 +29,9 @@ PurItemFilledDto _$PurItemFilledDtoFromJson(Map<String, dynamic> json) =>
         final val = PurItemFilledDto(
           id: $checkedConvert('id', (v) => v as int),
           name: $checkedConvert('name', (v) => v as String),
+          room: $checkedConvert('room', (v) => v as int),
+          message: $checkedConvert('message', (v) => v as int),
+          purchase: $checkedConvert('purchase', (v) => v as int),
           bought: $checkedConvert('bought', (v) => v as int),
           bought_qnty:
               $checkedConvert('bought_qnty', (v) => (v as num?)?.toDouble()),
@@ -43,6 +49,9 @@ Map<String, dynamic> _$PurItemFilledDtoToJson(PurItemFilledDto instance) =>
     <String, dynamic>{
       'id': instance.id,
       'name': instance.name,
+      'room': instance.room,
+      'message': instance.message,
+      'purchase': instance.purchase,
       'bought': instance.bought,
       'bought_qnty': instance.bought_qnty,
       'bought_price': instance.bought_price,

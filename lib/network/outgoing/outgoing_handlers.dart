@@ -1,17 +1,20 @@
+import 'package:shopping_list_flutter/network/incoming/pur_item_dto.dart';
+import 'package:shopping_list_flutter/network/outgoing/pur_item_filled_dto.dart';
+
+import '../../utils/static_logger.dart';
 import '../common/typing_dto.dart';
 import '../connection_state.dart';
 import '../incoming/incoming_state.dart';
 import '../incoming/purchase_dto.dart';
 import '../outgoing/new_purchase_dto.dart';
-import '../../utils/static_logger.dart';
 import 'archive_messages_dto.dart';
 import 'delete_messages_dto.dart';
 import 'edit_message_dto.dart';
 import 'edit_purchase_dto.dart';
-import 'login_dto.dart';
-import 'new_message_dto.dart';
 import 'get_messages_dto.dart';
+import 'login_dto.dart';
 import 'mark_message_read_dto.dart';
+import 'new_message_dto.dart';
 import 'new_purchase_dto.dart';
 import 'purchase_filled_dto.dart';
 
@@ -188,5 +191,17 @@ class OutgoingHandlers {
     final json = purchaseFilled.toJson();
     connectionState.socket.emit("fillPurchase", json);
     StaticLogger.append('<< FILL_PURCHASE [$json]');
+  }
+
+  void sendFillPurItem(PurItemDto purItem, PurchaseDto purchase) {
+    final String ident =
+        'purItem.id[${purItem.id}]:purchase[${purchase.id}]:room[${purchase.room}]:message[${purchase.message}]';
+    final msig = 'sendFillPurItem($purchase.room)';
+    if (!isConnected(msig)) return;
+
+    final purItemFilled = PurItemFilledDto.fromPurItem(purItem, purchase);
+    final json = purItemFilled.toJson();
+    connectionState.socket.emit("fillPurItem", json);
+    StaticLogger.append('<< FILL_PURITEM [$json]');
   }
 }

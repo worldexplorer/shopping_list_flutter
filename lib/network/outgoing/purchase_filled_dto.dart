@@ -4,6 +4,7 @@
 
 import 'package:json_annotation/json_annotation.dart';
 import 'package:shopping_list_flutter/network/incoming/purchase_dto.dart';
+
 import 'pur_item_filled_dto.dart';
 
 part 'purchase_filled_dto.g.dart';
@@ -37,6 +38,11 @@ class PurchaseFilledDto {
   });
 
   static fromPurchaseDto(PurchaseDto purchase) {
+    final List<PurItemFilledDto> converted = [];
+    for (final x in purchase.purItems) {
+      converted.add(PurItemFilledDto.fromPurItem(x, purchase));
+    }
+
     return PurchaseFilledDto(
       id: purchase.id,
       room: purchase.room,
@@ -44,8 +50,7 @@ class PurchaseFilledDto {
       purchased: purchase.purchased,
       price_total: purchase.price_total,
       weight_total: purchase.weight_total,
-      purItemsFilled:
-          purchase.purItems.map(PurItemFilledDto.fromPurItem).toList(),
+      purItemsFilled: converted,
     );
   }
 

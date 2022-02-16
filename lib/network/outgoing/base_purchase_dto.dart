@@ -3,8 +3,6 @@
 // $ flutter pub run build_runner watch
 
 import 'package:json_annotation/json_annotation.dart';
-import 'package:shopping_list_flutter/network/incoming/purchase_dto.dart';
-import 'new_pur_item_dto.dart';
 
 part 'base_purchase_dto.g.dart';
 
@@ -31,6 +29,7 @@ class BasePurchaseDto {
   bool show_state_stop;
 
   List<int> persons_can_edit;
+  List<int> persons_can_fill;
 
   BasePurchaseDto({
     required this.name,
@@ -44,6 +43,7 @@ class BasePurchaseDto {
     required this.show_state_unknown,
     required this.show_state_stop,
     required this.persons_can_edit,
+    required this.persons_can_fill,
   });
 
   factory BasePurchaseDto.fromJson(Map<String, dynamic> json) =>

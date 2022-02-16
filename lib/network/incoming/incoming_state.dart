@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:shopping_list_flutter/utils/ui_state.dart';
 
+import '../../utils/static_logger.dart';
+import '../../views/chat/message_item.dart';
 import '../connection.dart';
 import '../outgoing/outgoing_handlers.dart';
 import 'message_dto.dart';
@@ -10,9 +12,6 @@ import 'pur_item_dto.dart';
 import 'purchase_dto.dart';
 import 'room_dto.dart';
 import 'user_dto.dart';
-
-import '../../utils/static_logger.dart';
-import '../../views/chat/message_item.dart';
 
 final incomingStateProvider =
     ChangeNotifierProvider<IncomingState>((ref) => IncomingState());
@@ -131,14 +130,15 @@ class IncomingState extends ChangeNotifier {
       var widget = messageItemsById[msg.id];
       if (widget != null) {
         // no need to find widget in messageItems and re-insert a new instance
-        //v1 widget.message = msg;
+        //v1
+        widget.message = msg;
         //v2
-        final widget = MessageItem(
-          key: Key(msg.id.toString()),
-          isMe: isMyUserId(msg.user),
-          message: msg.clone(),
-        );
-        messageItemsById[msg.id] = widget;
+        // final widget = MessageItem(
+        //   key: Key(msg.id.toString()),
+        //   isMe: isMyUserId(msg.user),
+        //   message: msg.clone(),
+        // );
+        // messageItemsById[msg.id] = widget;
         StaticLogger.append('         REPLACED $msig: widget.message');
       } else {
         StaticLogger.append(
@@ -240,6 +240,7 @@ class IncomingState extends ChangeNotifier {
       person_created: userId,
       person_created_name: userName,
       persons_can_edit: currentRoom.users.map((x) => x.id).toList(),
+      persons_can_fill: currentRoom.users.map((x) => x.id).toList(),
       purchased: false,
       person_purchased: null,
       person_purchased_name: null,

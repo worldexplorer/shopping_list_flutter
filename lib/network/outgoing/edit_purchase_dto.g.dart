@@ -20,6 +20,7 @@ EditPurchaseDto _$EditPurchaseDtoFromJson(Map<String, dynamic> json) =>
       show_state_unknown: json['show_state_unknown'],
       show_state_stop: json['show_state_stop'],
       persons_can_edit: json['persons_can_edit'],
+      persons_can_fill: json['persons_can_fill'],
       purItems: (json['purItems'] as List<dynamic>)
           .map((e) => PurItemDto.fromJson(e as Map<String, dynamic>))
           .toList(),
@@ -38,6 +39,7 @@ Map<String, dynamic> _$EditPurchaseDtoToJson(EditPurchaseDto instance) =>
       'show_state_unknown': instance.show_state_unknown,
       'show_state_stop': instance.show_state_stop,
       'persons_can_edit': instance.persons_can_edit,
+      'persons_can_fill': instance.persons_can_fill,
       'id': instance.id,
       'purItems': instance.purItems.map((e) => e.toJson()).toList(),
     };

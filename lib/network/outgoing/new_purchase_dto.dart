@@ -4,6 +4,7 @@
 
 import 'package:json_annotation/json_annotation.dart';
 import 'package:shopping_list_flutter/network/incoming/purchase_dto.dart';
+
 import 'base_purchase_dto.dart';
 import 'new_pur_item_dto.dart';
 
@@ -36,6 +37,7 @@ class NewPurchaseDto extends BasePurchaseDto {
     required this.replyto_id,
     required this.copiedfrom_id,
     required persons_can_edit,
+    required persons_can_fill,
     required this.newPurItems,
   }) : super(
           name: name,
@@ -49,6 +51,7 @@ class NewPurchaseDto extends BasePurchaseDto {
           show_state_unknown: show_state_unknown,
           show_state_stop: show_state_stop,
           persons_can_edit: persons_can_edit,
+          persons_can_fill: persons_can_fill,
         );
 
   factory NewPurchaseDto.fromPurchaseDto(PurchaseDto purchase) {
@@ -66,6 +69,7 @@ class NewPurchaseDto extends BasePurchaseDto {
       replyto_id: purchase.replyto_id,
       copiedfrom_id: purchase.copiedfrom_id,
       persons_can_edit: purchase.persons_can_edit,
+      persons_can_fill: purchase.persons_can_fill,
       newPurItems: purchase.purItems.map(NewPurItemDto.fromPurItem).toList(),
     );
   }

@@ -4,12 +4,11 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:shopping_list_flutter/network/incoming/pur_item_dto.dart';
 
-import '../../network/incoming/purchase_dto.dart';
 import '../../network/incoming/incoming_state.dart';
+import '../../network/incoming/purchase_dto.dart';
+import '../../utils/purchase_totals.dart';
 import '../../utils/theme.dart';
 import '../../utils/ui_state.dart';
-import '../../utils/purchase_totals.dart';
-
 import 'grouping.dart';
 import 'purchase_item.dart';
 
@@ -36,9 +35,8 @@ class Purchase extends HookConsumerWidget {
     purchase.weight_total = totals.tPrice;
     purchase.price_total = totals.tWeight;
 
-    recalculateTotalsSendToServer() {
-      // recalculateTotals();
-      incoming.outgoingHandlers.sendFillPurchase(purchase);
+    fillPurItem(PurItemDto purItemDto) {
+      incoming.outgoingHandlers.sendFillPurItem(purItemDto, purchase);
       ui.rebuild();
     }
 
@@ -55,7 +53,7 @@ class Purchase extends HookConsumerWidget {
                 color: Colors.white.withOpacity(isMe ? 1 : 0.8),
                 fontSize: 15,
               )),
-          ...flatOrGrouped(grouping, purchase, recalculateTotalsSendToServer),
+          ...flatOrGrouped(grouping, purchase, fillPurItem),
           Row(
               mainAxisSize: MainAxisSize.max,
               mainAxisAlignment: MainAxisAlignment.start,
@@ -107,7 +105,7 @@ class Purchase extends HookConsumerWidget {
   }
 
   Iterable<Widget> flatOrGrouped(ValueNotifier<Grouping> groupingNotifier,
-      PurchaseDto purchase, Function() recalculateTotalsSendToServer) {
+      PurchaseDto purchase, Function(PurItemDto purItemDto) fillPurItem) {
     int serno = 1;
 
     if (purchase.show_pgroup) {
@@ -136,11 +134,7 @@ class Purchase extends HookConsumerWidget {
             purchase: purchase,
             purItem: purItem,
             isMe: isMe,
-            setBought: (int newBought) {
-              purItem.bought = newBought;
-              recalculateTotalsSendToServer();
-            },
-            recalculateTotalsSendToServer: recalculateTotalsSendToServer,
+            fillPurItem: fillPurItem,
             serno: serno++,
           ));
         }
@@ -169,10 +163,7 @@ class Purchase extends HookConsumerWidget {
             purchase: purchase,
             purItem: purItem,
             isMe: isMe,
-            setBought: (int newBought) {
-              purItem.bought = newBought;
-            },
-            recalculateTotalsSendToServer: recalculateTotalsSendToServer,
+            fillPurItem: fillPurItem,
             serno: serno++,
           ));
     }

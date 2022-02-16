@@ -25,6 +25,7 @@ NewPurchaseDto _$NewPurchaseDtoFromJson(Map<String, dynamic> json) =>
             'show_state_unknown',
             'show_state_stop',
             'persons_can_edit',
+            'persons_can_fill',
             'replyto_id',
             'copiedfrom_id',
             'newPurItems'
@@ -44,6 +45,7 @@ NewPurchaseDto _$NewPurchaseDtoFromJson(Map<String, dynamic> json) =>
           replyto_id: $checkedConvert('replyto_id', (v) => v as int?),
           copiedfrom_id: $checkedConvert('copiedfrom_id', (v) => v as int?),
           persons_can_edit: $checkedConvert('persons_can_edit', (v) => v),
+          persons_can_fill: $checkedConvert('persons_can_fill', (v) => v),
           newPurItems: $checkedConvert(
               'newPurItems',
               (v) => (v as List<dynamic>)
@@ -67,6 +69,7 @@ Map<String, dynamic> _$NewPurchaseDtoToJson(NewPurchaseDto instance) =>
       'show_state_unknown': instance.show_state_unknown,
       'show_state_stop': instance.show_state_stop,
       'persons_can_edit': instance.persons_can_edit,
+      'persons_can_fill': instance.persons_can_fill,
       'replyto_id': instance.replyto_id,
       'copiedfrom_id': instance.copiedfrom_id,
       'newPurItems': instance.newPurItems.map((e) => e.toJson()).toList(),

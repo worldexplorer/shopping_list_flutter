@@ -1,4 +1,3 @@
-import 'package:fluentui_system_icons/fluentui_system_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -11,7 +10,7 @@ import '../../views/purchase/purchase.dart';
 import '../../views/purchase/purchase_edit.dart';
 
 class MessageItem extends ConsumerWidget {
-  final MessageDto message;
+  MessageDto message;
   final bool isMe;
   bool selected;
 

@@ -6,23 +6,20 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '../../network/incoming/pur_item_dto.dart';
 import '../../network/incoming/purchase_dto.dart';
 import '../../utils/theme.dart';
-import '../../utils/ui_state.dart';
 
 class PurchaseItem extends HookConsumerWidget {
   final PurchaseDto purchase;
   final PurItemDto purItem;
   final bool isMe;
   final int serno;
-  final Function(int newBought) setBought;
-  final Function() recalculateTotalsSendToServer;
+  final Function(PurItemDto purItemDto) fillPurItem;
 
   const PurchaseItem({
     Key? key,
     required this.purchase,
     required this.purItem,
     required this.isMe,
-    required this.setBought,
-    required this.recalculateTotalsSendToServer,
+    required this.fillPurItem,
     required this.serno,
   }) : super(key: key);
 
@@ -43,7 +40,7 @@ class PurchaseItem extends HookConsumerWidget {
       final newDouble = double.tryParse(updateQnty.text);
       if (newDouble != null && purItem.bought_qnty != newDouble) {
         purItem.bought_qnty = newDouble;
-        recalculateTotalsSendToServer();
+        fillPurItem(purItem);
       }
     }, [updateQnty.text]);
 
@@ -55,7 +52,7 @@ class PurchaseItem extends HookConsumerWidget {
       final newDouble = double.tryParse(updatePrice.text);
       if (newDouble != null && purItem.bought_price != newDouble) {
         purItem.bought_price = newDouble;
-        recalculateTotalsSendToServer();
+        fillPurItem(purItem);
       }
     }, [updatePrice.text]);
 
@@ -67,7 +64,7 @@ class PurchaseItem extends HookConsumerWidget {
       final newDouble = double.tryParse(updateWeight.text);
       if (newDouble != null && purItem.bought_weight != newDouble) {
         purItem.bought_weight = newDouble;
-        recalculateTotalsSendToServer();
+        fillPurItem(purItem);
       }
     }, [updateWeight.text]);
 
@@ -75,9 +72,8 @@ class PurchaseItem extends HookConsumerWidget {
       final prevBought = purItem.bought;
       final nextBought = cycle0123(
           prevBought, purchase.show_state_unknown, purchase.show_state_stop);
-      // purItem.bought = nextBoughtCheckedState;
-      setBought(nextBought);
-      // recalculateTotalsSendToServer();
+      purItem.bought = nextBought;
+      fillPurItem(purItem);
     }
 
     return
