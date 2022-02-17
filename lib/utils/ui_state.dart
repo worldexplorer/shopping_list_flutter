@@ -3,7 +3,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../views/chat/message_item.dart';
 
-final uiStateProvider = ChangeNotifierProvider((ref) => UiState());
+final uiStateProvider = ChangeNotifierProvider<UiState>((ref) => UiState());
 
 class UiState extends ChangeNotifier {
   late AnimationController? menuVisibleController;

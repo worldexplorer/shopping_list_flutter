@@ -13,8 +13,8 @@ class Log extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final ui = ref.watch(uiStateProvider);
+    final rebuildEveryBufferChanged = ref.watch(staticLoggerProvider);
 
-    // final text = StaticLogger.dumpAll('\n\n');
     final tapGlobalPosition = useState(const Offset(0, 0));
 
     return Scaffold(
