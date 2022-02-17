@@ -61,7 +61,7 @@ class IncomingState extends ChangeNotifier {
   List<MessageItem> get getMessageItems => messageItems;
 
   bool messageAddOrEdit(MessageDto msg, String msig) {
-    bool addedOrChanged = false;
+    bool rebuildUi = false;
 
     final MessageDto? prevMsg = messagesById[msg.id];
     if (prevMsg == null) {
@@ -79,7 +79,7 @@ class IncomingState extends ChangeNotifier {
       messageItemsById[msg.id] = msgItemWidget;
       messageItems.insert(0, msgItemWidget);
 
-      addedOrChanged = true;
+      rebuildUi = true;
       StaticLogger.append('      ADDED $msig');
 
       var purchase = '';
@@ -121,10 +121,10 @@ class IncomingState extends ChangeNotifier {
         changes += 'purchase.date_updated[$prevPurchase]=>[$purchase] ';
       }
       if (changes == '') {
-        StaticLogger.append('      NOT_CHANGED $msig');
+        StaticLogger.append('      NOT_CHANGED_PURITEMS_EXCLUDED $msig');
       } else {
-        StaticLogger.append('      EDITED $msig: $changes');
-        addedOrChanged = true;
+        StaticLogger.append('      EDITED_PURITEMS_EXCLUDED $msig: $changes');
+        rebuildUi = true;
       }
       messagesById[msg.id] = msg;
 
@@ -136,19 +136,20 @@ class IncomingState extends ChangeNotifier {
         String forceReRenderAfterPurItemFill =
             dateFormatterHmsMillis.format(DateTime.now());
         final msgItemWidget = MessageItem(
-          key: Key(msg.id.toString() + ':' + forceReRenderAfterPurItemFill),
+          key: Key(msg.id.toString() + '-' + forceReRenderAfterPurItemFill),
           isMe: isMyUserId(msg.user),
-          message: msg.clone(),
+          message:
+              msg, // don't msg.clone(): don't detach from messagesById[msg.id]
         );
         messageItemsById[msg.id] = msgItemWidget;
-        StaticLogger.append('         REPLACED $msig: widget.message');
+        rebuildUi = true;
+        StaticLogger.append('         REPLACED_widget.message $msig');
       } else {
-        StaticLogger.append(
-            '         NO_PURCHASE_FOUND_FOR $msig: widget.message STAYS THE SAME');
+        StaticLogger.append('         NO_WIDGET_FOUND_FOR $msig');
       }
     }
 
-    return addedOrChanged;
+    return rebuildUi;
   }
 
   clearAllMessages() {

@@ -10,7 +10,7 @@ import '../../views/purchase/purchase.dart';
 import '../../views/purchase/purchase_edit.dart';
 
 class MessageItem extends ConsumerWidget {
-  MessageDto message;
+  final MessageDto message;
   final bool isMe;
   bool selected;
 
