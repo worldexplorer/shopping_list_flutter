@@ -5,7 +5,7 @@ class StaticLogger {
   static List<String> buffer = [];
   static append(String msg) {
     final now = DateTime.now();
-    var formatter = new DateFormat('Hms');
+    var formatter = DateFormat('Hms');
     String hms = formatter.format(now);
     final timeStamp = '[$hms.${now.millisecond}]';
     var withTime = '$timeStamp $msg';

@@ -8,9 +8,9 @@ import '../../hooks/scroll_controller_for_animation.dart';
 import '../../network/incoming/incoming_state.dart';
 import '../../utils/theme.dart';
 import '../../utils/ui_state.dart';
+import '../views.dart';
 import 'chat_messages.dart';
 import 'message_input.dart';
-import '../views.dart';
 
 class ChatWrapperSlivers extends HookConsumerWidget {
   const ChatWrapperSlivers({Key? key}) : super(key: key);
@@ -119,9 +119,9 @@ class ChatWrapperSlivers extends HookConsumerWidget {
                 ),
               ],
               bottom: PreferredSize(
-                preferredSize: Size.fromHeight(debugExpanded.value ? 200 : 0),
+                preferredSize: Size.fromHeight(debugExpanded.value ? 400 : 0),
                 child: debugExpanded.value
-                    ? const Expanded(child: Log())
+                    ? const SizedBox(height: 400, child: Log())
                     : Container(),
               )),
           SliverFillRemaining(

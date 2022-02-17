@@ -6,9 +6,9 @@ import 'dart:core';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import 'views.dart';
-import '../utils/ui_state.dart';
 import '../../network/incoming/incoming.dart';
+import '../utils/ui_state.dart';
+import 'views.dart';
 
 final routerProvider = ChangeNotifierProvider<Router>((ref) => Router(ref));
 
@@ -81,7 +81,7 @@ class Router extends ChangeNotifier {
         page: Page.Log,
         title: 'Log',
         path: '/log',
-        widget: (BuildContext context) => Log(),
+        widget: (BuildContext context) => const Log(showAppBar: true),
         isSelectedInMenu: false,
         isVisibleInMenu: true);
 

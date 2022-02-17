@@ -82,3 +82,10 @@ const double priceColumnWidth = 80;
 const double weightColumnWidth = 75;
 
 const double iconSize = 24;
+
+TextStyle logRecordStyle = GoogleFonts.poppins(
+  color: Colors.black,
+  fontSize: 13.0,
+  // letterSpacing: 1,
+  // wordSpacing: 1,
+);
