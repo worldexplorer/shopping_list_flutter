@@ -1,14 +1,12 @@
 import 'package:flutter/foundation.dart';
-import 'package:intl/intl.dart';
+import 'package:shopping_list_flutter/utils/theme.dart';
 
 class StaticLogger {
   static List<String> buffer = [];
   static append(String msg) {
-    final now = DateTime.now();
-    var formatter = DateFormat('Hms');
-    String hms = formatter.format(now);
-    final timeStamp = '[$hms.${now.millisecond}]';
-    var withTime = '$timeStamp $msg';
+    // final dateFormatterHms = DateFormat('Hms');
+    String nowHms = dateFormatterHmsMillis.format(DateTime.now());
+    var withTime = '[$nowHms] $msg';
     debugPrint(withTime);
     buffer.add(withTime);
   }

@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 
 ThemeData theme(BuildContext _) {
   return ThemeData(
@@ -89,3 +90,5 @@ TextStyle logRecordStyle = GoogleFonts.poppins(
   // letterSpacing: 1,
   // wordSpacing: 1,
 );
+
+final dateFormatterHmsMillis = DateFormat('HH:mm:ss.SSS');

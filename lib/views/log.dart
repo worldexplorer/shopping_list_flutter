@@ -25,15 +25,6 @@ class Log extends HookConsumerWidget {
           : null,
       body: Container(
         margin: const EdgeInsets.all(15.0),
-        // padding: const EdgeInsets.all(3.0),
-        // decoration: BoxDecoration(
-        //   border: Border.all(
-        //     color: Colors.blue,
-        //     width: 1,
-        //   ),
-        // ),
-        // child: SingleChildScrollView(
-        //   scrollDirection: Axis.vertical,
         child: wrapWithContextMenu(
           child: ListView.builder(
             scrollDirection: Axis.vertical,

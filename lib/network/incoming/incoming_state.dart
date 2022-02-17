@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:shopping_list_flutter/utils/theme.dart';
 import 'package:shopping_list_flutter/utils/ui_state.dart';
 
 import '../../utils/static_logger.dart';
@@ -64,7 +65,7 @@ class IncomingState extends ChangeNotifier {
 
     final MessageDto? prevMsg = messagesById[msg.id];
     if (prevMsg == null) {
-      final widget = MessageItem(
+      final msgItemWidget = MessageItem(
         key: Key(msg.id.toString()),
         isMe: isMyUserId(msg.user),
         message: msg.clone(),
@@ -75,8 +76,8 @@ class IncomingState extends ChangeNotifier {
         messagesUnreadById[msg.id] = msg;
       }
 
-      messageItemsById[msg.id] = widget;
-      messageItems.insert(0, widget);
+      messageItemsById[msg.id] = msgItemWidget;
+      messageItems.insert(0, msgItemWidget);
 
       addedOrChanged = true;
       StaticLogger.append('      ADDED $msig');
@@ -129,16 +130,17 @@ class IncomingState extends ChangeNotifier {
 
       var widget = messageItemsById[msg.id];
       if (widget != null) {
-        // no need to find widget in messageItems and re-insert a new instance
-        //v1
-        widget.message = msg;
-        //v2
-        // final widget = MessageItem(
-        //   key: Key(msg.id.toString()),
-        //   isMe: isMyUserId(msg.user),
-        //   message: msg.clone(),
-        // );
-        // messageItemsById[msg.id] = widget;
+        //v1 hoping there is no need to find widget in messageItems and re-insert a new instance
+        // widget.message = msg;
+        //v2 after purItemFill() I receive the updated message => replace & force re-render (new key!!!)
+        String forceReRenderAfterPurItemFill =
+            dateFormatterHmsMillis.format(DateTime.now());
+        final msgItemWidget = MessageItem(
+          key: Key(msg.id.toString() + ':' + forceReRenderAfterPurItemFill),
+          isMe: isMyUserId(msg.user),
+          message: msg.clone(),
+        );
+        messageItemsById[msg.id] = msgItemWidget;
         StaticLogger.append('         REPLACED $msig: widget.message');
       } else {
         StaticLogger.append(
@@ -266,13 +268,13 @@ class IncomingState extends ChangeNotifier {
       purchase: newPurchase,
     );
 
-    final widget = MessageItem(
+    final msgItemWidget = MessageItem(
       key: Key(newMessage.id.toString()),
       isMe: true,
       message: newMessage,
     );
 
-    newPurchaseMessageItem = widget;
+    newPurchaseMessageItem = msgItemWidget;
   }
 
   final Map<int, RoomDto> roomsById = <int, RoomDto>{};
