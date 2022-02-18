@@ -12,7 +12,7 @@ class UiState extends ChangeNotifier {
   int isEditingMessageId = 0;
   int? isReplyingToMessageId;
 
-  final messagesSelected = <int, MessageItem>{};
+  final messagesSelected = <int, MessageWidget>{};
 
   bool isSingleSelected(int messageId) {
     return messagesSelected.length == 1 &&

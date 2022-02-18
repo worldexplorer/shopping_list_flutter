@@ -1,17 +1,16 @@
 import '../../utils/static_logger.dart';
 import '../common/typing_dto.dart';
-import '../outgoing/outgoing_handlers.dart';
 import '../connection_state.dart';
-
+import '../outgoing/outgoing_handlers.dart';
 import 'archived_messages_dto.dart';
-import 'user_dto.dart';
 import 'deleted_messages_dto.dart';
 import 'incoming_state.dart';
 import 'message_dto.dart';
-import 'room_dto.dart';
-import 'update_messages_read_dto.dart';
 import 'messages_dto.dart';
+import 'room_dto.dart';
 import 'rooms_dto.dart';
+import 'update_messages_read_dto.dart';
+import 'user_dto.dart';
 
 class IncomingHandlers {
   ConnectionState connectionState;
@@ -163,7 +162,7 @@ class IncomingHandlers {
         final msig =
             ' onMessagesReadUpdated($counter): $msgId: ${msg.persons_read}';
 
-        final MessageDto? existingMsg = incomingState.messagesById[msgId];
+        final MessageDto? existingMsg = incomingState.messageDtoById[msgId];
         if (existingMsg == null) {
           StaticLogger.append('      $msig: messagesById[$msgId] NOT FOUND');
           continue;
@@ -204,7 +203,7 @@ class IncomingHandlers {
         int msgId = msgsArchived.messageIds[i - 1];
         final msig = ' onArchivedMessages($counter): $msgId';
 
-        final MessageDto? existingMsg = incomingState.messagesById[msgId];
+        final MessageDto? existingMsg = incomingState.messageDtoById[msgId];
         if (existingMsg == null) {
           StaticLogger.append('      $msig: messagesById[$msgId] NOT FOUND');
           continue;
@@ -244,7 +243,7 @@ class IncomingHandlers {
         int msgId = msgsDeleted.messageIds[i - 1];
         final msig = ' onDeletedMessages($counter): $msgId';
 
-        final MessageDto? existingMsg = incomingState.messagesById[msgId];
+        final MessageDto? existingMsg = incomingState.messageDtoById[msgId];
         if (existingMsg == null) {
           StaticLogger.append('      $msig: messagesById[$msgId] NOT FOUND');
           continue;

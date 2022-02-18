@@ -3,12 +3,11 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:shopping_list_flutter/utils/static_logger.dart';
 
-import '../../utils/theme.dart';
-import '../../utils/ui_state.dart';
-import '../../network/incoming/purchase_dto.dart';
 import '../../network/incoming/incoming_state.dart';
 import '../../network/incoming/pur_item_dto.dart';
-
+import '../../network/incoming/purchase_dto.dart';
+import '../../utils/theme.dart';
+import '../../utils/ui_state.dart';
 import 'grouping.dart';
 import 'pgroup_edit.dart';
 import 'purchase_item_edit.dart';
@@ -78,9 +77,9 @@ class PurchaseEdit extends HookConsumerWidget {
           //TODO: move to incomingHandlers.onPurchaseEdited
           ui.messagesSelected.remove(purchase.message);
 
-          final indexFound = incoming.messageItems
+          final indexFound = incoming.messageWidgets
               .indexWhere((x) => x.message.id == messageId);
-          incoming.messageItems[indexFound].selected = false;
+          incoming.messageWidgets[indexFound].selected = false;
           ui.rebuild();
         } catch (e) {
           StaticLogger.append(
@@ -95,9 +94,9 @@ class PurchaseEdit extends HookConsumerWidget {
       } else {
         ui.messagesSelected.remove(messageId);
 
-        final msgItem = incoming.messageItemsById[messageId];
-        if (msgItem != null) {
-          msgItem.selected = false;
+        final msgWidget = incoming.messageWidgetById[messageId];
+        if (msgWidget != null) {
+          msgWidget.selected = false;
         }
 
         ui.rebuild();

@@ -95,7 +95,7 @@ class OutgoingHandlers {
   }
 
   sendMarkMessagesRead() {
-    if (incomingState.messagesUnreadById.isEmpty) {
+    if (incomingState.messagesDtoUnreadById.isEmpty) {
       return;
     }
 
@@ -103,7 +103,7 @@ class OutgoingHandlers {
     if (unreadMsgIds.isEmpty) {
       StaticLogger.append(
           '-- MARK_MESSAGE_READ all messages already marked READ:'
-          ' unreadMsgIds[0] while messagesUnreadById[${incomingState.messagesUnreadById.length}]'
+          ' unreadMsgIds[0] while messagesUnreadById[${incomingState.messagesDtoUnreadById.length}]'
           ' for userId[${incomingState.userId}]');
       return;
     }

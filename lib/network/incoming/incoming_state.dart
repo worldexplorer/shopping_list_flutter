@@ -45,39 +45,40 @@ class IncomingState extends ChangeNotifier {
     notifyListeners();
   }
 
-  final Map<int, MessageDto> messagesUnreadById = <int, MessageDto>{};
+  final Map<int, MessageDto> messagesDtoUnreadById = <int, MessageDto>{};
   List<int> getOnlyUnreadMessages() {
-    final List<MessageDto> all = messagesUnreadById.values.toList();
+    final List<MessageDto> all = messagesDtoUnreadById.values.toList();
     final List<MessageDto> unread =
         all.where((x) => !x.persons_read.contains(userId)).toList();
     final List<int> unreadMsgIds = unread.map((y) => y.id).toList();
     return unreadMsgIds;
   }
 
-  final Map<int, MessageDto> messagesById = <int, MessageDto>{};
-  final Map<int, MessageItem> messageItemsById = <int, MessageItem>{};
-  // Iterable<MessageItem> get getMessageItems => _messageItemsById.values;
-  final List<MessageItem> messageItems = [];
-  List<MessageItem> get getMessageItems => messageItems;
+  final Map<int, MessageDto> messageDtoById = <int, MessageDto>{};
+  final Map<int, MessageWidget> messageWidgetById = <int, MessageWidget>{};
+  // Iterable<MessageItem> get msg.id.toString() => _messageWidgetsById.values;
+  final List<MessageWidget> messageWidgets = [];
+  List<MessageWidget> get getMessageWidgets => messageWidgets;
 
   bool messageAddOrEdit(MessageDto msg, String msig) {
     bool rebuildUi = false;
 
-    final MessageDto? prevMsg = messagesById[msg.id];
+    final MessageDto? prevMsg = messageDtoById[msg.id];
     if (prevMsg == null) {
-      final msgItemWidget = MessageItem(
+      final msgWidget = MessageWidget(
         key: Key(msg.id.toString()),
         isMe: isMyUserId(msg.user),
-        message: msg.clone(),
+        message:
+            msg, // don't msg.clone(): don't detach from messagesById[msg.id]
       );
 
-      messagesById[msg.id] = msg;
+      messageDtoById[msg.id] = msg;
       if (!msg.persons_read.contains(userId)) {
-        messagesUnreadById[msg.id] = msg;
+        messagesDtoUnreadById[msg.id] = msg;
       }
 
-      messageItemsById[msg.id] = msgItemWidget;
-      messageItems.insert(0, msgItemWidget);
+      messageWidgetById[msg.id] = msgWidget;
+      messageWidgets.insert(0, msgWidget);
 
       rebuildUi = true;
       StaticLogger.append('      ADDED $msig');
@@ -121,29 +122,41 @@ class IncomingState extends ChangeNotifier {
         changes += 'purchase.date_updated[$prevPurchase]=>[$purchase] ';
       }
       if (changes == '') {
-        StaticLogger.append('      NOT_CHANGED_PURITEMS_EXCLUDED $msig');
+        StaticLogger.append('      NOT_CHANGED(PURITEMS_EXCLUDED) $msig');
       } else {
-        StaticLogger.append('      EDITED_PURITEMS_EXCLUDED $msig: $changes');
+        StaticLogger.append('      EDITED(PURITEMS_EXCLUDED) $msig: $changes');
         rebuildUi = true;
       }
-      messagesById[msg.id] = msg;
+      messageDtoById[msg.id] = msg;
 
-      var widget = messageItemsById[msg.id];
+      final widget = messageWidgetById[msg.id];
       if (widget != null) {
-        //v1 hoping there is no need to find widget in messageItems and re-insert a new instance
+        //v1 hoping there is no need to find widget in messageWidgets and re-insert a new instance
         // widget.message = msg;
         //v2 after purItemFill() I receive the updated message => replace & force re-render (new key!!!)
         String forceReRenderAfterPurItemFill =
             dateFormatterHmsMillis.format(DateTime.now());
-        final msgItemWidget = MessageItem(
-          key: Key(msg.id.toString() + '-' + forceReRenderAfterPurItemFill),
+        String newKey = msg.id.toString() + '-' + forceReRenderAfterPurItemFill;
+        final msgWidget = MessageWidget(
+          key: Key(newKey),
           isMe: isMyUserId(msg.user),
           message:
               msg, // don't msg.clone(): don't detach from messagesById[msg.id]
         );
-        messageItemsById[msg.id] = msgItemWidget;
-        rebuildUi = true;
-        StaticLogger.append('         REPLACED_widget.message $msig');
+        messageWidgetById[msg.id] = msgWidget;
+
+        // 1) after I edited a message, server sends new MessageDto
+        // 2) new widget was created with new text => we replace unedited copy for chat.dart
+        final indexFound =
+            messageWidgets.indexWhere((x) => x.message.id == msg.id);
+        if (indexFound >= 0) {
+          messageWidgets[indexFound] = msgWidget;
+          rebuildUi = true;
+          StaticLogger.append(
+              '         REPLACED with new msgWidget[key=$newKey] $msig');
+        } else {
+          StaticLogger.append('         NO_WIDGET_FOUND_FOR $msig');
+        }
       } else {
         StaticLogger.append('         NO_WIDGET_FOUND_FOR $msig');
       }
@@ -153,18 +166,18 @@ class IncomingState extends ChangeNotifier {
   }
 
   clearAllMessages() {
-    messagesUnreadById.clear();
-    messagesById.clear();
-    messageItemsById.clear();
-    messageItems.clear();
+    messagesDtoUnreadById.clear();
+    messageDtoById.clear();
+    messageWidgetById.clear();
+    messageWidgets.clear();
     notifyListeners();
   }
 
   String removeMessageFromMessagesUnreadById(int msgId) {
     var log = '';
 
-    if (messagesUnreadById.containsKey(msgId)) {
-      messagesUnreadById.remove(msgId);
+    if (messagesDtoUnreadById.containsKey(msgId)) {
+      messagesDtoUnreadById.remove(msgId);
       log += ' REMOVED from messagesUnreadById;';
     } else {
       log += ' NOT_FOUND_IN messagesUnreadById;';
@@ -176,45 +189,45 @@ class IncomingState extends ChangeNotifier {
   String removeMessageFromAllMaps(int msgId) {
     var log = '';
 
-    if (messagesById.containsKey(msgId)) {
-      messagesById.remove(msgId);
+    if (messageDtoById.containsKey(msgId)) {
+      messageDtoById.remove(msgId);
       log += ' REMOVED from messagesById;';
     } else {
       log += ' NOT_FOUND_IN messagesById;';
     }
 
-    if (messagesUnreadById.containsKey(msgId)) {
-      messagesUnreadById.remove(msgId);
+    if (messagesDtoUnreadById.containsKey(msgId)) {
+      messagesDtoUnreadById.remove(msgId);
       log += ' REMOVED from messagesUnreadById;';
     } else {
       log += ' NOT_FOUND_IN messagesUnreadById;';
     }
 
-    if (messageItemsById.containsKey(msgId)) {
-      messageItemsById.remove(msgId);
-      log += ' REMOVED from messageItemsById;';
+    if (messageWidgetById.containsKey(msgId)) {
+      messageWidgetById.remove(msgId);
+      log += ' REMOVED from messageWidgetsById;';
     } else {
-      log += ' NOT_FOUND_IN messageItemsById;';
+      log += ' NOT_FOUND_IN messageWidgetsById;';
     }
 
-    final indexFound = messageItems.indexWhere((x) => x.message.id == msgId);
+    final indexFound = messageWidgets.indexWhere((x) => x.message.id == msgId);
     if (indexFound >= 0) {
-      messageItems.removeAt(indexFound);
-      log += ' REMOVED from messageItems;';
+      messageWidgets.removeAt(indexFound);
+      log += ' REMOVED from messageWidgets;';
     } else {
-      log += ' NOT_FOUND_IN messageItems;';
+      log += ' NOT_FOUND_IN messageWidgets;';
     }
     return log;
   }
 
-  MessageItem? _newPurchaseMessageItem;
-  MessageItem? get newPurchaseMessageItem => _newPurchaseMessageItem;
-  set newPurchaseMessageItem(MessageItem? val) {
+  MessageWidget? _newPurchaseMessageItem;
+  MessageWidget? get newPurchaseMessageItem => _newPurchaseMessageItem;
+  set newPurchaseMessageItem(MessageWidget? val) {
     _newPurchaseMessageItem = val;
     notifyListeners();
   }
 
-  bool editingNewPurchase(MessageItem mi) {
+  bool editingNewPurchase(MessageWidget mi) {
     return newPurchaseMessageItem != null && newPurchaseMessageItem == mi;
   }
 
@@ -269,13 +282,13 @@ class IncomingState extends ChangeNotifier {
       purchase: newPurchase,
     );
 
-    final msgItemWidget = MessageItem(
+    final msgWidget = MessageWidget(
       key: Key(newMessage.id.toString()),
       isMe: true,
       message: newMessage,
     );
 
-    newPurchaseMessageItem = msgItemWidget;
+    newPurchaseMessageItem = msgWidget;
   }
 
   final Map<int, RoomDto> roomsById = <int, RoomDto>{};
@@ -296,7 +309,7 @@ class IncomingState extends ChangeNotifier {
     }
     _currentRoomId = val;
 
-    messagesById.clear();
+    messageDtoById.clear();
     outgoingHandlers.sendGetMessages(_currentRoomId, 0);
 
     notifyListeners();

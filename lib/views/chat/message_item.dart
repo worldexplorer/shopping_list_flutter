@@ -9,12 +9,12 @@ import '../../utils/ui_state.dart';
 import '../../views/purchase/purchase.dart';
 import '../../views/purchase/purchase_edit.dart';
 
-class MessageItem extends ConsumerWidget {
+class MessageWidget extends ConsumerWidget {
   final MessageDto message;
   final bool isMe;
   bool selected;
 
-  MessageItem({
+  MessageWidget({
     Key? key,
     required this.message,
     this.isMe = false,

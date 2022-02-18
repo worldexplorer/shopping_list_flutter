@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import '../../utils/theme.dart';
+import '../../hooks/scroll_controller_for_animation.dart';
+import '../../network/incoming/incoming_state.dart';
 import '../../utils/static_logger.dart';
+import '../../utils/theme.dart';
 import '../../utils/ui_state.dart';
 import '../../views/chat/message_item.dart';
 import '../../widget/context_menu.dart';
-import '../../hooks/scroll_controller_for_animation.dart';
-import '../../network/incoming/incoming_state.dart';
 
 class ChatMessages extends HookConsumerWidget {
   const ChatMessages({Key? key}) : super(key: key);
@@ -32,20 +32,20 @@ class ChatMessages extends HookConsumerWidget {
     return ListView.builder(
       controller: scrollController,
       reverse: true,
-      itemCount: incoming.getMessageItems.length,
+      itemCount: incoming.getMessageWidgets.length,
       itemBuilder: (BuildContext context, int index) {
-        final MessageItem msgItem = incoming.getMessageItems[index];
-        Widget dismissibleMsgItem =
-            makeDismissible(context, ref, incoming.getMessageItems, index);
+        final MessageWidget msgWidget = incoming.getMessageWidgets[index];
+        Widget dismissibleMsgWidget =
+            makeDismissible(context, ref, incoming.getMessageWidgets, index);
         Widget ret = addLongTapSelection(
-            dismissibleMsgItem, msgItem, ref, context, tapGlobalPosition);
+            dismissibleMsgWidget, msgWidget, ref, context, tapGlobalPosition);
         return ret;
       },
     );
   }
 
-  Widget makeDismissible(
-      BuildContext context, WidgetRef ref, List<MessageItem> items, index) {
+  Widget makeDismissible(BuildContext context, WidgetRef ref,
+      List<MessageWidget> msgWidgets, index) {
     final ui = ref.watch(uiStateProvider);
     final incoming = ref.watch(incomingStateProvider);
 
@@ -59,10 +59,10 @@ class ChatMessages extends HookConsumerWidget {
       fontSize: 18,
     );
 
-    final msgItem = items[index];
+    final msgWidget = msgWidgets[index];
     return Dismissible(
         // Each Dismissible must contain a Key. Keys allow Flutter to uniquely identify widgets.
-        key: Key(msgItem.message.id.toString()),
+        key: Key(msgWidget.message.id.toString()),
         secondaryBackground: Container(
           color: chatMessageReply,
           padding: const EdgeInsets.symmetric(horizontal: 10),
@@ -101,11 +101,11 @@ class ChatMessages extends HookConsumerWidget {
                 ],
               )));
 
-              ui.isReplyingToMessageId = msgItem.message.id;
+              ui.isReplyingToMessageId = msgWidget.message.id;
 
               // HACK to reset ui.isReplyingToMessageId = NULL
-              ui.messagesSelected.addAll({msgItem.message.id: msgItem});
-              msgItem.selected = true;
+              ui.messagesSelected.addAll({msgWidget.message.id: msgWidget});
+              msgWidget.selected = true;
 
               ui.rebuild();
               //TODO popup soft keyboard to reply
@@ -116,9 +116,9 @@ class ChatMessages extends HookConsumerWidget {
         onDismissed: (direction) {
           switch (direction) {
             case DismissDirection.startToEnd:
-              items.removeAt(index);
+              msgWidgets.removeAt(index);
               incoming.outgoingHandlers.sendArchiveMessages(
-                  [msgItem.message.id], incoming.userId, true);
+                  [msgWidget.message.id], incoming.userId, true);
 
               ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                   content: Row(
@@ -129,7 +129,7 @@ class ChatMessages extends HookConsumerWidget {
                     style: snackBarDismissedTextStyle,
                   ),
                   const SizedBox(width: 40),
-                  items[index] != msgItem
+                  msgWidgets[index] != msgWidget
                       ? Row(mainAxisSize: MainAxisSize.min, children: [
                           IconButton(
                             icon: const Icon(
@@ -138,10 +138,12 @@ class ChatMessages extends HookConsumerWidget {
                             ),
                             onPressed: () {
                               incoming.outgoingHandlers.sendArchiveMessages(
-                                  [msgItem.message.id], incoming.userId, false);
+                                  [msgWidget.message.id],
+                                  incoming.userId,
+                                  false);
 
-                              if (items[index] != msgItem) {
-                                items.insert(index, msgItem);
+                              if (msgWidgets[index] != msgWidget) {
+                                msgWidgets.insert(index, msgWidget);
                                 ui.rebuild();
                               }
                             },
@@ -157,12 +159,12 @@ class ChatMessages extends HookConsumerWidget {
               break;
           }
         },
-        child: msgItem);
+        child: msgWidget);
   }
 
   Widget addLongTapSelection(
-    Widget dismissibleMsgItem,
-    MessageItem msgItem,
+    Widget dismissibleMsgWidget,
+    MessageWidget msgWidget,
     WidgetRef ref,
     BuildContext context,
     ValueNotifier<Offset> tapGlobalPosition,
@@ -176,10 +178,10 @@ class ChatMessages extends HookConsumerWidget {
         tapGlobalPosition.value = details.globalPosition;
       },
       onTapUp: (TapUpDetails details) {
-        if (msgItem.selected) {
-          messagesSelected.remove(msgItem.message.id);
-          msgItem.selected = false;
-          if (ui.msgInputCtrl.text == msgItem.message.content) {
+        if (msgWidget.selected) {
+          messagesSelected.remove(msgWidget.message.id);
+          msgWidget.selected = false;
+          if (ui.msgInputCtrl.text == msgWidget.message.content) {
             ui.msgInputCtrl.text = '';
           }
           ui.isReplyingToMessageId = null;
@@ -191,8 +193,8 @@ class ChatMessages extends HookConsumerWidget {
               messagesSelected.remove(first.message.id);
               first.selected = false;
             } else {
-              messagesSelected.addAll({msgItem.message.id: msgItem});
-              msgItem.selected = true;
+              messagesSelected.addAll({msgWidget.message.id: msgWidget});
+              msgWidget.selected = true;
             }
           }
         }
@@ -201,7 +203,7 @@ class ChatMessages extends HookConsumerWidget {
       onLongPress: () async {
         HapticFeedback.vibrate();
 
-        MessageItem? singlePrevSelected = messagesSelected.length == 1
+        MessageWidget? singlePrevSelected = messagesSelected.length == 1
             ? messagesSelected.values.toList()[0]
             : null;
 
@@ -213,27 +215,27 @@ class ChatMessages extends HookConsumerWidget {
         }
         messagesSelected.clear();
 
-        if (singlePrevSelected == msgItem) {
+        if (singlePrevSelected == msgWidget) {
           ui.rebuild();
           return;
         }
 
-        if (msgItem.isMe &&
-            msgItem.message.purchaseId == null &&
+        if (msgWidget.isMe &&
+            msgWidget.message.purchaseId == null &&
             messagesSelected.isEmpty &&
             ui.msgInputCtrl.text == '') {
-          ui.msgInputCtrl.text = msgItem.message.content;
-          ui.isEditingMessageId = msgItem.message.id;
+          ui.msgInputCtrl.text = msgWidget.message.content;
+          ui.isEditingMessageId = msgWidget.message.id;
           // TODO: open soft keyboard
         }
 
-        messagesSelected.addAll({msgItem.message.id: msgItem});
-        msgItem.selected = true;
+        messagesSelected.addAll({msgWidget.message.id: msgWidget});
+        msgWidget.selected = true;
 
         ui.rebuild();
 
-        if (!msgItem.isMe && msgItem.message.purchase == null) {
-          await addPopupMenu(msgItem, context, ref, tapGlobalPosition);
+        if (!msgWidget.isMe && msgWidget.message.purchase == null) {
+          await addPopupMenu(msgWidget, context, ref, tapGlobalPosition);
         }
       },
       child: Container(
@@ -243,13 +245,13 @@ class ChatMessages extends HookConsumerWidget {
               16,
               16,
               16),
-          color: msgItem.selected ? chatMessageSelected : Colors.transparent,
-          child: dismissibleMsgItem),
+          color: msgWidget.selected ? chatMessageSelected : Colors.transparent,
+          child: dismissibleMsgWidget),
     );
   }
 
   addPopupMenu(
-    MessageItem msgItem,
+    MessageWidget msgWidget,
     BuildContext context,
     WidgetRef ref,
     ValueNotifier<Offset> tapGlobalPosition,
@@ -272,7 +274,7 @@ class ChatMessages extends HookConsumerWidget {
       () {
         StaticLogger.append('Archive$suffix');
         incoming.outgoingHandlers
-            .sendArchiveMessages([msgItem.message.id], incoming.userId, true);
+            .sendArchiveMessages([msgWidget.message.id], incoming.userId, true);
       },
     );
     final replyCtx = CtxMenuItem(
@@ -292,7 +294,7 @@ class ChatMessages extends HookConsumerWidget {
       () {
         StaticLogger.append('Delete$suffix');
         incoming.outgoingHandlers
-            .sendDeleteMessages([msgItem.message.id], incoming.userId);
+            .sendDeleteMessages([msgWidget.message.id], incoming.userId);
       },
     );
 
