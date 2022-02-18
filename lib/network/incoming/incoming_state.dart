@@ -60,32 +60,32 @@ class IncomingState extends ChangeNotifier {
   final List<MessageWidget> messageWidgets = [];
   List<MessageWidget> get getMessageWidgets => messageWidgets;
 
-  bool messageAddOrEdit(MessageDto msg, String msig) {
+  bool messageAddOrEdit(MessageDto msgReceived, String msig) {
     bool rebuildUi = false;
 
-    final MessageDto? prevMsg = messageDtoById[msg.id];
+    final MessageDto? prevMsg = messageDtoById[msgReceived.id];
     if (prevMsg == null) {
       final msgWidget = MessageWidget(
-        key: Key(msg.id.toString()),
-        isMe: isMyUserId(msg.user),
+        key: Key(msgReceived.id.toString()),
+        isMe: isMyUserId(msgReceived.user),
         message:
-            msg, // don't msg.clone(): don't detach from messagesById[msg.id]
+            msgReceived, // don't msg.clone(): don't detach from messagesById[msg.id]
       );
 
-      messageDtoById[msg.id] = msg;
-      if (!msg.persons_read.contains(userId)) {
-        messagesDtoUnreadById[msg.id] = msg;
+      messageDtoById[msgReceived.id] = msgReceived;
+      if (!msgReceived.persons_read.contains(userId)) {
+        messagesDtoUnreadById[msgReceived.id] = msgReceived;
       }
 
-      messageWidgetById[msg.id] = msgWidget;
+      messageWidgetById[msgReceived.id] = msgWidget;
       messageWidgets.insert(0, msgWidget);
 
       rebuildUi = true;
       StaticLogger.append('      ADDED $msig');
 
       var purchase = '';
-      if (msg.purchase != null) {
-        final pur = msg.purchase!;
+      if (msgReceived.purchase != null) {
+        final pur = msgReceived.purchase!;
         purchase += '${pur.name} puritems[${pur.purItems.length}]';
         purchase += pur.purItems.map((PurItemDto x) {
           final qnty =
@@ -105,20 +105,21 @@ class IncomingState extends ChangeNotifier {
       }
     } else {
       String changes = '';
-      if (prevMsg.content != msg.content) {
-        changes += '[${prevMsg.content}]=>[${msg.content}] ';
+      if (prevMsg.content != msgReceived.content) {
+        changes += '[${prevMsg.content}]=>[${msgReceived.content}] ';
       }
-      if (prevMsg.edited != msg.edited) {
-        changes += 'edited[${msg.edited}] ';
+      if (prevMsg.edited != msgReceived.edited) {
+        changes += 'edited[${msgReceived.edited}] ';
       }
-      if (prevMsg.purchase?.name != msg.purchase?.name) {
+      if (prevMsg.purchase?.name != msgReceived.purchase?.name) {
         String prevPurchase = prevMsg.purchase?.name ?? 'NONE';
-        String purchase = msg.purchase?.name ?? 'NONE';
+        String purchase = msgReceived.purchase?.name ?? 'NONE';
         changes += 'purchase[$prevPurchase]=>[$purchase] ';
       }
-      if (prevMsg.purchase?.date_updated != msg.purchase?.date_updated) {
+      if (prevMsg.purchase?.date_updated !=
+          msgReceived.purchase?.date_updated) {
         DateTime? prevPurchase = prevMsg.purchase?.date_updated;
-        DateTime? purchase = msg.purchase?.date_updated;
+        DateTime? purchase = msgReceived.purchase?.date_updated;
         changes += 'purchase.date_updated[$prevPurchase]=>[$purchase] ';
       }
       if (changes == '') {
@@ -127,38 +128,41 @@ class IncomingState extends ChangeNotifier {
         StaticLogger.append('      EDITED(PURITEMS_EXCLUDED) $msig: $changes');
         rebuildUi = true;
       }
-      messageDtoById[msg.id] = msg;
+      messageDtoById[msgReceived.id] = msgReceived;
 
-      final widget = messageWidgetById[msg.id];
+      final widget = messageWidgetById[msgReceived.id];
       if (widget != null) {
         //v1 hoping there is no need to find widget in messageWidgets and re-insert a new instance
         // widget.message = msg;
         //v2 after purItemFill() I receive the updated message => replace & force re-render (new key!!!)
         String forceReRenderAfterPurItemFill =
             dateFormatterHmsMillis.format(DateTime.now());
-        String newKey = msg.id.toString() + '-' + forceReRenderAfterPurItemFill;
-        final msgWidget = MessageWidget(
-          key: Key(newKey),
-          isMe: isMyUserId(msg.user),
+        String key =
+            msgReceived.id.toString() + '-' + forceReRenderAfterPurItemFill;
+        final replacementMsgWidget = MessageWidget(
+          key: Key(key),
+          isMe: isMyUserId(msgReceived.user),
           message:
-              msg, // don't msg.clone(): don't detach from messagesById[msg.id]
+              msgReceived, // don't msg.clone(): don't detach from messagesById[msg.id]
         );
-        messageWidgetById[msg.id] = msgWidget;
+        messageWidgetById[msgReceived.id] = replacementMsgWidget;
 
         // 1) after I edited a message, server sends new MessageDto
         // 2) new widget was created with new text => we replace unedited copy for chat.dart
         final indexFound =
-            messageWidgets.indexWhere((x) => x.message.id == msg.id);
+            messageWidgets.indexWhere((x) => x.message.id == msgReceived.id);
         if (indexFound >= 0) {
-          messageWidgets[indexFound] = msgWidget;
+          messageWidgets[indexFound] = replacementMsgWidget;
           rebuildUi = true;
-          StaticLogger.append(
-              '         REPLACED with new msgWidget[key=$newKey] $msig');
+          final what = 'newMsgWidget[key=$key]';
+          StaticLogger.append('         REPLACED $what $msig');
         } else {
-          StaticLogger.append('         NO_WIDGET_FOUND_FOR $msig');
+          StaticLogger.append('         NO_messageWidget_FOUND $msig');
         }
       } else {
-        StaticLogger.append('         NO_WIDGET_FOUND_FOR $msig');
+        final where =
+            'NO_messageWidget_FOUND messageWidgetById[${msgReceived.id}]';
+        StaticLogger.append('         LOOKUP_MAP_UNSYNC: $where $msig');
       }
     }
 

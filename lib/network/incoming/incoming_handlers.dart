@@ -96,7 +96,8 @@ class IncomingHandlers {
     StaticLogger.append('> MESSAGE [$data]');
     try {
       MessageDto msg = MessageDto.fromJson(data);
-      final msig = ' onMessage(): ${msg.user_name}: ${msg.content}';
+      final msig =
+          ' onMessage(): msgId[${msg.id}] ${msg.user_name}: ${msg.content}';
 
       bool rebuildUi = incomingState.messageAddOrEdit(msg, msig);
 
@@ -125,7 +126,8 @@ class IncomingHandlers {
       for (; i <= total; i++) {
         final counter = '$i/$total';
         MessageDto msg = msgs.messages[i - 1];
-        final msig = ' onMessages($counter): ${msg.user_name}: ${msg.content}';
+        final msig =
+            ' onMessages($counter/$total): msgId[${msg.id}] ${msg.user_name}: ${msg.content}';
 
         final addedOrChanged = incomingState.messageAddOrEdit(msg, msig);
         if (addedOrChanged) {

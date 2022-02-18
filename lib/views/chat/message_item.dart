@@ -80,7 +80,7 @@ class MessageWidget extends ConsumerWidget {
                                 scrollDirection: Axis.vertical,
                                 child: PurchaseEdit(
                                   // after SAVE, Purchase() will receive a new incoming...message.purchase
-                                  purchase: message.purchase!.clone(),
+                                  purchaseToClone: message.purchase!,
                                   messageId: message.id,
                                 ))
                             : Purchase(

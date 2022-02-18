@@ -13,20 +13,27 @@ import 'pgroup_edit.dart';
 import 'purchase_item_edit.dart';
 
 class PurchaseEdit extends HookConsumerWidget {
-  final PurchaseDto purchase;
+  late PurchaseDto purchaseClone;
+
+  final PurchaseDto purchaseToClone;
   final int messageId;
   // final PurItemDto? newItemToFocus;
 
-  const PurchaseEdit({
+  PurchaseEdit({
     Key? key,
-    required this.purchase,
+    required this.purchaseToClone,
     required this.messageId,
-  }) : super(key: key);
+  }) : super(key: key) {
+    purchaseClone = purchaseToClone.clone();
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final ui = ref.watch(uiStateProvider);
     final incoming = ref.watch(incomingStateProvider);
+
+    final purchaseState = useState(purchaseClone);
+    final purchase = purchaseState.value;
 
     final settingsExpanded = useState(true);
     final grouping = useState(Grouping(purchase.purItems));
@@ -147,7 +154,7 @@ class PurchaseEdit extends HookConsumerWidget {
                     onPressed: onSaveButtonPressed),
               ]),
           const SizedBox(height: 5),
-          ...flatOrGrouped(grouping, ui, pgroupFocused, addProduct),
+          ...flatOrGrouped(grouping, purchase, ui, pgroupFocused, addProduct),
           const SizedBox(height: 5),
           if (settingsExpanded.value)
             // Wrap(
@@ -195,6 +202,8 @@ class PurchaseEdit extends HookConsumerWidget {
                           purchase.show_state_stop = newShowStateStop;
                           ui.newPurchaseSettings.showStateStop =
                               newShowStateStop;
+                          StaticLogger.append(
+                              'purchase.show_state_stop[${purchase.show_state_stop}]');
                         }, ui),
                       ]),
                   Expanded(
@@ -311,6 +320,7 @@ class PurchaseEdit extends HookConsumerWidget {
 
   Iterable<Widget> flatOrGrouped(
       ValueNotifier<Grouping> groupingNotifier,
+      PurchaseDto purchase,
       UiState ui,
       ValueNotifier<int?> pgroupFocused,
       Function(int?) addProduct) {

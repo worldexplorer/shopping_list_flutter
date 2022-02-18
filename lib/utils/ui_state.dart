@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../views/chat/message_item.dart';
+import 'static_logger.dart';
 
 final uiStateProvider = ChangeNotifierProvider<UiState>((ref) => UiState());
 
@@ -40,6 +41,7 @@ class UiState extends ChangeNotifier {
   void rebuild() {
     _refreshCounter++;
     notifyListeners();
+    StaticLogger.append('UI.REBUILT[${_refreshCounter.toString()}]');
   }
 
   // TODO: save to local database
