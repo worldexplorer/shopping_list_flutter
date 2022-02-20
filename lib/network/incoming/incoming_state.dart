@@ -64,9 +64,15 @@ class IncomingState extends ChangeNotifier {
     bool rebuildUi = false;
 
     final MessageDto? prevMsg = messageDtoById[msgReceived.id];
+
+    String forceReRenderAfterPurItemFill =
+        dateFormatterHmsMillis.format(DateTime.now());
+    String key =
+        msgReceived.id.toString() + '-' + forceReRenderAfterPurItemFill;
+
     if (prevMsg == null) {
       final msgWidget = MessageWidget(
-        key: Key(msgReceived.id.toString()),
+        key: Key(key),
         isMe: isMyUserId(msgReceived.user),
         message:
             msgReceived, // don't msg.clone(): don't detach from messagesById[msg.id]
@@ -135,10 +141,6 @@ class IncomingState extends ChangeNotifier {
         //v1 hoping there is no need to find widget in messageWidgets and re-insert a new instance
         // widget.message = msg;
         //v2 after purItemFill() I receive the updated message => replace & force re-render (new key!!!)
-        String forceReRenderAfterPurItemFill =
-            dateFormatterHmsMillis.format(DateTime.now());
-        String key =
-            msgReceived.id.toString() + '-' + forceReRenderAfterPurItemFill;
         final replacementMsgWidget = MessageWidget(
           key: Key(key),
           isMe: isMyUserId(msgReceived.user),

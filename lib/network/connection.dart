@@ -2,12 +2,11 @@ import 'package:flutter/foundation.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:socket_io_client/socket_io_client.dart';
 
+import '../../env/env.dart';
+import '../../utils/static_logger.dart';
 import 'connection_state.dart';
 import 'incoming/incoming.dart';
 import 'outgoing/outgoing_handlers.dart';
-
-import '../../env/env.dart';
-import '../../utils/static_logger.dart';
 
 final connectionStateProvider =
     ChangeNotifierProvider.family<Connection, Env>((ref, env) {
@@ -49,7 +48,9 @@ class Connection extends ChangeNotifier {
     _socket.on('connect', (_) {
       StaticLogger.append('#3/4 connected: [${_connectionState.socketId}]');
       // connectionNotifier.notify();
-      outgoingHandlers.sendLogin(_env.myMobile);
+      if (_env.myAuthToken != null) {
+        outgoingHandlers.sendLogin(_env.myAuthToken!);
+      }
     });
     _socket.on('disconnect', (_) {
       StaticLogger.append(

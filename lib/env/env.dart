@@ -1,14 +1,21 @@
 class Env {
+  // server environment
   String envName;
   String websocketURL;
   String? wsPortJsonURL;
   String myMobile;
+  // app runtime variables
+  String? myAuthToken;
+  bool loggedIn = false;
 
-  Env(
-      {required this.envName,
-      this.wsPortJsonURL,
-      required this.websocketURL,
-      required this.myMobile});
+  Env({
+    required this.envName,
+    this.wsPortJsonURL,
+    required this.websocketURL,
+    required this.myMobile,
+    this.myAuthToken,
+    this.loggedIn = false,
+  });
 }
 
 final Env DEV_LOCAL = Env(
