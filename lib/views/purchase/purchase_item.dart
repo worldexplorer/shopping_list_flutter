@@ -27,20 +27,12 @@ class PurchaseItem extends HookConsumerWidget {
     // final ui = ref.watch(uiStateProvider);
 
     final qntyInputCtrl = useTextEditingController();
-    double? bought_qnty = purItem.bought_qnty;
-    if (bought_qnty != null) {
-      qntyInputCtrl.text = (purItem.punit_fpoint ?? false)
-          ? bought_qnty.toInt().toString()
-          : bought_qnty.toStringAsPrecision(2);
-    }
+
     final updateQnty = useValueListenable(qntyInputCtrl);
     useEffect(() {
-      qntyInputCtrl.text = updateQnty.text;
-      final newDouble = double.tryParse(updateQnty.text);
-      if (newDouble != null && purItem.bought_qnty != newDouble) {
-        purItem.bought_qnty = newDouble;
-        fillPurItem(purItem);
-      }
+      // qntyInputCtrl.text = updateQnty.text;
+      purItem.bought_qnty_string = updateQnty.text;
+      // fillPurItem(purItem);
     }, [updateQnty.text]);
 
     final priceInputCtrl =

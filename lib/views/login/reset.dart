@@ -5,13 +5,13 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../env/env.dart';
-import 'login.dart';
+import 'register.dart';
 import 'validator.dart';
 
-class Register extends HookConsumerWidget {
+class Reset extends HookConsumerWidget {
   final Env env;
 
-  const Register({required this.env, Key? key}) : super(key: key);
+  const Reset({required this.env, Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -19,9 +19,11 @@ class Register extends HookConsumerWidget {
     final _formKey = GlobalKey<FormState>();
 
     final emailController = useTextEditingController();
-    final passwordController = useTextEditingController();
+    final oneTimeCodeController = useTextEditingController();
 
-    Future<void> _handleRegister() async {
+    final codeSent = useState(false);
+
+    Future<void> _handleReset() async {
       if (_formKey.currentState!.validate()) {
         //show snackbar to indicate loading
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -37,7 +39,7 @@ class Register extends HookConsumerWidget {
               "Value": emailController.text,
             }
           ],
-          "Password": passwordController.text,
+          "Password": oneTimeCodeController.text,
           "About": 'I am a new user :smile:',
           "FirstName": "Test",
           "LastName": "Account",
@@ -46,7 +48,8 @@ class Register extends HookConsumerWidget {
         };
 
         //get response from ApiClient
-        // dynamic res = await _apiClient.registerUser(userData);
+        // dynamic res = await _apiClient.ResetUser(userData);
+        await Future.delayed(const Duration(seconds: 2));
         ScaffoldMessenger.of(context).hideCurrentSnackBar();
 
         //checks if there is no error in the response body.
@@ -62,8 +65,7 @@ class Register extends HookConsumerWidget {
         //   ));
         // }
 
-        Navigator.push(
-            context, MaterialPageRoute(builder: (context) => Login(env: env)));
+        codeSent.value = true;
       }
     }
 
@@ -90,7 +92,7 @@ class Register extends HookConsumerWidget {
                   children: <Widget>[
                     const Center(
                       child: Text(
-                        "Register",
+                        "Reset Password",
                         style: TextStyle(
                           fontSize: 30,
                           fontWeight: FontWeight.bold,
@@ -112,37 +114,24 @@ class Register extends HookConsumerWidget {
                         ),
                       ),
                     ),
-                    SizedBox(height: size.height * 0.03),
-                    TextFormField(
-                      obscureText: true,
-                      validator: (value) =>
-                          Validator.validatePassword(value ?? ""),
-                      controller: passwordController,
-                      keyboardType: TextInputType.visiblePassword,
-                      decoration: InputDecoration(
-                        hintText: "Password",
-                        isDense: true,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                      ),
-                    ),
                     SizedBox(height: size.height * 0.04),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Expanded(
                           child: ElevatedButton(
-                            onPressed: _handleRegister,
+                            onPressed: _handleReset,
                             style: ElevatedButton.styleFrom(
                                 primary: Colors.indigo,
                                 shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(10)),
                                 padding: const EdgeInsets.symmetric(
                                     horizontal: 40, vertical: 15)),
-                            child: const Text(
-                              "Register",
-                              style: TextStyle(
+                            child: Text(
+                              codeSent.value
+                                  ? "Send Again"
+                                  : "Send 4-digit code",
+                              style: const TextStyle(
                                 fontSize: 20,
                                 fontWeight: FontWeight.bold,
                               ),
@@ -151,10 +140,74 @@ class Register extends HookConsumerWidget {
                         ),
                       ],
                     ),
-                    SizedBox(height: size.height * 0.02),
-                    Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                    ...(codeSent.value
+                        ? [
+                            SizedBox(height: size.height * 0.05),
+                            TextFormField(
+                              validator: (value) =>
+                                  Validator.validateEmail(value ?? ""),
+                              controller: oneTimeCodeController,
+                              autofocus: true,
+                              keyboardType: TextInputType.number,
+                              decoration: InputDecoration(
+                                hintText: "4-digit code",
+                                isDense: true,
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                              ),
+                            ),
+                            SizedBox(height: size.height * 0.04),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Expanded(
+                                  child: ElevatedButton(
+                                    onPressed: _handleReset,
+                                    style: ElevatedButton.styleFrom(
+                                        primary: Colors.indigo,
+                                        shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(10)),
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 40, vertical: 15)),
+                                    child: const Text(
+                                      "Log in",
+                                      style: TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ]
+                        : []),
+                    SizedBox(height: size.height * 0.04),
+                    Row(mainAxisAlignment: MainAxisAlignment.end, children: [
                       const Text(
                         'Already have an account?',
+                        style: TextStyle(
+                          fontSize: 20,
+                        ),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          //forgot password screen
+                        },
+                        child: const Text(
+                          'Log in',
+                          style: TextStyle(
+                            fontSize: 20,
+                          ),
+                        ),
+                      ),
+                    ]),
+                    SizedBox(height: size.height * 0.02),
+                    Row(mainAxisAlignment: MainAxisAlignment.end, children: [
+                      const Text(
+                        'Do not have an account?',
                         style: TextStyle(
                           fontSize: 20,
                         ),
@@ -164,10 +217,10 @@ class Register extends HookConsumerWidget {
                           Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => Login(env: env)));
+                                  builder: (context) => Register(env: env)));
                         },
                         child: const Text(
-                          'Log in',
+                          'Register',
                           style: TextStyle(
                             fontSize: 20,
                           ),

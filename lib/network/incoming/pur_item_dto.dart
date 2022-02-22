@@ -4,7 +4,6 @@
 
 import 'package:json_annotation/json_annotation.dart';
 import 'package:shopping_list_flutter/network/outgoing/new_pur_item_dto.dart';
-import 'package:shopping_list_flutter/utils/checked_convert.dart';
 
 part 'pur_item_dto.g.dart';
 
@@ -57,6 +56,23 @@ class PurItemDto extends NewPurItemDto {
           punit_brief: punit_brief,
           punit_fpoint: punit_fpoint,
         );
+
+  String get bought_qnty_string {
+    if (bought_qnty != null) {
+      return (punit_fpoint ?? false)
+          ? bought_qnty!.toInt().toString()
+          : bought_qnty!.toStringAsPrecision(2);
+    } else {
+      return '';
+    }
+  }
+
+  set bought_qnty_string(String newValue) {
+    final newDouble = double.tryParse(newValue);
+    if (newDouble != null && bought_qnty != newDouble) {
+      bought_qnty = newDouble;
+    }
+  }
 
   factory PurItemDto.fromJson(Map<String, dynamic> json) {
     // return _$PurItemDtoFromJson(NewPurItemDto.fromJson(json).toJson());

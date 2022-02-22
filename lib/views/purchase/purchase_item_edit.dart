@@ -56,7 +56,7 @@ class PurchaseItemEdit extends HookConsumerWidget {
                     textInputAction: TextInputAction.newline,
                     keyboardType: TextInputType.multiline,
                     minLines: 1,
-                    maxLines: 3,
+                    maxLines: 5,
                     controller: nameInputCtrl,
                     onChanged: (String text) {
                       purItem.name = text;

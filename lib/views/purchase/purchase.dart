@@ -6,11 +6,11 @@ import 'package:shopping_list_flutter/network/incoming/pur_item_dto.dart';
 
 import '../../network/incoming/incoming_state.dart';
 import '../../network/incoming/purchase_dto.dart';
-import '../../utils/purchase_totals.dart';
 import '../../utils/theme.dart';
 import '../../utils/ui_state.dart';
 import 'grouping.dart';
 import 'purchase_item.dart';
+import 'purchase_totals.dart';
 
 class Purchase extends HookConsumerWidget {
   final PurchaseDto purchase;

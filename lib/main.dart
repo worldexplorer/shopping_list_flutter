@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:shopping_list_flutter/views/home.dart';
 
 import 'env/env.dart';
 import 'env/env_loader.dart';
 import 'network/connection.dart';
 import 'utils/my_shared_preferences.dart';
 import 'views/home.dart';
-import 'views/login/login.dart';
+import 'views/login/register.dart';
 import 'views/router.dart';
 
 Future<void> main() async {
@@ -40,7 +39,7 @@ class MyApp extends ConsumerWidget {
         primarySwatch: Colors.blue,
       ),
       // home: HomeWidget(),
-      home: SafeArea(child: env.loggedIn ? const Home() : Login(env: env)),
+      home: SafeArea(child: env.loggedIn ? const Home() : Register(env: env)),
       debugShowCheckedModeBanner: true,
       routes: router.widgetByNamedRoute,
     );

@@ -25,16 +25,23 @@ class ChatWrapperSlivers extends HookConsumerWidget {
       SchedulerBinding.instance?.addPostFrameCallback((_) {
         final TextStyle snackBarErrorTextStyle = GoogleFonts.poppins(
           color: Colors.white,
-          fontSize: 22,
+          fontSize: 20,
         );
 
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          backgroundColor: Colors.red,
-          content: Text(
-            incoming.serverError,
-            style: snackBarErrorTextStyle,
-          ),
-        ));
+            backgroundColor: Colors.red,
+            content: Text(
+              incoming.serverError,
+              style: snackBarErrorTextStyle,
+            ),
+            duration: const Duration(seconds: 6),
+            action: SnackBarAction(
+              label: 'X',
+              textColor: Colors.yellow,
+              onPressed: () {
+                ScaffoldMessenger.of(context).hideCurrentSnackBar();
+              },
+            )));
 
         Future.delayed(const Duration(milliseconds: 100), () async {
           incoming.serverError = '';

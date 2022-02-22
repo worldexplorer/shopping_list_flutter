@@ -6,6 +6,8 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../env/env.dart';
 import '../home.dart';
+import 'register.dart';
+import 'reset.dart';
 import 'validator.dart';
 
 class Login extends HookConsumerWidget {
@@ -18,8 +20,8 @@ class Login extends HookConsumerWidget {
     var size = MediaQuery.of(context).size;
     final _formKey = GlobalKey<FormState>();
 
-    final emailController = useTextEditingController();
-    final passwordController = useTextEditingController();
+    final emailController = useTextEditingController(text: '');
+    final passwordController = useTextEditingController(text: '');
 
     Future<void> _handleLogin() async {
       if (_formKey.currentState!.validate()) {
@@ -90,8 +92,9 @@ class Login extends HookConsumerWidget {
                     SizedBox(height: size.height * 0.05),
                     TextFormField(
                       validator: (value) =>
-                          Validator.validatePassword(value ?? ""),
+                          Validator.validateEmail(value ?? ""),
                       controller: emailController,
+                      autofocus: true,
                       keyboardType: TextInputType.emailAddress,
                       decoration: InputDecoration(
                         hintText: "Email",
@@ -103,7 +106,7 @@ class Login extends HookConsumerWidget {
                     ),
                     SizedBox(height: size.height * 0.03),
                     TextFormField(
-                      // obscureText: _showPassword,
+                      obscureText: true,
                       validator: (value) =>
                           Validator.validatePassword(value ?? ""),
                       controller: passwordController,
@@ -116,13 +119,45 @@ class Login extends HookConsumerWidget {
                         ),
                       ),
                     ),
-                    SizedBox(height: size.height * 0.06),
+                    SizedBox(height: size.height * 0.01),
+                    Row(mainAxisAlignment: MainAxisAlignment.end, children: [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => Reset(env: env)));
+                        },
+                        child: const Text(
+                          'Forgot Password',
+                          style: TextStyle(
+                            fontSize: 18,
+                          ),
+                        ),
+                      ),
+                    ]),
+                    SizedBox(height: size.height * 0.01),
+                    Row(mainAxisAlignment: MainAxisAlignment.end, children: [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.push(context,
+                              MaterialPageRoute(builder: (context) => Home()));
+                        },
+                        child: const Text(
+                          'Anonymous',
+                          style: TextStyle(
+                            fontSize: 18,
+                          ),
+                        ),
+                      ),
+                    ]),
+                    SizedBox(height: size.height * 0.04),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Expanded(
                           child: ElevatedButton(
-                            onPressed: _handleLogin, //<--
+                            onPressed: _handleLogin,
                             style: ElevatedButton.styleFrom(
                                 primary: Colors.indigo,
                                 shape: RoundedRectangleBorder(
@@ -140,6 +175,29 @@ class Login extends HookConsumerWidget {
                         ),
                       ],
                     ),
+                    SizedBox(height: size.height * 0.02),
+                    Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                      const Text(
+                        'Do not have an account?',
+                        style: TextStyle(
+                          fontSize: 20,
+                        ),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => Register(env: env)));
+                        },
+                        child: const Text(
+                          'Register',
+                          style: TextStyle(
+                            fontSize: 20,
+                          ),
+                        ),
+                      ),
+                    ]),
                   ],
                 ),
               ),
