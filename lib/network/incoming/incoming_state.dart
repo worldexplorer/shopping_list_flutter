@@ -45,6 +45,21 @@ class IncomingState extends ChangeNotifier {
     notifyListeners();
   }
 
+  clearServerError() {
+    serverError = '';
+  }
+
+  String _clientError = '';
+  String get clientError => _clientError;
+  set clientError(String val) {
+    _clientError = val;
+    notifyListeners();
+  }
+
+  clearClientError() {
+    clientError = '';
+  }
+
   final Map<int, MessageDto> messagesDtoUnreadById = <int, MessageDto>{};
   List<int> getOnlyUnreadMessages() {
     final List<MessageDto> all = messagesDtoUnreadById.values.toList();
@@ -59,6 +74,7 @@ class IncomingState extends ChangeNotifier {
   // Iterable<MessageItem> get msg.id.toString() => _messageWidgetsById.values;
   final List<MessageWidget> messageWidgets = [];
   List<MessageWidget> get getMessageWidgets => messageWidgets;
+  int isEditingMessageId = 0;
 
   bool messageAddOrEdit(MessageDto msgReceived, String msig) {
     bool rebuildUi = false;
@@ -138,28 +154,35 @@ class IncomingState extends ChangeNotifier {
 
       final widget = messageWidgetById[msgReceived.id];
       if (widget != null) {
-        //v1 hoping there is no need to find widget in messageWidgets and re-insert a new instance
-        // widget.message = msg;
-        //v2 after purItemFill() I receive the updated message => replace & force re-render (new key!!!)
-        final replacementMsgWidget = MessageWidget(
-          key: Key(key),
-          isMe: isMyUserId(msgReceived.user),
-          message:
-              msgReceived, // don't msg.clone(): don't detach from messagesById[msg.id]
-        );
-        messageWidgetById[msgReceived.id] = replacementMsgWidget;
-
-        // 1) after I edited a message, server sends new MessageDto
-        // 2) new widget was created with new text => we replace unedited copy for chat.dart
-        final indexFound =
-            messageWidgets.indexWhere((x) => x.message.id == msgReceived.id);
-        if (indexFound >= 0) {
-          messageWidgets[indexFound] = replacementMsgWidget;
-          rebuildUi = true;
-          final what = 'newMsgWidget[key=$key]';
-          StaticLogger.append('         REPLACED $what $msig');
+        if (msgReceived.id == isEditingMessageId) {
+          final id = isEditingMessageId.toString();
+          final msg = 'REJECTED server update EditingMessageId[$id]';
+          StaticLogger.append(msg);
+          clientError = msg;
         } else {
-          StaticLogger.append('         NO_messageWidget_FOUND $msig');
+          //v1 hoping there is no need to find widget in messageWidgets and re-insert a new instance
+          // widget.message = msg;
+          //v2 after purItemFill() I receive the updated message => replace & force re-render (new key!!!)
+          final replacementMsgWidget = MessageWidget(
+            key: Key(key),
+            isMe: isMyUserId(msgReceived.user),
+            message:
+                msgReceived, // don't msg.clone(): don't detach from messagesById[msg.id]
+          );
+          messageWidgetById[msgReceived.id] = replacementMsgWidget;
+
+          // 1) after I edited a message, server sends new MessageDto
+          // 2) new widget was created with new text => we replace unedited copy for chat.dart
+          final indexFound =
+              messageWidgets.indexWhere((x) => x.message.id == msgReceived.id);
+          if (indexFound >= 0) {
+            messageWidgets[indexFound] = replacementMsgWidget;
+            rebuildUi = true;
+            final what = 'newMsgWidget[key=$key]';
+            StaticLogger.append('         REPLACED $what $msig');
+          } else {
+            StaticLogger.append('         NO_messageWidget_FOUND $msig');
+          }
         }
       } else {
         final where =

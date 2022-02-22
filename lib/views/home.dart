@@ -6,9 +6,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
+import '../network/incoming/incoming_state.dart';
+import '../utils/my_snack_bar.dart';
 import '../utils/theme.dart';
 import '../utils/ui_state.dart';
-
 import 'views.dart';
 
 class Home extends HookConsumerWidget {
@@ -16,6 +17,11 @@ class Home extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final incoming = ref.watch(incomingStateProvider);
+
+    mySnackBar(context, incoming.serverError, incoming.clearServerError);
+    mySnackBar(context, incoming.clientError, incoming.clearClientError);
+
     final widthAfterRebuild = MediaQuery.of(context).size.width;
 
     final screenWidth = useState(widthAfterRebuild);

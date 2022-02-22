@@ -2,12 +2,12 @@ import 'package:fluentui_system_icons/fluentui_system_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
+import '../../network/incoming/incoming.dart';
 // import 'package:flutter_hooks/flutter_hooks.dart';
 // import 'dart:async';
 
 import '../../utils/theme.dart';
 import '../../utils/ui_state.dart';
-import '../../network/incoming/incoming.dart';
 
 class MessageInput extends HookConsumerWidget {
   const MessageInput({Key? key}) : super(key: key);
@@ -25,10 +25,10 @@ class MessageInput extends HookConsumerWidget {
       if (ui.msgInputCtrl.text.isEmpty) {
         return;
       }
-      if (ui.isEditingMessageId > 0) {
+      if (incoming.isEditingMessageId > 0) {
         outgoingHandlers.sendEditMessage(
-            ui.isEditingMessageId, ui.msgInputCtrl.text);
-        ui.isEditingMessageId = 0;
+            incoming.isEditingMessageId, ui.msgInputCtrl.text);
+        incoming.isEditingMessageId = 0;
       } else {
         outgoingHandlers.sendMessage(
             ui.msgInputCtrl.text, ui.isReplyingToMessageId);

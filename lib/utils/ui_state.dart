@@ -10,7 +10,6 @@ class UiState extends ChangeNotifier {
   late AnimationController? menuVisibleController;
 
   final msgInputCtrl = TextEditingController();
-  int isEditingMessageId = 0;
   int? isReplyingToMessageId;
 
   final messagesSelected = <int, MessageWidget>{};

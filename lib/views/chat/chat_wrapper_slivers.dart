@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -19,35 +18,6 @@ class ChatWrapperSlivers extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final ui = ref.watch(uiStateProvider);
     final incoming = ref.watch(incomingStateProvider);
-
-    if (incoming.serverError != '') {
-      //https://stackoverflow.com/questions/47592301/setstate-or-markneedsbuild-called-during-build
-      SchedulerBinding.instance?.addPostFrameCallback((_) {
-        final TextStyle snackBarErrorTextStyle = GoogleFonts.poppins(
-          color: Colors.white,
-          fontSize: 20,
-        );
-
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            backgroundColor: Colors.red,
-            content: Text(
-              incoming.serverError,
-              style: snackBarErrorTextStyle,
-            ),
-            duration: const Duration(seconds: 6),
-            action: SnackBarAction(
-              label: 'X',
-              textColor: Colors.yellow,
-              onPressed: () {
-                ScaffoldMessenger.of(context).hideCurrentSnackBar();
-              },
-            )));
-
-        Future.delayed(const Duration(milliseconds: 100), () async {
-          incoming.serverError = '';
-        });
-      });
-    }
 
     var debugExpanded = useState(false);
 
@@ -86,10 +56,11 @@ class ChatWrapperSlivers extends HookConsumerWidget {
               // https://blog.logrocket.com/flutter-appbar-tutorial/
               // https://o7planning.org/12851/flutter-appbar
               leading: IconButton(
-                icon: const Icon(
-                  Icons.more_vert,
-                  size: 20,
-                ),
+                icon: Icon(Icons.more_vert,
+                    size: 20,
+                    color: incoming.connection.connectionState.socketConnected
+                        ? Colors.white
+                        : Colors.white30),
                 onPressed: () {
                   ui.toMenuAndBack();
                 },
@@ -98,7 +69,9 @@ class ChatWrapperSlivers extends HookConsumerWidget {
               centerTitle: false,
               title: Column(children: [
                 Text(
-                  '${incoming.currentRoom.name} (${incoming.currentRoomUsersCsv})',
+                  incoming.connection.connectionState.socketConnected
+                      ? '${incoming.currentRoom.name} (${incoming.currentRoomUsersCsv})'
+                      : "Connecting...",
                   style: GoogleFonts.manrope(
                     color: Colors.white,
                     fontWeight: FontWeight.w600,

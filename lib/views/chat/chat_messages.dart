@@ -17,7 +17,8 @@ class ChatMessages extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final ui = ref.watch(uiStateProvider); // REFRESH ON PURCHASE SAVED
+    final ui =
+        ref.watch(uiStateProvider); // DONT REMOVE, REFRESH ON PURCHASE SAVED
     final incoming = ref.watch(incomingStateProvider);
 
     incoming.outgoingHandlers.sendMarkMessagesRead();
@@ -170,6 +171,7 @@ class ChatMessages extends HookConsumerWidget {
     ValueNotifier<Offset> tapGlobalPosition,
   ) {
     final ui = ref.watch(uiStateProvider);
+    final incoming = ref.watch(incomingStateProvider);
     final messagesSelected = ui.messagesSelected;
 
     return GestureDetector(
@@ -225,7 +227,7 @@ class ChatMessages extends HookConsumerWidget {
             messagesSelected.isEmpty &&
             ui.msgInputCtrl.text == '') {
           ui.msgInputCtrl.text = msgWidget.message.content;
-          ui.isEditingMessageId = msgWidget.message.id;
+          incoming.isEditingMessageId = msgWidget.message.id;
           // TODO: open soft keyboard
         }
 

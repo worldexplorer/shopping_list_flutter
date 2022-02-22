@@ -19,23 +19,23 @@ final connectionStateProvider =
 class Connection extends ChangeNotifier {
   final Env _env;
 
-  late ConnectionState _connectionState;
+  late ConnectionState connectionState;
   late IncomingState _incomingState;
   late OutgoingHandlers outgoingHandlers;
   late IncomingHandlers incomingHandlers;
   late Socket _socket;
 
   Connection(this._env) {
-    _connectionState = ConnectionState();
+    connectionState = ConnectionState();
   }
 
   void lateBindCreateSocket(IncomingState incomingState) {
     _incomingState = incomingState;
     _incomingState.connection = this;
-    outgoingHandlers = OutgoingHandlers(_connectionState, _incomingState);
+    outgoingHandlers = OutgoingHandlers(connectionState, _incomingState);
     _incomingState.outgoingHandlers = outgoingHandlers;
     incomingHandlers =
-        IncomingHandlers(_connectionState, _incomingState, outgoingHandlers);
+        IncomingHandlers(connectionState, _incomingState, outgoingHandlers);
     createSocket();
   }
 
@@ -46,7 +46,7 @@ class Connection extends ChangeNotifier {
     });
 
     _socket.on('connect', (_) {
-      StaticLogger.append('#3/4 connected: [${_connectionState.socketId}]');
+      StaticLogger.append('#3/4 connected: [${connectionState.socketId}]');
       // connectionNotifier.notify();
       if (_env.myAuthToken != null) {
         // outgoingHandlers.sendLogin(_env.myAuthToken!);
@@ -56,7 +56,7 @@ class Connection extends ChangeNotifier {
     _socket.on('disconnect', (_) {
       StaticLogger.append(
           'disconnected by server; willGetMessagesOnReconnect=true');
-      _connectionState.willGetMessagesOnReconnect = true;
+      connectionState.willGetMessagesOnReconnect = true;
     });
     _socket.on('fromServer', (_) => {StaticLogger.append(_)});
 
@@ -71,14 +71,14 @@ class Connection extends ChangeNotifier {
     _socket.on('error', incomingHandlers.onServerError);
 
     StaticLogger.append(
-        '#1/4 handlers hooked to a socket [${_connectionState.sConnected}]');
+        '#1/4 handlers hooked to a socket [${connectionState.sConnected}]');
   }
 
   void connect() async {
     try {
       _socket.connect();
       StaticLogger.append('#2/4 connecting to [${_env.websocketURL}]');
-      _connectionState.socket = _socket;
+      connectionState.socket = _socket;
     } catch (e) {
       StaticLogger.append(e.toString());
     }
@@ -95,7 +95,7 @@ class Connection extends ChangeNotifier {
 
   void reconnect() {
     disconnect();
-    _connectionState.willGetMessagesOnReconnect = true;
+    connectionState.willGetMessagesOnReconnect = true;
     connect();
     outgoingHandlers.sendLogin(_env.myMobile);
   }
