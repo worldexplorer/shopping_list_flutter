@@ -4,33 +4,21 @@
 
 import 'package:json_annotation/json_annotation.dart';
 
-part 'user_dto.g.dart';
+part 'register_dto.g.dart';
 
 @JsonSerializable(
     checked: true,
-    createFactory: true,
+    createFactory: false,
     createToJson: true,
     explicitToJson: true,
     disallowUnrecognizedKeys: true,
     includeIfNull: true)
-class UserDto {
-  int id;
-  String name;
+class RegisterDto {
   String email;
   String phone;
-  String username;
-  String color;
 
-  UserDto({
-    required this.id,
-    required this.name,
-    required this.email,
-    required this.phone,
-    required this.username,
-    required this.color,
-  });
+  RegisterDto({required this.email, required this.phone});
 
-  factory UserDto.fromJson(Map<String, dynamic> json) =>
-      _$UserDtoFromJson(json);
-  Map<String, dynamic> toJson() => _$UserDtoToJson(this);
+  // factory LoginDto.fromJson(Map<String, dynamic> json) => _$RegisterDtoFromJson(json);
+  Map<String, dynamic> toJson() => _$RegisterDtoToJson(this);
 }

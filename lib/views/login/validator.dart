@@ -50,4 +50,15 @@ class Validator {
       return null;
     }
   }
+
+  static String? validateNumber(String value) {
+    if (value.isEmpty) {
+      return null;
+    }
+    if (int.tryParse(value) == null) {
+      return '🚩 Must be a Number';
+    } else {
+      return null;
+    }
+  }
 }

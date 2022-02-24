@@ -1,22 +1,22 @@
-import 'package:shopping_list_flutter/network/incoming/pur_item_dto.dart';
-import 'package:shopping_list_flutter/network/outgoing/pur_item_filled_dto.dart';
-
 import '../../utils/static_logger.dart';
 import '../common/typing_dto.dart';
 import '../connection_state.dart';
 import '../incoming/incoming_state.dart';
-import '../incoming/purchase_dto.dart';
-import '../outgoing/new_purchase_dto.dart';
-import 'archive_messages_dto.dart';
-import 'delete_messages_dto.dart';
-import 'edit_message_dto.dart';
-import 'edit_purchase_dto.dart';
-import 'get_messages_dto.dart';
-import 'login_dto.dart';
-import 'mark_message_read_dto.dart';
-import 'new_message_dto.dart';
-import 'new_purchase_dto.dart';
-import 'purchase_filled_dto.dart';
+import '../incoming/purchase/pur_item_dto.dart';
+import '../incoming/purchase/purchase_dto.dart';
+import 'message/archive_messages_dto.dart';
+import 'message/delete_messages_dto.dart';
+import 'message/edit_message_dto.dart';
+import 'message/get_messages_dto.dart';
+import 'message/mark_message_read_dto.dart';
+import 'message/new_message_dto.dart';
+import 'person/login_dto.dart';
+import 'person/register_confirm_dto.dart';
+import 'person/register_dto.dart';
+import 'purchase/edit_purchase_dto.dart';
+import 'purchase/new_purchase_dto.dart';
+import 'purchase/pur_item_filled_dto.dart';
+import 'purchase/purchase_filled_dto.dart';
 
 class OutgoingHandlers {
   ConnectionState connectionState;
@@ -33,14 +33,39 @@ class OutgoingHandlers {
     return false;
   }
 
-  sendLogin(String phone) {
-    final msig = 'sendLogin($phone)';
+  sendRegister(String email, String phone) {
+    final msig = 'sendRegister($email, $phone)';
+    if (!isConnected(msig)) return;
+
+    final json = RegisterDto(
+      email: email,
+      phone: phone,
+    ).toJson();
+    connectionState.socket.emit("register", json);
+    StaticLogger.append('<< REGISTER [$json]');
+  }
+
+  sendRegisterConfirm(String email, String phone, int codeFromEmail) {
+    final msig = 'sendRegisterConfirm($email, $phone)';
+    if (!isConnected(msig)) return;
+
+    final json = RegisterConfirmDto(
+      email: email,
+      phone: phone,
+      code: codeFromEmail,
+    ).toJson();
+    connectionState.socket.emit("registerConfirm", json);
+    StaticLogger.append('<< REGISTER_CONFIRM [$json]');
+  }
+
+  sendLogin(String auth) {
+    final msig = 'sendLogin($auth)';
     if (!isConnected(msig)) return;
 
     final json = LoginDto(
-      phone: phone,
+      auth: auth,
     ).toJson();
-    connectionState.socket.emit("login", json);
+    connectionState.socket.emit("person", json);
     StaticLogger.append('<< LOGIN [$json]');
   }
 
@@ -53,7 +78,7 @@ class OutgoingHandlers {
         "typing",
         TypingDto(
           socketId: connectionState.socketId,
-          userName: incomingState.userName,
+          userName: incomingState.personName,
           typing: typing,
         ).toJson());
   }
@@ -71,7 +96,7 @@ class OutgoingHandlers {
 
     final json = NewMessageDto(
       room: incomingState.currentRoomId,
-      //user: incomingState.userId,
+      //person: incomingState.userId,
       content: msg,
       replyto_id: isReplyingToMessageId,
     ).toJson();
@@ -104,11 +129,11 @@ class OutgoingHandlers {
       StaticLogger.append(
           '-- MARK_MESSAGE_READ all messages already marked READ:'
           ' unreadMsgIds[0] while messagesUnreadById[${incomingState.messagesDtoUnreadById.length}]'
-          ' for userId[${incomingState.userId}]');
+          ' for userId[${incomingState.personId}]');
       return;
     }
 
-    _sendMarkMessagesRead(unreadMsgIds, incomingState.userId);
+    _sendMarkMessagesRead(unreadMsgIds, incomingState.personId);
   }
 
   _sendMarkMessagesRead(List<int> messageIds, int userId) {

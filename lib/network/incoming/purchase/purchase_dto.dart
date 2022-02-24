@@ -4,7 +4,7 @@
 
 import 'package:json_annotation/json_annotation.dart';
 
-import '../outgoing/edit_purchase_dto.dart';
+import '../../outgoing/purchase/edit_purchase_dto.dart';
 
 // import 'package:shopping_list_flutter/utils/checked_convert.dart';
 // import 'pur_item_dto.dart';

@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import '../../network/incoming/pur_item_dto.dart';
-import '../../network/incoming/purchase_dto.dart';
+import '../../network/incoming/purchase/pur_item_dto.dart';
+import '../../network/incoming/purchase/purchase_dto.dart';
 import '../../utils/theme.dart';
 
 class PurchaseItem extends HookConsumerWidget {
@@ -12,6 +12,8 @@ class PurchaseItem extends HookConsumerWidget {
   final bool isMe;
   final int serno;
   final Function(PurItemDto purItemDto) fillPurItem;
+
+  static final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   const PurchaseItem({
     Key? key,

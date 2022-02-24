@@ -3,8 +3,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import '../../network/incoming/pur_item_dto.dart';
-import '../../network/incoming/purchase_dto.dart';
+import '../../network/incoming/purchase/pur_item_dto.dart';
+import '../../network/incoming/purchase/purchase_dto.dart';
 import '../../utils/theme.dart';
 import '../../utils/ui_state.dart';
 import 'purchase_item.dart';

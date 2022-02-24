@@ -3,8 +3,8 @@
 // $ flutter pub run build_runner watch
 
 import 'package:json_annotation/json_annotation.dart';
-import 'room_dto.dart';
-part 'rooms_dto.g.dart';
+
+part 'registration_needs_code_dto.g.dart';
 
 @JsonSerializable(
     checked: true,
@@ -13,12 +13,15 @@ part 'rooms_dto.g.dart';
     explicitToJson: true,
     disallowUnrecognizedKeys: true,
     includeIfNull: true)
-class RoomsDto {
-  List<RoomDto> rooms;
+class RegistrationNeedsCodeDto {
+  bool emailSent;
+  bool smsSent;
+  String status;
 
-  RoomsDto({required this.rooms});
+  RegistrationNeedsCodeDto(
+      {required this.status, required this.emailSent, required this.smsSent});
 
-  factory RoomsDto.fromJson(Map<String, dynamic> json) =>
-      _$RoomsDtoFromJson(json);
-  Map<String, dynamic> toJson() => _$RoomsDtoToJson(this);
+  factory RegistrationNeedsCodeDto.fromJson(Map<String, dynamic> json) =>
+      _$RegistrationNeedsCodeDtoFromJson(json);
+  Map<String, dynamic> toJson() => _$RegistrationNeedsCodeDtoToJson(this);
 }

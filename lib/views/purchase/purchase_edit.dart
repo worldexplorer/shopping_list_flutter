@@ -4,8 +4,8 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:shopping_list_flutter/utils/static_logger.dart';
 
 import '../../network/incoming/incoming_state.dart';
-import '../../network/incoming/pur_item_dto.dart';
-import '../../network/incoming/purchase_dto.dart';
+import '../../network/incoming/purchase/pur_item_dto.dart';
+import '../../network/incoming/purchase/purchase_dto.dart';
 import '../../utils/theme.dart';
 import '../../utils/ui_state.dart';
 import 'grouping.dart';

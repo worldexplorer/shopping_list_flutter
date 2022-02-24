@@ -3,7 +3,6 @@
 // $ flutter pub run build_runner watch
 
 import 'package:json_annotation/json_annotation.dart';
-import './new_purchase_dto.dart';
 
 part 'new_message_dto.g.dart';
 
@@ -16,14 +15,14 @@ part 'new_message_dto.g.dart';
     includeIfNull: true)
 class NewMessageDto {
   int room;
-  // int user;
+  // int person;
   String content;
   int? replyto_id;
   // NewPurchaseDto? purchase;
 
   NewMessageDto({
     required this.room,
-    // required this.user,
+    // required this.person,
     required this.content,
     this.replyto_id,
     // this.purchase,

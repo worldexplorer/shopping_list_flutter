@@ -3,11 +3,11 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../network/incoming/incoming_state.dart';
-import '../../network/incoming/message_dto.dart';
-import '../../utils/timeago.dart';
+import '../../network/incoming/message/message_dto.dart';
 import '../../utils/ui_state.dart';
 import '../../views/purchase/purchase.dart';
 import '../../views/purchase/purchase_edit.dart';
+import 'timeago.dart';
 
 class MessageWidget extends ConsumerWidget {
   final MessageDto message;

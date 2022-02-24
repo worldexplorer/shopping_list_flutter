@@ -20,7 +20,7 @@ RoomDto _$RoomDtoFromJson(Map<String, dynamic> json) => $checkedCreate(
           users: $checkedConvert(
               'users',
               (v) => (v as List<dynamic>)
-                  .map((e) => UserDto.fromJson(e as Map<String, dynamic>))
+                  .map((e) => PersonDto.fromJson(e as Map<String, dynamic>))
                   .toList()),
         );
         return val;

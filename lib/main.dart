@@ -6,7 +6,7 @@ import 'env/env_loader.dart';
 import 'network/connection.dart';
 import 'utils/my_shared_preferences.dart';
 import 'views/home.dart';
-import 'views/login/register.dart';
+import 'views/login/login.dart';
 import 'views/router.dart';
 
 Future<void> main() async {
@@ -39,7 +39,7 @@ class MyApp extends ConsumerWidget {
         primarySwatch: Colors.blue,
       ),
       // home: HomeWidget(),
-      home: SafeArea(child: env.loggedIn ? const Home() : Register(env: env)),
+      home: SafeArea(child: env.loggedIn ? const Home() : Login(env: env)),
       debugShowCheckedModeBanner: true,
       routes: router.widgetByNamedRoute,
     );

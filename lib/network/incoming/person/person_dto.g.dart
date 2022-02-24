@@ -1,13 +1,13 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'user_dto.dart';
+part of 'person_dto.dart';
 
 // **************************************************************************
 // JsonSerializableGenerator
 // **************************************************************************
 
-UserDto _$UserDtoFromJson(Map<String, dynamic> json) => $checkedCreate(
-      'UserDto',
+PersonDto _$PersonDtoFromJson(Map<String, dynamic> json) => $checkedCreate(
+      'PersonDto',
       json,
       ($checkedConvert) {
         $checkKeys(
@@ -21,7 +21,7 @@ UserDto _$UserDtoFromJson(Map<String, dynamic> json) => $checkedCreate(
             'color'
           ],
         );
-        final val = UserDto(
+        final val = PersonDto(
           id: $checkedConvert('id', (v) => v as int),
           name: $checkedConvert('name', (v) => v as String),
           email: $checkedConvert('email', (v) => v as String),
@@ -33,7 +33,7 @@ UserDto _$UserDtoFromJson(Map<String, dynamic> json) => $checkedCreate(
       },
     );
 
-Map<String, dynamic> _$UserDtoToJson(UserDto instance) => <String, dynamic>{
+Map<String, dynamic> _$PersonDtoToJson(PersonDto instance) => <String, dynamic>{
       'id': instance.id,
       'name': instance.name,
       'email': instance.email,

@@ -119,7 +119,7 @@ class ChatMessages extends HookConsumerWidget {
             case DismissDirection.startToEnd:
               msgWidgets.removeAt(index);
               incoming.outgoingHandlers.sendArchiveMessages(
-                  [msgWidget.message.id], incoming.userId, true);
+                  [msgWidget.message.id], incoming.personId, true);
 
               ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                   content: Row(
@@ -140,7 +140,7 @@ class ChatMessages extends HookConsumerWidget {
                             onPressed: () {
                               incoming.outgoingHandlers.sendArchiveMessages(
                                   [msgWidget.message.id],
-                                  incoming.userId,
+                                  incoming.personId,
                                   false);
 
                               if (msgWidgets[index] != msgWidget) {
@@ -275,8 +275,8 @@ class ChatMessages extends HookConsumerWidget {
       'Archive$suffix',
       () {
         StaticLogger.append('Archive$suffix');
-        incoming.outgoingHandlers
-            .sendArchiveMessages([msgWidget.message.id], incoming.userId, true);
+        incoming.outgoingHandlers.sendArchiveMessages(
+            [msgWidget.message.id], incoming.personId, true);
       },
     );
     final replyCtx = CtxMenuItem(
@@ -296,7 +296,7 @@ class ChatMessages extends HookConsumerWidget {
       () {
         StaticLogger.append('Delete$suffix');
         incoming.outgoingHandlers
-            .sendDeleteMessages([msgWidget.message.id], incoming.userId);
+            .sendDeleteMessages([msgWidget.message.id], incoming.personId);
       },
     );
 

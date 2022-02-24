@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-void mySnackBar(BuildContext context, String message, Function clearMessage) {
+void mySnackBar(BuildContext context, String message, Function? clearMessage) {
   if (message == '') {
     return;
   }
@@ -29,8 +29,10 @@ void mySnackBar(BuildContext context, String message, Function clearMessage) {
           },
         )));
 
-    Future.delayed(const Duration(milliseconds: 100), () async {
-      clearMessage();
-    });
+    if (clearMessage != null) {
+      Future.delayed(const Duration(milliseconds: 100), () async {
+        clearMessage();
+      });
+    }
   });
 }

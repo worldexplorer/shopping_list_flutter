@@ -1,4 +1,4 @@
-import '../../network/incoming/purchase_dto.dart';
+import '../../network/incoming/purchase/purchase_dto.dart';
 
 class PurchaseTotals {
   double tQnty = .0;

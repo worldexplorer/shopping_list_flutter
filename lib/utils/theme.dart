@@ -92,3 +92,17 @@ TextStyle logRecordStyle = GoogleFonts.poppins(
 );
 
 final dateFormatterHmsMillis = DateFormat('HH:mm:ss.SSS');
+
+final loginButtonStyle = ElevatedButton.styleFrom(
+    primary: Colors.indigo,
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+    padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15));
+
+const loginButtonTextStyle = TextStyle(
+  fontSize: 20,
+  fontWeight: FontWeight.bold,
+);
+
+const loginScreenTextStyle = TextStyle(
+  fontSize: 20,
+);

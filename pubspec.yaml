@@ -52,7 +52,8 @@ dependencies:
 #  platform_plus: ^2.1.0
 #  mobile_number: ^1.0.4
 #  shared_preferences: 0.5.12
-  shared_preferences: ^2.0.13
+#  shared_preferences: ^2.0.13
+  flutter_secure_storage: ^5.0.2
 
 dev_dependencies:
   flutter_test:

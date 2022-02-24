@@ -8,11 +8,12 @@ import '../../utils/static_logger.dart';
 import '../../views/chat/message_item.dart';
 import '../connection.dart';
 import '../outgoing/outgoing_handlers.dart';
-import 'message_dto.dart';
-import 'pur_item_dto.dart';
-import 'purchase_dto.dart';
-import 'room_dto.dart';
-import 'user_dto.dart';
+import 'message/message_dto.dart';
+import 'person/person_dto.dart';
+import 'person/registration_needs_code_dto.dart';
+import 'purchase/pur_item_dto.dart';
+import 'purchase/purchase_dto.dart';
+import 'room/room_dto.dart';
 
 final incomingStateProvider =
     ChangeNotifierProvider<IncomingState>((ref) => IncomingState());
@@ -21,13 +22,43 @@ class IncomingState extends ChangeNotifier {
   late OutgoingHandlers outgoingHandlers;
   late Connection connection;
 
-  UserDto? _user;
-  UserDto get user => _user!;
-  int get userId => _user?.id ?? -1;
-  bool isMyUserId(int id) => id == userId;
-  String get userName => _user?.name ?? "USER_DTO_NOT_YET_RECEIVED";
-  set user(UserDto val) {
-    _user = val;
+  String? _auth;
+  String? get auth => _auth;
+  set auth(String? val) {
+    _auth = val;
+    notifyListeners();
+  }
+
+  RegistrationNeedsCodeDto? _needsCode;
+  RegistrationNeedsCodeDto? get needsCode => _needsCode;
+  set needsCode(RegistrationNeedsCodeDto? val) {
+    _needsCode = val;
+    notifyListeners();
+  }
+
+  String get sentTo_fromServerResponse {
+    String ret = '';
+    if (needsCode != null) {
+      if (needsCode!.emailSent) {
+        ret += 'Email';
+      }
+      if (needsCode!.smsSent) {
+        if (ret.isNotEmpty) {
+          ret += ' and ';
+        }
+        ret += 'SMS';
+      }
+    }
+    return ret;
+  }
+
+  PersonDto? _person;
+  PersonDto get person => _person!;
+  int get personId => _person?.id ?? -1;
+  bool isMyUserId(int id) => id == personId;
+  String get personName => _person?.name ?? "PERSON_DTO_NOT_YET_RECEIVED";
+  set person(PersonDto val) {
+    _person = val;
     notifyListeners();
   }
 
@@ -61,18 +92,21 @@ class IncomingState extends ChangeNotifier {
   }
 
   final Map<int, MessageDto> messagesDtoUnreadById = <int, MessageDto>{};
+
   List<int> getOnlyUnreadMessages() {
     final List<MessageDto> all = messagesDtoUnreadById.values.toList();
     final List<MessageDto> unread =
-        all.where((x) => !x.persons_read.contains(userId)).toList();
+        all.where((x) => !x.persons_read.contains(personId)).toList();
     final List<int> unreadMsgIds = unread.map((y) => y.id).toList();
     return unreadMsgIds;
   }
 
   final Map<int, MessageDto> messageDtoById = <int, MessageDto>{};
   final Map<int, MessageWidget> messageWidgetById = <int, MessageWidget>{};
+
   // Iterable<MessageItem> get msg.id.toString() => _messageWidgetsById.values;
   final List<MessageWidget> messageWidgets = [];
+
   List<MessageWidget> get getMessageWidgets => messageWidgets;
   int isEditingMessageId = 0;
 
@@ -95,7 +129,7 @@ class IncomingState extends ChangeNotifier {
       );
 
       messageDtoById[msgReceived.id] = msgReceived;
-      if (!msgReceived.persons_read.contains(userId)) {
+      if (!msgReceived.persons_read.contains(personId)) {
         messagesDtoUnreadById[msgReceived.id] = msgReceived;
       }
 
@@ -250,7 +284,9 @@ class IncomingState extends ChangeNotifier {
   }
 
   MessageWidget? _newPurchaseMessageItem;
+
   MessageWidget? get newPurchaseMessageItem => _newPurchaseMessageItem;
+
   set newPurchaseMessageItem(MessageWidget? val) {
     _newPurchaseMessageItem = val;
     notifyListeners();
@@ -282,8 +318,8 @@ class IncomingState extends ChangeNotifier {
       show_state_stop: newPurchaseSettings.showStateStop,
       replyto_id: null,
       copiedfrom_id: null,
-      person_created: userId,
-      person_created_name: userName,
+      person_created: personId,
+      person_created_name: personName,
       persons_can_edit: currentRoom.users.map((x) => x.id).toList(),
       persons_can_fill: currentRoom.users.map((x) => x.id).toList(),
       purchased: false,
@@ -305,8 +341,8 @@ class IncomingState extends ChangeNotifier {
       persons_sent: [],
       persons_read: [],
       room: currentRoomId,
-      user: userId,
-      user_name: userName,
+      user: personId,
+      user_name: personName,
       purchaseId: 0,
       purchase: newPurchase,
     );
@@ -321,10 +357,13 @@ class IncomingState extends ChangeNotifier {
   }
 
   final Map<int, RoomDto> roomsById = <int, RoomDto>{};
+
   List<RoomDto> get rooms => roomsById.values.toList();
 
   int _currentRoomId = 0;
+
   int get currentRoomId => _currentRoomId;
+
   set currentRoomId(int val) {
     if (!roomsById.containsKey(val)) {
       StaticLogger.append(

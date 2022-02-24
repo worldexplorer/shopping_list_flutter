@@ -4,20 +4,23 @@
 
 import 'package:json_annotation/json_annotation.dart';
 
-part 'login_dto.g.dart';
+import 'room_dto.dart';
+
+part 'rooms_dto.g.dart';
 
 @JsonSerializable(
     checked: true,
-    createFactory: false,
+    createFactory: true,
     createToJson: true,
     explicitToJson: true,
     disallowUnrecognizedKeys: true,
     includeIfNull: true)
-class LoginDto {
-  String phone;
+class RoomsDto {
+  List<RoomDto> rooms;
 
-  LoginDto({required this.phone});
+  RoomsDto({required this.rooms});
 
-  // factory LoginDto.fromJson(Map<String, dynamic> json) => _$LoginDtoFromJson(json);
-  Map<String, dynamic> toJson() => _$LoginDtoToJson(this);
+  factory RoomsDto.fromJson(Map<String, dynamic> json) =>
+      _$RoomsDtoFromJson(json);
+  Map<String, dynamic> toJson() => _$RoomsDtoToJson(this);
 }

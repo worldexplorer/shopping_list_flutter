@@ -49,8 +49,8 @@ class Connection extends ChangeNotifier {
       StaticLogger.append('#3/4 connected: [${connectionState.socketId}]');
       // connectionNotifier.notify();
       if (_env.myAuthToken != null) {
-        // outgoingHandlers.sendLogin(_env.myAuthToken!);
-        outgoingHandlers.sendLogin(_env.myMobile);
+        outgoingHandlers.sendLogin(_env.myAuthToken!);
+        // outgoingHandlers.sendLogin(_env.myMobile);
       }
     });
     _socket.on('disconnect', (_) {
@@ -60,7 +60,11 @@ class Connection extends ChangeNotifier {
     });
     _socket.on('fromServer', (_) => {StaticLogger.append(_)});
 
-    _socket.on('user', incomingHandlers.onUser);
+    _socket.on(
+        'registrationNeedsCode', incomingHandlers.onRegistrationNeedsCode);
+    _socket.on(
+        'registrationConfirmed', incomingHandlers.onRegistrationConfirmed);
+    _socket.on('person', incomingHandlers.onPerson);
     _socket.on('rooms', incomingHandlers.onRooms);
     _socket.on('typing', incomingHandlers.onTyping);
     _socket.on('message', incomingHandlers.onMessage);
@@ -97,7 +101,9 @@ class Connection extends ChangeNotifier {
     disconnect();
     connectionState.willGetMessagesOnReconnect = true;
     connect();
-    outgoingHandlers.sendLogin(_env.myMobile);
+    if (_env.myAuthToken != null) {
+      outgoingHandlers.sendLogin(_env.myAuthToken!);
+    }
   }
 
   @override

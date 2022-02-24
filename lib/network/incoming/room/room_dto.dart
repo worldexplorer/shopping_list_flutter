@@ -3,7 +3,8 @@
 // $ flutter pub run build_runner watch
 
 import 'package:json_annotation/json_annotation.dart';
-import 'package:shopping_list_flutter/network/incoming/user_dto.dart';
+
+import '..//person/person_dto.dart';
 
 part 'room_dto.g.dart';
 
@@ -17,7 +18,7 @@ part 'room_dto.g.dart';
 class RoomDto {
   int id;
   String name;
-  List<UserDto> users;
+  List<PersonDto> users;
 
   RoomDto({required this.name, required this.id, required this.users});
   factory RoomDto.fromJson(Map<String, dynamic> json) =>

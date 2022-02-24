@@ -60,7 +60,7 @@ class ChatWrapperSlivers extends HookConsumerWidget {
                     size: 20,
                     color: incoming.connection.connectionState.socketConnected
                         ? Colors.white
-                        : Colors.white30),
+                        : Colors.amberAccent),
                 onPressed: () {
                   ui.toMenuAndBack();
                 },
@@ -73,7 +73,9 @@ class ChatWrapperSlivers extends HookConsumerWidget {
                       ? '${incoming.currentRoom.name} (${incoming.currentRoomUsersCsv})'
                       : "Connecting...",
                   style: GoogleFonts.manrope(
-                    color: Colors.white,
+                    color: incoming.connection.connectionState.socketConnected
+                        ? Colors.white
+                        : Colors.amberAccent,
                     fontWeight: FontWeight.w600,
                     fontSize: 19,
                   ),

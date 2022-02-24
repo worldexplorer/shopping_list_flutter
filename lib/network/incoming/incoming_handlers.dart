@@ -1,16 +1,19 @@
+import 'package:shopping_list_flutter/network/incoming/person/registration_confirmed_dto.dart';
+
 import '../../utils/static_logger.dart';
 import '../common/typing_dto.dart';
 import '../connection_state.dart';
 import '../outgoing/outgoing_handlers.dart';
-import 'archived_messages_dto.dart';
-import 'deleted_messages_dto.dart';
 import 'incoming_state.dart';
-import 'message_dto.dart';
-import 'messages_dto.dart';
-import 'room_dto.dart';
-import 'rooms_dto.dart';
-import 'update_messages_read_dto.dart';
-import 'user_dto.dart';
+import 'message/archived_messages_dto.dart';
+import 'message/deleted_messages_dto.dart';
+import 'message/message_dto.dart';
+import 'message/messages_dto.dart';
+import 'message/update_messages_read_dto.dart';
+import 'person/person_dto.dart';
+import 'person/registration_needs_code_dto.dart';
+import 'room/room_dto.dart';
+import 'room/rooms_dto.dart';
 
 class IncomingHandlers {
   ConnectionState connectionState;
@@ -20,13 +23,35 @@ class IncomingHandlers {
   IncomingHandlers(
       this.connectionState, this.incomingState, this.outgoingHandlers);
 
-  void onUser(data) {
+  void onRegistrationNeedsCode(data) {
     try {
-      StaticLogger.append('   > USER [$data]');
-      final userParsed = UserDto.fromJson(data);
-      incomingState.user = userParsed;
+      StaticLogger.append('   > REGISTRATION_NEEDS_CODE [$data]');
+      final needsCode = RegistrationNeedsCodeDto.fromJson(data);
+      incomingState.needsCode = needsCode;
     } catch (e) {
-      StaticLogger.append('      FAILED onUser($data): ${e.toString()}');
+      StaticLogger.append(
+          '      FAILED onRegistrationNeedsCode($data): ${e.toString()}');
+    }
+  }
+
+  void onRegistrationConfirmed(data) {
+    try {
+      StaticLogger.append('   > REGISTRATION_CONFIRMED [$data]');
+      final auth = RegistrationConfirmedDto.fromJson(data);
+      incomingState.auth = auth.auth;
+    } catch (e) {
+      StaticLogger.append(
+          '      FAILED onRegistrationConfirmed($data): ${e.toString()}');
+    }
+  }
+
+  void onPerson(data) {
+    try {
+      StaticLogger.append('   > PERSON [$data]');
+      final userParsed = PersonDto.fromJson(data);
+      incomingState.person = userParsed;
+    } catch (e) {
+      StaticLogger.append('      FAILED onPerson($data): ${e.toString()}');
     }
   }
 
@@ -78,7 +103,7 @@ class IncomingHandlers {
   void onTyping(data) {
     try {
       final typingDto = TypingDto.fromJson(data);
-      if (typingDto.userName == incomingState.userName) {
+      if (typingDto.userName == incomingState.personName) {
         return;
       }
 

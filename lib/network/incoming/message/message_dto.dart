@@ -4,7 +4,7 @@
 
 import 'package:json_annotation/json_annotation.dart';
 
-import 'purchase_dto.dart';
+import '../purchase/purchase_dto.dart';
 
 part 'message_dto.g.dart';
 

@@ -1,4 +1,4 @@
-import 'package:shopping_list_flutter/network/incoming/pur_item_dto.dart';
+import 'package:shopping_list_flutter/network/incoming/purchase/pur_item_dto.dart';
 
 const newPgroupName = '';
 const newProductName = '';
