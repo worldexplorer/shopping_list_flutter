@@ -12,11 +12,11 @@ import '../../outgoing/purchase/edit_purchase_dto.dart';
 part 'purchase_dto.g.dart';
 
 @JsonSerializable(
-    checked: false,
+    checked: true,
     createFactory: true,
     createToJson: true,
     explicitToJson: true,
-    disallowUnrecognizedKeys: false,
+    disallowUnrecognizedKeys: true,
     includeIfNull: true)
 class PurchaseDto extends EditPurchaseDto {
   DateTime date_created;

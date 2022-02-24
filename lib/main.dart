@@ -34,7 +34,7 @@ class MyApp extends ConsumerWidget {
     final router = ref.watch(routerProvider);
 
     return MaterialApp(
-      title: 'Shopping List',
+      title: 'Shared Shopping List',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),

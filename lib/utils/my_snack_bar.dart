@@ -15,19 +15,26 @@ void mySnackBar(BuildContext context, String message, Function? clearMessage) {
     );
 
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        backgroundColor: Colors.red,
-        content: Text(
+      backgroundColor: Colors.red,
+      content: GestureDetector(
+        child: Text(
           message,
+          overflow: TextOverflow.ellipsis,
           style: snackBarErrorTextStyle,
         ),
-        duration: const Duration(seconds: 6),
-        action: SnackBarAction(
-          label: 'X',
-          textColor: Colors.yellow,
-          onPressed: () {
-            ScaffoldMessenger.of(context).hideCurrentSnackBar();
-          },
-        )));
+        onTap: () {
+          ScaffoldMessenger.of(context).hideCurrentSnackBar();
+        },
+      ),
+      duration: const Duration(seconds: 6),
+      // action: SnackBarAction(
+      //   label: 'X',
+      //   textColor: Colors.yellow,
+      //   onPressed: () {
+      //     ScaffoldMessenger.of(context).hideCurrentSnackBar();
+      //   },
+      //  )
+    ));
 
     if (clearMessage != null) {
       Future.delayed(const Duration(milliseconds: 100), () async {

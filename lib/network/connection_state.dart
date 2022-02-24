@@ -22,7 +22,7 @@ class ConnectionState
   bool get socketCreated => _socket == null || socket.connected;
   bool get socketConnected => socketCreated && socket.connected;
   Socket get socket => _socket!;
-  String get socketId => _socket?.id ?? "SOCKET_NOT_YET_CONNECTED";
+  String get socketId => _socket?.id ?? "SOCKET_NOT_CONNECTED";
   String get sConnected => socketCreated
       ? "NO_CONNECTION_ATTEMPT"
       : socket.connected

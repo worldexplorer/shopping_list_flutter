@@ -21,7 +21,11 @@ class Login extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final timer = ref.watch(timerStateProvider);
+
     final incoming = ref.watch(incomingStateProvider);
+    mySnackBar(context, incoming.serverError, incoming.clearServerError);
+    mySnackBar(context, incoming.clientError, incoming.clearClientError);
+
     final outgoingHandlers = incoming.outgoingHandlers;
 
     final emailFocusNode = useFocusNode(
@@ -150,7 +154,7 @@ class Login extends HookConsumerWidget {
                     child: Text(
                       "Shared Shopping List",
                       style: TextStyle(
-                        fontSize: 30,
+                        fontSize: 24,
                         fontWeight: FontWeight.bold,
                       ),
                     ),

@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import 'router.dart';
-
-import '../utils/theme.dart';
 import '../utils/static_logger.dart';
+import '../utils/theme.dart';
 import '../utils/ui_state.dart';
+import 'router.dart';
 
 class Menu extends HookConsumerWidget {
   const Menu({Key? key}) : super(key: key);
@@ -23,7 +22,7 @@ class Menu extends HookConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Padding(
-              padding: const EdgeInsets.fromLTRB(0, 5, 0, 80),
+              padding: const EdgeInsets.fromLTRB(0, 35, 0, 80),
               child: IconButton(
                 icon:
                     const Icon(Icons.arrow_back, size: 20, color: Colors.white),

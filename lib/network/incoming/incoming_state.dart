@@ -56,7 +56,7 @@ class IncomingState extends ChangeNotifier {
   PersonDto get person => _person!;
   int get personId => _person?.id ?? -1;
   bool isMyUserId(int id) => id == personId;
-  String get personName => _person?.name ?? "PERSON_DTO_NOT_YET_RECEIVED";
+  String get personName => _person?.name ?? "PERSON_DTO_NOT_RECEIVED";
   set person(PersonDto val) {
     _person = val;
     notifyListeners();
