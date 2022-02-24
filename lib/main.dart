@@ -4,7 +4,6 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'env/env.dart';
 import 'env/env_loader.dart';
 import 'network/connection.dart';
-import 'utils/my_shared_preferences.dart';
 import 'views/home.dart';
 import 'views/login/login.dart';
 import 'views/router.dart';
@@ -12,7 +11,8 @@ import 'views/router.dart';
 Future<void> main() async {
   // TODO: move somewhere to let UI draw spinner & NetLog panel
   final env = await EnvLoader.load();
-  env.myAuthToken = await MySharedPreferences.getMyAuthToken();
+  // WidgetsFlutterBinding.ensureInitialized();
+  // env.myAuthToken = await MySharedPreferences.getMyAuthToken();
 
   runApp(ProviderScope(
       // observers: [ProviderChangedLogger()],

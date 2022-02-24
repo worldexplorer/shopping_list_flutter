@@ -6,7 +6,6 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../env/env.dart';
 import '../../network/incoming/incoming_state.dart';
-import '../../utils/my_shared_preferences.dart';
 import '../../utils/my_snack_bar.dart';
 import '../../utils/theme.dart';
 import '../home.dart';
@@ -55,7 +54,7 @@ class Login extends HookConsumerWidget {
     if (isNetworkPending.value == true && incoming.auth != null) {
       isNetworkPending.value = false;
       outgoingHandlers.sendLogin(incoming.auth!);
-      MySharedPreferences.setMyAuthToken(incoming.auth!);
+      // MySharedPreferences.setMyAuthToken(incoming.auth!);
       MaterialPageRoute(builder: (context) => const Home());
     }
 
