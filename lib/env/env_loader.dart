@@ -44,7 +44,7 @@ class EnvLoader {
     //       'FAILED EnvLoader:load(): platformPlus.isPhysicalDevice(): ${e.toString()}');
     // }
 
-    String mobileNumber = ret.myMobile;
+    // String mobileNumber = ret.myMobile;
     // try {
     //   mobileNumber = await fetchMobileNumber(DEV_LOCAL.myMobile);
     //   StaticLogger.append('EnvLoader:load(): mobileNumber=$mobileNumber');
@@ -55,7 +55,7 @@ class EnvLoader {
 
     if (isPhysicalDevice || !isEmulator) {
       ret = PROD_HEROKU;
-      ret.myMobile = mobileNumber;
+      // ret.myMobile = mobileNumber;
     }
 
     if (ret.wsPortJsonURL != null) {

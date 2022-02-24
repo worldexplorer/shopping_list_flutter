@@ -65,7 +65,7 @@ class OutgoingHandlers {
     final json = LoginDto(
       auth: auth,
     ).toJson();
-    connectionState.socket.emit("person", json);
+    connectionState.socket.emit("login", json);
     StaticLogger.append('<< LOGIN [$json]');
   }
 

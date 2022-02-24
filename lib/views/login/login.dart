@@ -6,6 +6,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../env/env.dart';
 import '../../network/incoming/incoming_state.dart';
+import '../../utils/my_shared_preferences.dart';
 import '../../utils/my_snack_bar.dart';
 import '../../utils/theme.dart';
 import '../home.dart';
@@ -49,16 +50,30 @@ class Login extends HookConsumerWidget {
         outgoingHandlers.sendRegisterConfirm(
             emailInputCtrl.value.text, smsInputCtrl.value.text, codeParsed);
       }
+      if (codeTyped.text.isEmpty && !timer.isRunning) {
+        // enable 'Try as Anonymous' button
+        isCodeSent.value = false;
+      }
+      return null;
     }, [codeTyped.text]);
 
-    if (isNetworkPending.value == true && incoming.auth != null) {
+    if (incoming.auth != null) {
+      final auth = incoming.auth!;
+      Future.delayed(const Duration(milliseconds: 200), () async {
+        incoming.auth = null;
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => const Home()));
+      });
+
+      timer.stopTimer();
+      outgoingHandlers.sendLogin(auth);
+      env.myAuthToken = auth;
+
       isNetworkPending.value = false;
-      outgoingHandlers.sendLogin(incoming.auth!);
-      // MySharedPreferences.setMyAuthToken(incoming.auth!);
-      MaterialPageRoute(builder: (context) => const Home());
+      MySharedPreferences.setMyAuthToken(auth);
     }
 
-    Future<void> _handleSendCode() async {
+    _handleSendCode() async {
       if (_formKey.currentState!.validate() == false) {
         return;
       }
@@ -83,6 +98,15 @@ class Login extends HookConsumerWidget {
       });
     }
 
+    _handleTryAnonymous() {
+      timer.stopTimer();
+      env.myAuthToken = anonymousAuthToken;
+      outgoingHandlers.sendLogin(anonymousAuthToken);
+      // env.myAuthToken = anonymousAuthToken;
+      Navigator.push(
+          context, MaterialPageRoute(builder: (context) => const Home()));
+    }
+
     if (isNetworkPending.value == true && incoming.needsCode != null) {
       isNetworkPending.value = false;
       isCodeSent.value =
@@ -99,31 +123,6 @@ class Login extends HookConsumerWidget {
           codeFocusNode.requestFocus();
         }
       });
-
-      // timer.notifyListeners(); // force re-render
-
-      // String sentTo_fromServerResponse = '';
-      // if (emailController.value.text.isNotEmpty) {
-      //   sentTo_fromServerResponse += 'Email';
-      // }
-      // if (smsController.value.text.isNotEmpty) {
-      //   if (sentTo_fromServerResponse.isNotEmpty) {
-      //     sentTo_fromServerResponse += ' and ';
-      //   }
-      //   sentTo_fromServerResponse += 'SMS';
-      // }
-      // sentTo.value = sentTo_fromServerResponse;
-
-      // isNetworkPending.value = true;
-      // isCodeSent.value = false;
-      // Future.delayed(const Duration(seconds: 3), () async {
-      //   isNetworkPending.value = false;
-      //   isCodeSent.value = true;
-      // });
-
-      // env.myAuthToken = 'accessToken';
-      // Navigator.push(
-      //     context, MaterialPageRoute(builder: (context) => const Home()));
     }
 
     // final canSendCode = !(timer.isRunning || isNetworkPending.value == true);
@@ -214,13 +213,7 @@ class Login extends HookConsumerWidget {
                             children: [
                               Expanded(
                                 child: ElevatedButton(
-                                  onPressed: () {
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                const Home()));
-                                  },
+                                  onPressed: _handleTryAnonymous,
                                   style: loginButtonStyle,
                                   child: const Text(
                                     "Try as Anonymous",

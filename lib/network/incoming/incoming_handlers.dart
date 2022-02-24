@@ -136,8 +136,9 @@ class IncomingHandlers {
   }
 
   void onMessages(data) {
-    StaticLogger.append('   > MESSAGES [SEE_BELOW]');
-    int i = 1;
+    // StaticLogger.append('   > MESSAGES [SEE_BELOW]');
+    StaticLogger.append('   > MESSAGES [$data]');
+    int i = 0;
     int total = 0;
 
     try {

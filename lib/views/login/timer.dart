@@ -20,6 +20,13 @@ class TimerState extends ChangeNotifier {
     return secondsLeft == 1;
   }
 
+  void stopTimer() {
+    if (_timer != null) {
+      _timer!.cancel();
+      _timer = null;
+    }
+  }
+
   void startTimer(
       {int start = 120,
       int decrementSec = 1,
@@ -28,13 +35,15 @@ class TimerState extends ChangeNotifier {
     secondsScheduled = start;
     secondsLeft = start;
     timeLeftFormatted = formatSeconds(secondsLeft);
+
+    stopTimer();
+
     _timer = Timer.periodic(Duration(seconds: decrementSec), (Timer timer) {
       secondsLeft = secondsLeft - decrementSec;
       if (secondsLeft > 0) {
         timeLeftFormatted = formatSeconds(secondsLeft);
       } else {
-        timer.cancel();
-        _timer = null;
+        stopTimer();
         timeLeftFormatted = '';
         if (onExpired != null) {
           onExpired();
