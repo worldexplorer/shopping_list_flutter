@@ -12,7 +12,7 @@ import '../../outgoing/purchase/edit_purchase_dto.dart';
 part 'purchase_dto.g.dart';
 
 @JsonSerializable(
-    checked: true,
+    checked: false,
     createFactory: true,
     createToJson: true,
     explicitToJson: true,

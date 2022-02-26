@@ -2,7 +2,7 @@
     package="li.shasho.shopping_list_flutter">
     <uses-permission android:name="android.permission.INTERNET"/>
    <application
-        android:label="shopping_list_flutter"
+        android:label="Shared Shopping List"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"

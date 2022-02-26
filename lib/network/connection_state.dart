@@ -20,8 +20,15 @@ class ConnectionState
 
   Socket? _socket;
   bool get socketCreated => _socket == null || socket.connected;
-  bool get socketConnected => socketCreated && socket.connected;
-  Socket get socket => _socket!;
+  bool get socketConnected => _socket != null && _socket!.connected;
+  Socket get socket {
+    if (_socket != null) {
+      return _socket!;
+    } else {
+      throw "YOU_SHOULD_WAIT_FOR_CONNECTION";
+    }
+  }
+
   String get socketId => _socket?.id ?? "SOCKET_NOT_CONNECTED";
   String get sConnected => socketCreated
       ? "NO_CONNECTION_ATTEMPT"

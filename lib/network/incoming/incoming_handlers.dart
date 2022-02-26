@@ -60,13 +60,13 @@ class IncomingHandlers {
     try {
       RoomsDto roomsParsed = RoomsDto.fromJson(data);
 
-      var changed = false;
-      var firstRoomId = 0;
+      // var changed = false;
+      // var firstRoomId = 0;
       for (int i = 1; i <= roomsParsed.rooms.length; i++) {
         RoomDto room = roomsParsed.rooms[i - 1];
-        if (firstRoomId == 0) {
-          firstRoomId = room.id;
-        }
+        // if (firstRoomId == 0) {
+        //   firstRoomId = room.id;
+        // }
 
         if (incomingState.roomsById.containsKey(room.id)) {
           StaticLogger.append(
@@ -79,22 +79,22 @@ class IncomingHandlers {
 
         incomingState.roomsById[room.id] = room;
 
-        changed = true;
+        // changed = true;
       }
 
-      if (changed) {
-        if (incomingState.currentRoomId == 0) {
-          incomingState.currentRoomId =
-              firstRoomId; // will trigger sendGetMessages()
-        } else {
-          incomingState.notifyListeners();
-        }
-      } else {
-        if (connectionState.willGetMessagesOnReconnect) {
-          outgoingHandlers.sendGetMessages(incomingState.currentRoomId, 0);
-          connectionState.willGetMessagesOnReconnect = false;
-        }
-      }
+      // if (changed) {
+      //   if (incomingState.currentRoomId == 0) {
+      //     incomingState.currentRoomId =
+      //         firstRoomId; // will trigger sendGetMessages()
+      //   } else {
+      //     incomingState.notifyListeners();
+      //   }
+      // } else {
+      //   if (connectionState.willGetMessagesOnReconnect) {
+      //     outgoingHandlers.sendGetMessages(incomingState.currentRoomId, 0);
+      //     connectionState.willGetMessagesOnReconnect = false;
+      //   }
+      // }
     } catch (e) {
       StaticLogger.append('      FAILED onRooms(): ${e.toString()}');
     }

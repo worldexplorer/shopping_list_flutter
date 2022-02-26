@@ -22,7 +22,7 @@ class Menu extends HookConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Padding(
-              padding: const EdgeInsets.fromLTRB(0, 35, 0, 80),
+              padding: const EdgeInsets.fromLTRB(3, 6, 0, 80),
               child: IconButton(
                 icon:
                     const Icon(Icons.arrow_back, size: 20, color: Colors.white),
@@ -32,11 +32,14 @@ class Menu extends HookConsumerWidget {
                 },
               ),
             ),
-            Column(
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: createMenuItems(router.visibleMenuItems, context)),
+            Padding(
+                padding: const EdgeInsets.only(left: 25.0),
+                child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children:
+                        createMenuItems(router.visibleMenuItems, context))),
           ],
         ));
   }

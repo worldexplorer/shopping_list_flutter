@@ -19,14 +19,14 @@ void mySnackBar(BuildContext context, String message, Function? clearMessage) {
       content: GestureDetector(
         child: Text(
           message,
-          overflow: TextOverflow.ellipsis,
           style: snackBarErrorTextStyle,
         ),
         onTap: () {
           ScaffoldMessenger.of(context).hideCurrentSnackBar();
+          // ScaffoldMessenger.of(context).removeCurrentSnackBar();
         },
       ),
-      duration: const Duration(seconds: 6),
+      duration: const Duration(seconds: 9999),
       // action: SnackBarAction(
       //   label: 'X',
       //   textColor: Colors.yellow,

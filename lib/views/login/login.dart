@@ -10,13 +10,13 @@ import '../../utils/my_shared_preferences.dart';
 import '../../utils/my_snack_bar.dart';
 import '../../utils/theme.dart';
 import '../home.dart';
+import '../log.dart';
 import 'timer.dart';
 
 class Login extends HookConsumerWidget {
-  final Env env;
   static final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-  const Login({required this.env, Key? key}) : super(key: key);
+  const Login({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -71,7 +71,7 @@ class Login extends HookConsumerWidget {
 
       timer.stopTimer();
       outgoingHandlers.sendLogin(auth);
-      env.myAuthToken = auth;
+      Env.current.myAuthToken = auth;
 
       isNetworkPending.value = false;
       MySharedPreferences.setMyAuthToken(auth);
@@ -104,9 +104,8 @@ class Login extends HookConsumerWidget {
 
     _handleTryAnonymous() {
       timer.stopTimer();
-      env.myAuthToken = anonymousAuthToken;
+      Env.current.myAuthToken = anonymousAuthToken;
       outgoingHandlers.sendLogin(anonymousAuthToken);
-      // env.myAuthToken = anonymousAuthToken;
       Navigator.push(
           context, MaterialPageRoute(builder: (context) => const Home()));
     }
@@ -122,6 +121,7 @@ class Login extends HookConsumerWidget {
 
       timer.startTimer(onExpired: () {
         emailFocusNode.requestFocus();
+        incoming.needsCode = null;
       }, onEachSecond: (int currentSecondsLeft) {
         if (currentSecondsLeft == 1) {
           codeFocusNode.requestFocus();
@@ -133,108 +133,141 @@ class Login extends HookConsumerWidget {
     final canSendCode = !timer.isRunning;
 
     final size = MediaQuery.of(context).size;
-    return Scaffold(
-      backgroundColor: chatBackground,
-      body: Form(
+    return formDecorator(
+      context,
+      size,
+      Form(
         key: _formKey,
         autovalidateMode: AutovalidateMode.always,
-        child: Center(
-          child: Container(
-            width: size.width * 0.85,
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  const Center(
-                    child: Text(
-                      "Shared Shopping List",
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: size.height * 0.05),
-                  TextFormField(
-                    // validator: (value) =>
-                    //     Validator.validateEmail(value ?? ""),
-                    controller: emailInputCtrl,
-                    enabled: canSendCode,
-                    autofocus: true,
-                    keyboardType: TextInputType.emailAddress,
-                    decoration: inputDeco("Email"),
-                  ),
-                  SizedBox(height: size.height * 0.03),
-                  TextFormField(
-                    // validator: (value) =>
-                    //     Validator.validatePhoneNumber(value ?? ""),
-                    controller: smsInputCtrl,
-                    enabled: canSendCode,
-                    keyboardType: TextInputType.phone,
-                    decoration: inputDeco("Phone"),
-                  ),
-                  SizedBox(height: size.height * 0.04),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Expanded(
-                        child: ElevatedButton(
-                          onPressed: canSendCode ? _handleSendCode : null,
-                          style: loginButtonStyle,
-                          child: Text(
-                            timer.isRunning
-                                ? 'Send code in ${timer.timeLeftFormatted}...'
-                                : 'Send 6-digit code',
-                            style: loginButtonTextStyle,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: size.height * 0.04),
-                  ...(isCodeSent.value
-                      ? [
-                          TextFormField(
-                            controller: codeInputCtrl,
-                            focusNode: codeFocusNode,
-                            enabled: !isNetworkPending.value,
-                            // validator: (value) =>
-                            //     Validator.validateNumber(value ?? ""),
-                            keyboardType: TextInputType.number,
-                            decoration: inputDeco(incoming.needsCode != null
-                                ? incoming.needsCode!.status
-                                : 'Check your ${sentTo.value}'),
-                          ),
-                        ]
-                      : [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Expanded(
-                                child: ElevatedButton(
-                                  onPressed: _handleTryAnonymous,
-                                  style: loginButtonStyle,
-                                  child: const Text(
-                                    "Try as Anonymous",
-                                    style: loginButtonTextStyle,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ]),
-                ],
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            const Center(
+              child: Text(
+                "Shared Shopping List",
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
-          ),
+            SizedBox(height: size.height * 0.05),
+            Row(children: [
+              Expanded(
+                  child: TextFormField(
+                // validator: (value) =>
+                //     Validator.validateEmail(value ?? ""),
+                controller: emailInputCtrl,
+                enabled: canSendCode,
+                autofocus: true,
+                keyboardType: TextInputType.emailAddress,
+                decoration: inputDeco("Email"),
+              )),
+              // incoming.needsCode != null
+              //     ? (emailInputCtrl.text.isNotEmpty &&
+              //             incoming.needsCode!.emailSent
+              //         ? const Icon(Icons.check, color: Colors.green, size: 26)
+              //         : const Icon(Icons.cancel, color: Colors.red, size: 26))
+              //     : const SizedBox(),
+            ]),
+            SizedBox(height: size.height * 0.03),
+            Row(children: [
+              Expanded(
+                child: TextFormField(
+                  // validator: (value) =>
+                  //     Validator.validatePhoneNumber(value ?? ""),
+                  controller: smsInputCtrl,
+                  enabled: canSendCode,
+                  keyboardType: TextInputType.phone,
+                  decoration: inputDeco("Phone"),
+                ),
+              ),
+              // incoming.needsCode != null
+              //     ? (emailInputCtrl.text.isNotEmpty &&
+              //             incoming.needsCode!.emailSent
+              //         ? const Icon(Icons.check, color: Colors.green, size: 26)
+              //         : const Icon(Icons.cancel, color: Colors.red, size: 26))
+              //     : const SizedBox(),
+            ]),
+            SizedBox(height: size.height * 0.04),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: canSendCode ? _handleSendCode : null,
+                    style: loginButtonStyle,
+                    child: Text(
+                      timer.isRunning
+                          ? (isCodeSent.value ? 'Code sent ' : 'Not sent ') +
+                              '${timer.timeLeftFormatted}...'
+                          : 'Send 6-digit code',
+                      style: loginButtonTextStyle,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: size.height * 0.04),
+            ...(isCodeSent.value
+                ? [
+                    TextFormField(
+                      controller: codeInputCtrl,
+                      focusNode: codeFocusNode,
+                      enabled: !isNetworkPending.value,
+                      // validator: (value) =>
+                      //     Validator.validateNumber(value ?? ""),
+                      keyboardType: TextInputType.number,
+                      decoration: inputDeco(incoming.needsCode != null
+                          ? incoming.needsCode!.status
+                          : 'Check your ${sentTo.value}'),
+                    ),
+                  ]
+                : [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Expanded(
+                          child: ElevatedButton(
+                            onPressed: _handleTryAnonymous,
+                            style: loginButtonStyle,
+                            child: const Text(
+                              "Try as Anonymous",
+                              style: loginButtonTextStyle,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ]),
+          ],
         ),
       ),
     );
+  }
+
+  Widget formDecorator(BuildContext context, Size size, Widget form) {
+    return Scaffold(
+        backgroundColor: chatBackground,
+        body: GestureDetector(
+          onTap: () {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => const Log(showAppBar: true)));
+          },
+          child: Center(
+            child: Container(
+              width: size.width * 0.85,
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: SingleChildScrollView(child: form),
+            ),
+          ),
+        ));
   }
 
   InputDecoration inputDeco(hintText) {
@@ -246,29 +279,3 @@ class Login extends HookConsumerWidget {
         ));
   }
 }
-
-// ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-//   content: const Text('Checking your email/phone'),
-//   backgroundColor: Colors.green.shade300,
-// ));
-
-// dynamic res = await _apiClient.person(
-//   emailController.text,
-//   passwordController.text,
-// );
-// ScaffoldMessenger.of(context).hideCurrentSnackBar();
-
-//if there is no error, get the person's accesstoken and pass it to HomeScreen
-// if (res['ErrorCode'] == null) {
-//   String accessToken = res['access_token'];
-//   Navigator.push(
-//       context,
-//       MaterialPageRoute(
-//           builder: (context) => Home(accesstoken: accessToken)));
-// } else {
-//   //if an error occurs, show snackbar with error message
-//   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-//     content: Text('Error: ${res['Message']}'),
-//     backgroundColor: Colors.red.shade300,
-//   ));
-// }

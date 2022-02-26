@@ -6,8 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import '../../network/incoming/incoming_state.dart';
-import '../../utils/my_snack_bar.dart';
 import '../utils/theme.dart';
 import '../utils/ui_state.dart';
 import 'views.dart';
@@ -17,11 +15,6 @@ class Home extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final incoming = ref.watch(incomingStateProvider);
-
-    mySnackBar(context, incoming.serverError, incoming.clearServerError);
-    mySnackBar(context, incoming.clientError, incoming.clearClientError);
-
     final widthAfterRebuild = MediaQuery.of(context).size.width;
 
     final screenWidth = useState(widthAfterRebuild);
@@ -55,10 +48,7 @@ class Home extends HookConsumerWidget {
               scale: menuScaleAnimation.value,
               child: const Align(
                 alignment: Alignment.centerLeft,
-                child: Padding(
-                  padding: EdgeInsets.only(left: 25.0),
-                  child: Menu(),
-                ),
+                child: Menu(),
               ),
             ),
           ),
@@ -91,12 +81,14 @@ class Home extends HookConsumerWidget {
                     //     ui.toMenuAndBack();
                     //   },
                     //   child:
-                    IgnorePointer(
-                  // https://stackoverflow.com/questions/50600747/flutter-ignore-touch-events-on-a-widget
-                  ignoring: !ui.isMenuVisible,
-                  child: const ChatWrapperSlivers(),
-                  // child: const ChatWrapperAppbar(),
-                ),
+                    // IgnorePointer(
+                    // https://stackoverflow.com/questions/50600747/flutter-ignore-touch-events-on-a-widget
+                    // ignoring: !ui.isMenuVisible,
+                    // child:
+                    const Rooms(),
+                // child: const ChatWrapperSlivers(),
+                // child: const ChatWrapperAppbar(),
+                // ),
                 // ),
               ),
             ),

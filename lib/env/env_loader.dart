@@ -5,11 +5,12 @@
 // import 'device_emulator_detector.dart';
 
 import 'env.dart';
-import 'heroku_workaround.dart';
+
+const forceHeroku = false;
 
 class EnvLoader {
   // https://blog.codemagic.io/flutter-ui-socket/
-  static Future<Env> load([forceHeroku = true]) async {
+  static Future<Env> load([forceHeroku = false]) async {
     Env ret = forceHeroku ? PROD_HEROKU : DEV_LOCAL;
 
     bool isEmulator = true;
@@ -58,14 +59,15 @@ class EnvLoader {
       // ret.myMobile = mobileNumber;
     }
 
-    if (ret.wsPortJsonURL != null) {
-      final int port =
-          await HerokuWorkaround.fetchWebsocketPort(ret.wsPortJsonURL!);
-      if (port != 0) {
-        ret.websocketURL += ':$port';
-      }
-    }
+    // if (ret.wsPortJsonURL != null) {
+    //   final int port =
+    //       await HerokuWorkaround.fetchWebsocketPort(ret.wsPortJsonURL!);
+    //   if (port != 0) {
+    //     ret.websocketURL += ':$port';
+    //   }
+    // }
 
+    Env.current = ret;
     return ret;
   }
 

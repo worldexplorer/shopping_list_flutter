@@ -8,6 +8,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../network/incoming/incoming.dart';
 import '../utils/ui_state.dart';
+import 'login/login.dart';
 import 'views.dart';
 
 final routerProvider = ChangeNotifierProvider<Router>((ref) => Router(ref));
@@ -20,6 +21,7 @@ class Router extends ChangeNotifier {
   late RouteMenuItem rooms;
   late RouteMenuItem settings;
   late RouteMenuItem log;
+  late RouteMenuItem login;
   late ActionMenuItem reconnect;
   late ActionMenuItem getMessages;
   late ActionMenuItem refresh;
@@ -85,6 +87,14 @@ class Router extends ChangeNotifier {
         isSelectedInMenu: false,
         isVisibleInMenu: true);
 
+    login = RouteMenuItem(
+        page: Page.Login,
+        title: 'Login',
+        path: '/login',
+        widget: (BuildContext context) => const Login(),
+        isSelectedInMenu: false,
+        isVisibleInMenu: true);
+
     reconnect = ActionMenuItem(
         page: Page.Reconnect,
         title: 'Reconnect',
@@ -125,6 +135,7 @@ class Router extends ChangeNotifier {
       Page.Rooms: rooms,
       Page.Settings: settings,
       Page.Log: log,
+      Page.Login: login,
       Page.Reconnect: reconnect,
       Page.GetMessages: getMessages,
       Page.Refresh: refresh,
@@ -138,6 +149,7 @@ enum Page {
   Rooms,
   Settings,
   Log,
+  Login,
   Reconnect,
   GetMessages,
   Refresh

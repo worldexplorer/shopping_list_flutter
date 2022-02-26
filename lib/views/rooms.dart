@@ -1,18 +1,67 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:shopping_list_flutter/views/chat/chat_wrapper_slivers.dart';
 
-class Rooms extends HookWidget {
+import '../network/incoming/incoming_state.dart';
+import '../utils/theme.dart';
+import '../utils/ui_state.dart';
+
+class Rooms extends HookConsumerWidget {
   const Rooms({Key? key}) : super(key: key);
 
   @override
-  build(BuildContext context) {
+  build(BuildContext context, WidgetRef ref) {
+    final ui = ref.watch(uiStateProvider);
+    final socketConnected = ref.watch(incomingStateProvider
+        .select((state) => state.connection.connectionState.socketConnected));
+
+    final incoming = ref.watch(incomingStateProvider);
+
     return Scaffold(
       appBar: AppBar(
         title: const Text("Rooms"),
+        leading: IconButton(
+          icon: Icon(Icons.more_vert,
+              size: 20,
+              color: socketConnected ? Colors.white : Colors.amberAccent),
+          onPressed: () {
+            ui.toMenuAndBack();
+          },
+        ),
+        actions: <Widget>[
+          IconButton(
+            icon: const Icon(Icons.search),
+            onPressed: () {
+              // debugExpanded.value = !debugExpanded.value;
+            },
+          ),
+        ],
       ),
-      // body: Container(
-      //   child: ,
-      // ),
+      body: ListView.builder(
+        scrollDirection: Axis.vertical,
+        shrinkWrap: true,
+        itemCount: incoming.rooms.length,
+        itemBuilder: (BuildContext context, int index) {
+          final room = incoming.rooms[index];
+          final users = room.users.map((x) => x.name).join(", ");
+          final label = room.name + ' (' + users + ')';
+          return Container(
+              margin: const EdgeInsets.symmetric(vertical: 4),
+              child: GestureDetector(
+                onTap: () {
+                  incoming.currentRoomId = room.id;
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const ChatWrapperSlivers()));
+                },
+                child: Text(
+                  label,
+                  style: purchaseStyle,
+                ),
+              ));
+        },
+      ),
     );
   }
 }

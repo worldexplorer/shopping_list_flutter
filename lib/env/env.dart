@@ -4,17 +4,16 @@ class Env {
   String websocketURL;
   String? wsPortJsonURL;
   // app runtime variables
-  String? myMobile;
   String? myAuthToken;
-  bool loggedIn = false;
+
+  static bool forceHeroku = false;
+  static Env current = forceHeroku ? PROD_HEROKU : DEV_LOCAL;
 
   Env({
     required this.envName,
     this.wsPortJsonURL,
     required this.websocketURL,
-    this.myMobile,
     this.myAuthToken,
-    this.loggedIn = false,
   });
 }
 
