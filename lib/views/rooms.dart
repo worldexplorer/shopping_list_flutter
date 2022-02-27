@@ -18,19 +18,19 @@ class Rooms extends HookConsumerWidget {
     final incoming = ref.watch(incomingStateProvider);
 
     return Scaffold(
+      backgroundColor: chatBackground,
       appBar: AppBar(
-        title: const Text("Rooms"),
+        title: titleText(socketConnected, "Rooms"),
         leading: IconButton(
-          icon: Icon(Icons.more_vert,
-              size: 20,
-              color: socketConnected ? Colors.white : Colors.amberAccent),
+          icon: Icon(Icons.arrow_back,
+              size: 20, color: whiteOrConnecting(socketConnected)),
           onPressed: () {
             ui.toMenuAndBack();
           },
         ),
         actions: <Widget>[
           IconButton(
-            icon: const Icon(Icons.search),
+            icon: const Icon(Icons.more_vert),
             onPressed: () {
               // debugExpanded.value = !debugExpanded.value;
             },
@@ -43,10 +43,15 @@ class Rooms extends HookConsumerWidget {
         itemCount: incoming.rooms.length,
         itemBuilder: (BuildContext context, int index) {
           final room = incoming.rooms[index];
-          final users = room.users.map((x) => x.name).join(", ");
-          final label = room.name + ' (' + users + ')';
+          final users = room.users;
+          final majorUsers = users
+              .getRange(0, users.length >= 4 ? 4 : users.length - 1)
+              .map((x) => x.name)
+              .join(", ");
+          final minorUsers = users.length > 5 ? ' + ${users.length - 5}' : '';
+          final label = room.name;
           return Container(
-              margin: const EdgeInsets.symmetric(vertical: 4),
+              margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
               child: GestureDetector(
                 onTap: () {
                   incoming.currentRoomId = room.id;
@@ -55,9 +60,30 @@ class Rooms extends HookConsumerWidget {
                       MaterialPageRoute(
                           builder: (context) => const ChatWrapperSlivers()));
                 },
-                child: Text(
-                  label,
-                  style: purchaseStyle,
+                child: Row(
+                  children: [
+                    const CircleAvatar(
+                      backgroundColor: Colors.grey,
+                      foregroundColor: Colors.white,
+                      radius: 25,
+                    ),
+                    const SizedBox(width: 10),
+                    Column(
+                      children: [
+                        Text(
+                          label,
+                          style: const TextStyle(
+                              color: Colors.white, fontSize: 20),
+                        ),
+                        Text(
+                          majorUsers + minorUsers,
+                          style: TextStyle(
+                              color: Colors.white.withOpacity(0.6),
+                              fontSize: 14),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
               ));
         },

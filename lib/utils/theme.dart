@@ -106,3 +106,26 @@ const loginButtonTextStyle = TextStyle(
 const loginScreenTextStyle = TextStyle(
   fontSize: 20,
 );
+
+TextStyle appBarTextStyle(bool socketConnected) {
+  return GoogleFonts.manrope(
+    color: whiteOrConnecting(socketConnected),
+    fontWeight: FontWeight.w600,
+    fontSize: 19,
+  );
+}
+
+Color whiteOrConnecting(bool socketConnected) {
+  return socketConnected ? Colors.white : Colors.amberAccent;
+}
+
+String textOrConnecting(bool socketConnected, String text) {
+  return socketConnected ? text : "Connecting...";
+}
+
+Text titleText(bool socketConnected, String text) {
+  return Text(
+    socketConnected ? text : "Connecting...",
+    style: appBarTextStyle(socketConnected),
+  );
+}

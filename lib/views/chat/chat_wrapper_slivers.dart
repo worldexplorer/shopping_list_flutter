@@ -26,6 +26,8 @@ class ChatWrapperSlivers extends HookConsumerWidget {
     final scrollController =
         useScrollControllerForAnimation(hideFabAnimController);
 
+    final socketConnected = incoming.connection.connectionState.socketConnected;
+
     return Scaffold(
       backgroundColor: chatBackground,
       // floatingActionButton: FadeTransition(
@@ -56,11 +58,8 @@ class ChatWrapperSlivers extends HookConsumerWidget {
               // https://blog.logrocket.com/flutter-appbar-tutorial/
               // https://o7planning.org/12851/flutter-appbar
               leading: IconButton(
-                icon: Icon(Icons.more_vert,
-                    size: 20,
-                    color: incoming.connection.connectionState.socketConnected
-                        ? Colors.white
-                        : Colors.amberAccent),
+                icon: Icon(Icons.arrow_back,
+                    size: 20, color: whiteOrConnecting(socketConnected)),
                 onPressed: () {
                   ui.toMenuAndBack();
                 },
@@ -68,18 +67,8 @@ class ChatWrapperSlivers extends HookConsumerWidget {
               titleSpacing: 0,
               centerTitle: false,
               title: Column(children: [
-                Text(
-                  incoming.connection.connectionState.socketConnected
-                      ? '${incoming.currentRoom.name} (${incoming.currentRoomUsersCsv})'
-                      : "Connecting...",
-                  style: GoogleFonts.manrope(
-                    color: incoming.connection.connectionState.socketConnected
-                        ? Colors.white
-                        : Colors.amberAccent,
-                    fontWeight: FontWeight.w600,
-                    fontSize: 19,
-                  ),
-                ),
+                titleText(socketConnected,
+                    '${incoming.currentRoom.name} (${incoming.currentRoomUsersCsv})'),
                 if (incoming.typing.isNotEmpty) ...[
                   const SizedBox(width: 4),
                   Text(
@@ -94,7 +83,7 @@ class ChatWrapperSlivers extends HookConsumerWidget {
               ]),
               actions: <Widget>[
                 IconButton(
-                  icon: const Icon(Icons.search),
+                  icon: const Icon(Icons.more_vert),
                   onPressed: () {
                     debugExpanded.value = !debugExpanded.value;
                   },
