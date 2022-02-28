@@ -2,7 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-void mySnackBar(BuildContext context, String message, Function? clearMessage) {
+void mySnackBar(
+    BuildContext context,
+    // GlobalKey messengerKey,
+    String message,
+    Function? clearMessage) {
   if (message == '') {
     return;
   }
@@ -14,7 +18,10 @@ void mySnackBar(BuildContext context, String message, Function? clearMessage) {
       fontSize: 20,
     );
 
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+    final snackControl = ScaffoldMessenger.of(context);
+    // final snackControl = messengerKey.currentState;
+
+    snackControl.showSnackBar(SnackBar(
       backgroundColor: Colors.red,
       content: GestureDetector(
         child: Text(
@@ -22,16 +29,16 @@ void mySnackBar(BuildContext context, String message, Function? clearMessage) {
           style: snackBarErrorTextStyle,
         ),
         onTap: () {
-          ScaffoldMessenger.of(context).hideCurrentSnackBar();
-          // ScaffoldMessenger.of(context).removeCurrentSnackBar();
+          snackControl.hideCurrentSnackBar();
+          // snackControl.removeCurrentSnackBar();
         },
       ),
-      duration: const Duration(seconds: 9999),
+      duration: const Duration(seconds: 20),
       // action: SnackBarAction(
       //   label: 'X',
       //   textColor: Colors.yellow,
       //   onPressed: () {
-      //     ScaffoldMessenger.of(context).hideCurrentSnackBar();
+      //     snackControl.hideCurrentSnackBar();
       //   },
       //  )
     ));

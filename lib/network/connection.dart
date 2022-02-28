@@ -65,6 +65,7 @@ class Connection extends ChangeNotifier {
         'registrationConfirmed', incomingHandlers.onRegistrationConfirmed);
     _socket.on('person', incomingHandlers.onPerson);
     _socket.on('rooms', incomingHandlers.onRooms);
+    _socket.on('room', incomingHandlers.onRoom);
     _socket.on('typing', incomingHandlers.onTyping);
     _socket.on('message', incomingHandlers.onMessage);
     _socket.on('updatedMessagesRead', incomingHandlers.onMessagesReadUpdated);

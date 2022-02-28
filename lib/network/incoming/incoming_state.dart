@@ -357,13 +357,9 @@ class IncomingState extends ChangeNotifier {
   }
 
   final Map<int, RoomDto> roomsById = <int, RoomDto>{};
-
   List<RoomDto> get rooms => roomsById.values.toList();
-
   int _currentRoomId = 0;
-
   int get currentRoomId => _currentRoomId;
-
   set currentRoomId(int val) {
     if (!roomsById.containsKey(val)) {
       StaticLogger.append(

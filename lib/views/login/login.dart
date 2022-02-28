@@ -9,8 +9,8 @@ import '../../network/incoming/incoming_state.dart';
 import '../../utils/my_shared_preferences.dart';
 import '../../utils/my_snack_bar.dart';
 import '../../utils/theme.dart';
-import '../home.dart';
 import '../log.dart';
+import '../rooms.dart';
 import 'timer.dart';
 
 class Login extends HookConsumerWidget {
@@ -66,7 +66,7 @@ class Login extends HookConsumerWidget {
       Future.delayed(const Duration(milliseconds: 200), () async {
         incoming.auth = null;
         Navigator.push(
-            context, MaterialPageRoute(builder: (context) => const Home()));
+            context, MaterialPageRoute(builder: (context) => const Rooms()));
       });
 
       timer.stopTimer();
@@ -107,7 +107,7 @@ class Login extends HookConsumerWidget {
       Env.current.myAuthToken = anonymousAuthToken;
       outgoingHandlers.sendLogin(anonymousAuthToken);
       Navigator.push(
-          context, MaterialPageRoute(builder: (context) => const Home()));
+          context, MaterialPageRoute(builder: (context) => const Rooms()));
     }
 
     if (isNetworkPending.value == true && incoming.needsCode != null) {

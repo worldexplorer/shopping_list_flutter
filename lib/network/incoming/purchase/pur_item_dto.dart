@@ -57,6 +57,7 @@ class PurItemDto extends NewPurItemDto {
           punit_fpoint: punit_fpoint,
         );
 
+  @JsonKey(ignore: true)
   String get bought_qnty_string {
     if (bought_qnty != null) {
       return (punit_fpoint ?? false)

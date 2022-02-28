@@ -7,7 +7,7 @@ import 'static_logger.dart';
 final uiStateProvider = ChangeNotifierProvider<UiState>((ref) => UiState());
 
 class UiState extends ChangeNotifier {
-  late AnimationController? menuVisibleController;
+  // late AnimationController? menuVisibleController;
 
   final msgInputCtrl = TextEditingController();
   int? isReplyingToMessageId;
@@ -19,21 +19,21 @@ class UiState extends ChangeNotifier {
         messagesSelected.keys.toList()[0] == messageId;
   }
 
-  void toMenuAndBack() {
-    if (isMenuVisible) {
-      menuVisibleController?.forward();
-    } else {
-      menuVisibleController?.reverse();
-    }
-    isMenuVisible = !isMenuVisible;
-  }
-
-  bool _isMenuVisible = true;
-  bool get isMenuVisible => _isMenuVisible;
-  set isMenuVisible(bool val) {
-    _isMenuVisible = val;
-    notifyListeners();
-  }
+  // void toMenuAndBack() {
+  //   if (isMenuVisible) {
+  //     menuVisibleController?.forward();
+  //   } else {
+  //     menuVisibleController?.reverse();
+  //   }
+  //   isMenuVisible = !isMenuVisible;
+  // }
+  //
+  // bool _isMenuVisible = true;
+  // bool get isMenuVisible => _isMenuVisible;
+  // set isMenuVisible(bool val) {
+  //   _isMenuVisible = val;
+  //   notifyListeners();
+  // }
 
   int _refreshCounter = 0;
   int get refreshCounter => _refreshCounter;

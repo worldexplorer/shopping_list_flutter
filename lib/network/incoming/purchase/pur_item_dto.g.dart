@@ -23,7 +23,7 @@ PurItemDto _$PurItemDtoFromJson(Map<String, dynamic> json) => PurItemDto(
       bought_qnty: (json['bought_qnty'] as num?)?.toDouble(),
       bought_price: (json['bought_price'] as num?)?.toDouble(),
       bought_weight: (json['bought_weight'] as num?)?.toDouble(),
-    )..bought_qnty_string = json['bought_qnty_string'] as String;
+    );
 
 Map<String, dynamic> _$PurItemDtoToJson(PurItemDto instance) =>
     <String, dynamic>{
@@ -43,5 +43,4 @@ Map<String, dynamic> _$PurItemDtoToJson(PurItemDto instance) =>
       'bought_qnty': instance.bought_qnty,
       'bought_price': instance.bought_price,
       'bought_weight': instance.bought_weight,
-      'bought_qnty_string': instance.bought_qnty_string,
     };

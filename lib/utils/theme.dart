@@ -85,7 +85,7 @@ const double weightColumnWidth = 75;
 const double iconSize = 24;
 
 TextStyle logRecordStyle = GoogleFonts.poppins(
-  color: Colors.black,
+  color: Colors.white,
   fontSize: 13.0,
   // letterSpacing: 1,
   // wordSpacing: 1,

@@ -17,6 +17,7 @@ import 'purchase/edit_purchase_dto.dart';
 import 'purchase/new_purchase_dto.dart';
 import 'purchase/pur_item_filled_dto.dart';
 import 'purchase/purchase_filled_dto.dart';
+import 'room/new_room_dto.dart';
 
 class OutgoingHandlers {
   ConnectionState connectionState;
@@ -24,10 +25,10 @@ class OutgoingHandlers {
 
   OutgoingHandlers(this.connectionState, this.incomingState);
 
-  bool isConnected(String msig) {
+  bool isConnected(String invoker) {
     if (connectionState.socketConnected) return true;
 
-    final msg = '$msig: ${connectionState.socketId}';
+    final msg = '$invoker: ${connectionState.socketId}';
     StaticLogger.append(msg);
     incomingState.serverError = msg;
     return false;
@@ -86,11 +87,6 @@ class OutgoingHandlers {
   sendMessage(String msg, int? isReplyingToMessageId) {
     final msig = 'sendMessage($msg)';
     if (!isConnected(msig)) return;
-
-    if (!connectionState.socketConnected) {
-      StaticLogger.append(': ${connectionState.socketId}');
-      return;
-    }
 
     sendTyping(false);
 
@@ -228,5 +224,17 @@ class OutgoingHandlers {
     final json = purItemFilled.toJson();
     connectionState.socket.emit("fillPurItem", json);
     StaticLogger.append('<< FILL_PURITEM [$json]');
+  }
+
+  sendNewRoom(String name, List<int> userIds) {
+    final msig = 'sendNewRoom($name)';
+    if (!isConnected(msig)) return;
+
+    final json = NewRoomDto(
+      name: name,
+      userIds: userIds,
+    ).toJson();
+    connectionState.socket.emit("newRoom", json);
+    StaticLogger.append('<< NEW_ROOM [$json]');
   }
 }

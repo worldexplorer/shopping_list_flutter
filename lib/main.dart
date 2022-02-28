@@ -8,6 +8,7 @@ import 'network/incoming/incoming_state.dart';
 import 'utils/my_shared_preferences.dart';
 import 'utils/my_snack_bar.dart';
 import 'views/home.dart';
+import 'views/login/half-tiger.dart';
 import 'views/login/login.dart';
 import 'views/router.dart';
 
@@ -35,6 +36,7 @@ class MyApp extends HookConsumerWidget {
     final clearClientError = ref
         .watch(incomingStateProvider.select((state) => state.clearClientError));
 
+    final messengerKey = GlobalKey<ScaffoldMessengerState>();
     mySnackBar(context, serverError, clearServerError);
     mySnackBar(context, clientError, clearClientError);
 
@@ -71,14 +73,15 @@ class MyApp extends HookConsumerWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
+      scaffoldMessengerKey: messengerKey,
       home: SafeArea(
           child: connection.connectionState.socketConnected
               ? isLoginSent.value
                   ? incomingPersonId == -1
                       ? const Login()
                       : const Home()
-                  : const Text("Logging in...")
-              : const Text("Connecting...")),
+                  : const HalfTiger(message: "Logging in...")
+              : const HalfTiger(message: "Connecting...")),
       debugShowCheckedModeBanner: true,
       routes: router.widgetByNamedRoute,
     );

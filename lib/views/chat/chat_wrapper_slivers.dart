@@ -61,7 +61,8 @@ class ChatWrapperSlivers extends HookConsumerWidget {
                 icon: Icon(Icons.arrow_back,
                     size: 20, color: whiteOrConnecting(socketConnected)),
                 onPressed: () {
-                  ui.toMenuAndBack();
+                  // ui.toMenuAndBack();
+                  Navigator.of(context).pop();
                 },
               ),
               titleSpacing: 0,

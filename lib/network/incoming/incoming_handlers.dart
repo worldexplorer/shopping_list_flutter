@@ -100,6 +100,25 @@ class IncomingHandlers {
     }
   }
 
+  void onRoom(data) {
+    StaticLogger.append('   > ROOM [$data]');
+    try {
+      RoomDto roomParsed = RoomDto.fromJson(data);
+
+      if (incomingState.roomsById.containsKey(roomParsed.id)) {
+        StaticLogger.append(
+            '      DUPLICATE onRooms(): ${roomParsed.id}: ${roomParsed.name}');
+        return;
+      }
+
+      StaticLogger.append('   > ROOM [${roomParsed.toJson()}]');
+      incomingState.roomsById[roomParsed.id] = roomParsed;
+      incomingState.notifyListeners();
+    } catch (e) {
+      StaticLogger.append('      FAILED onRoom(): ${e.toString()}');
+    }
+  }
+
   void onTyping(data) {
     try {
       final typingDto = TypingDto.fromJson(data);

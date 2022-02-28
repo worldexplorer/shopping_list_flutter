@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:shopping_list_flutter/views/chat/chat_wrapper_slivers.dart';
 
 import '../network/incoming/incoming_state.dart';
 import '../utils/theme.dart';
 import '../utils/ui_state.dart';
+import 'menu.dart';
 
 class Rooms extends HookConsumerWidget {
   const Rooms({Key? key}) : super(key: key);
@@ -12,22 +14,59 @@ class Rooms extends HookConsumerWidget {
   @override
   build(BuildContext context, WidgetRef ref) {
     final ui = ref.watch(uiStateProvider);
-    final socketConnected = ref.watch(incomingStateProvider
-        .select((state) => state.connection.connectionState.socketConnected));
 
     final incoming = ref.watch(incomingStateProvider);
+    final socketConnected = incoming.connection.connectionState.socketConnected;
+
+    final nameController = useTextEditingController();
+
+    void showDialogWithFields() {
+      showDialog(
+        context: context,
+        builder: (_) {
+          return AlertDialog(
+            title: const Text('New Room'),
+            content: SingleChildScrollView(
+                child: Column(
+              children: [
+                TextFormField(
+                  controller: nameController,
+                  autofocus: true,
+                  decoration: const InputDecoration(hintText: 'Room name'),
+                ),
+              ],
+            )),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Cancel'),
+              ),
+              TextButton(
+                onPressed: () {
+                  var name = nameController.text;
+                  incoming.outgoingHandlers.sendNewRoom(name, []);
+                  Navigator.pop(context);
+                },
+                child: const Text('Create'),
+              ),
+            ],
+          );
+        },
+      );
+    }
 
     return Scaffold(
       backgroundColor: chatBackground,
+      drawer: const Menu(),
       appBar: AppBar(
         title: titleText(socketConnected, "Rooms"),
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back,
-              size: 20, color: whiteOrConnecting(socketConnected)),
-          onPressed: () {
-            ui.toMenuAndBack();
-          },
-        ),
+        // leading: IconButton(
+        //   icon: Icon(Icons.arrow_back,
+        //       size: 20, color: whiteOrConnecting(socketConnected)),
+        //   onPressed: () {
+        //     ui.toMenuAndBack();
+        //   },
+        // ),
         actions: <Widget>[
           IconButton(
             icon: const Icon(Icons.more_vert),
@@ -50,7 +89,13 @@ class Rooms extends HookConsumerWidget {
               .join(", ");
           final minorUsers = users.length > 5 ? ' + ${users.length - 5}' : '';
           final label = room.name;
+
+          String forceReRenderAfterPurItemFill =
+              dateFormatterHmsMillis.format(DateTime.now());
+          String key = room.id.toString() + '-' + forceReRenderAfterPurItemFill;
+
           return Container(
+              key: Key(key),
               margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
               child: GestureDetector(
                 onTap: () {
@@ -88,6 +133,14 @@ class Rooms extends HookConsumerWidget {
               ));
         },
       ),
+      floatingActionButton: FloatingActionButton(
+        child: const Icon(Icons.add),
+        tooltip: 'Add new Room',
+        onPressed: () {
+          showDialogWithFields();
+        },
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }
 }

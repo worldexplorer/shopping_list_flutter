@@ -18,6 +18,7 @@ class Log extends HookConsumerWidget {
     final tapGlobalPosition = useState(const Offset(0, 0));
 
     return Scaffold(
+      backgroundColor: chatBackground,
       appBar: showAppBar == true
           ? AppBar(
               title: const Text('Log'),
