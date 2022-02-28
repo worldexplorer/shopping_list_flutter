@@ -9,7 +9,6 @@ import '../../network/incoming/incoming_state.dart';
 import '../../utils/my_shared_preferences.dart';
 import '../../utils/my_snack_bar.dart';
 import '../../utils/theme.dart';
-import '../log.dart';
 import '../rooms.dart';
 import 'timer.dart';
 
@@ -248,26 +247,29 @@ class Login extends HookConsumerWidget {
 
   Widget formDecorator(BuildContext context, Size size, Widget form) {
     return Scaffold(
-        backgroundColor: chatBackground,
-        body: GestureDetector(
-          onTap: () {
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => const Log(showAppBar: true)));
-          },
-          child: Center(
-            child: Container(
-              width: size.width * 0.85,
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: SingleChildScrollView(child: form),
-            ),
+      backgroundColor: chatBackground,
+      body:
+          // GestureDetector(
+          //   onTap: () {
+          //     Navigator.push(
+          //         context,
+          //         MaterialPageRoute(
+          //             builder: (context) => const Log(showAppBar: true)));
+          //   },
+          //   child:
+          Center(
+        child: Container(
+          width: size.width * 0.85,
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(20),
           ),
-        ));
+          child: SingleChildScrollView(child: form),
+        ),
+      ),
+      // )
+    );
   }
 
   InputDecoration inputDeco(hintText) {
