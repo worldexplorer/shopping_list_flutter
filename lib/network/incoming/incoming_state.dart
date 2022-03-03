@@ -59,7 +59,13 @@ class IncomingState extends ChangeNotifier {
   String get personName => _person?.name ?? "PERSON_DTO_NOT_RECEIVED";
   set person(PersonDto val) {
     _person = val;
+    userLoggedIn();
     notifyListeners();
+  }
+
+  void userLoggedIn() {
+    clearAllRooms();
+    clearAllMessages();
   }
 
   String _typing = '';
@@ -354,6 +360,10 @@ class IncomingState extends ChangeNotifier {
     );
 
     newPurchaseMessageItem = msgWidget;
+  }
+
+  void clearAllRooms() {
+    roomsById.clear();
   }
 
   final Map<int, RoomDto> roomsById = <int, RoomDto>{};
