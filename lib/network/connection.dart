@@ -47,9 +47,10 @@ class Connection extends ChangeNotifier {
 
     _socket.on('connect', (_) {
       StaticLogger.append('#3/4 connected: [${connectionState.socketId}]');
-      // connectionNotifier.notify();
       if (_env.myAuthToken != null) {
         outgoingHandlers.sendLogin(_env.myAuthToken ?? 'NO_TOKEN');
+      } else {
+        _incomingState.notifyListeners(); // rebuild to show Login()
       }
     });
     _socket.on('disconnect', (_) {

@@ -119,6 +119,13 @@ class IncomingState extends ChangeNotifier {
   bool messageAddOrEdit(MessageDto msgReceived, String msig) {
     bool rebuildUi = false;
 
+    if (msgReceived.room != currentRoomId) {
+      final msg =
+          'msgReceived.room[${msgReceived.room}] != currentRoomId[$currentRoomId]';
+      StaticLogger.append('          MESSAGE_IGNORED $msg');
+      return rebuildUi;
+    }
+
     final MessageDto? prevMsg = messageDtoById[msgReceived.id];
 
     String forceReRenderAfterPurItemFill =
@@ -234,12 +241,14 @@ class IncomingState extends ChangeNotifier {
     return rebuildUi;
   }
 
-  clearAllMessages() {
+  clearAllMessages({bool notify = true}) {
     messagesDtoUnreadById.clear();
     messageDtoById.clear();
     messageWidgetById.clear();
     messageWidgets.clear();
-    notifyListeners();
+    if (notify) {
+      notifyListeners();
+    }
   }
 
   String removeMessageFromMessagesUnreadById(int msgId) {
@@ -383,7 +392,7 @@ class IncomingState extends ChangeNotifier {
     }
     _currentRoomId = val;
 
-    messageDtoById.clear();
+    clearAllMessages(notify: false);
     outgoingHandlers.sendGetMessages(_currentRoomId, 0);
 
     notifyListeners();
