@@ -17,8 +17,8 @@ class Router extends ChangeNotifier {
   RouteMenuItem get initialRoute => currentRoom;
 
   late RouteMenuItem home;
-  late RouteMenuItem currentRoom;
   late RouteMenuItem rooms;
+  late RouteMenuItem currentRoom;
   late RouteMenuItem settings;
   late RouteMenuItem log;
   late RouteMenuItem login;
@@ -35,7 +35,8 @@ class Router extends ChangeNotifier {
 
   Map<String, Widget Function(BuildContext)> get widgetByNamedRoute {
     Map<String, Widget Function(BuildContext)> ret = {};
-    for (var x in visibleMenuItems) {
+    // for (var x in visibleMenuItems) {
+    for (var x in _menuItems.values.toList()) {
       if (x is RouteMenuItem) {
         RouteMenuItem routeMenuItem = x;
         ret.addAll(
@@ -54,14 +55,6 @@ class Router extends ChangeNotifier {
         isSelectedInMenu: false,
         isVisibleInMenu: false);
 
-    currentRoom = RouteMenuItem(
-        page: Page.CurrentRoom,
-        title: '',
-        path: '/currentRoom',
-        widget: (BuildContext context) => const Home(),
-        isSelectedInMenu: false,
-        isVisibleInMenu: true);
-
     rooms = RouteMenuItem(
       page: Page.Rooms,
       title: 'Rooms',
@@ -70,6 +63,14 @@ class Router extends ChangeNotifier {
       isSelectedInMenu: false,
       isVisibleInMenu: true,
     );
+
+    currentRoom = RouteMenuItem(
+        page: Page.CurrentRoom,
+        title: 'Current Room',
+        path: '/currentRoom',
+        widget: (BuildContext context) => const ChatWrapperSlivers(),
+        isSelectedInMenu: false,
+        isVisibleInMenu: true);
 
     settings = RouteMenuItem(
         page: Page.Settings,
@@ -131,8 +132,8 @@ class Router extends ChangeNotifier {
 
     _menuItems = {
       Page.Home: home,
-      Page.CurrentRoom: currentRoom,
       Page.Rooms: rooms,
+      Page.CurrentRoom: currentRoom,
       Page.Settings: settings,
       Page.Log: log,
       Page.Login: login,
@@ -145,8 +146,8 @@ class Router extends ChangeNotifier {
 
 enum Page {
   Home,
-  CurrentRoom,
   Rooms,
+  CurrentRoom,
   Settings,
   Log,
   Login,

@@ -9,7 +9,7 @@ import '../../network/incoming/incoming_state.dart';
 import '../../utils/my_shared_preferences.dart';
 import '../../utils/my_snack_bar.dart';
 import '../../utils/theme.dart';
-import '../rooms.dart';
+import '../router.dart';
 import 'timer.dart';
 
 class Login extends HookConsumerWidget {
@@ -20,6 +20,7 @@ class Login extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final timer = ref.watch(timerStateProvider);
+    final router = ref.watch(routerProvider);
 
     final incoming = ref.watch(incomingStateProvider);
     mySnackBar(context, incoming.serverError, incoming.clearServerError);
@@ -64,8 +65,7 @@ class Login extends HookConsumerWidget {
       final auth = incoming.auth!;
       Future.delayed(const Duration(milliseconds: 200), () async {
         incoming.auth = null;
-        Navigator.push(
-            context, MaterialPageRoute(builder: (context) => const Rooms()));
+        Navigator.pushNamed(context, router.rooms.path);
       });
 
       timer.stopTimer();
@@ -105,8 +105,7 @@ class Login extends HookConsumerWidget {
       timer.stopTimer();
       Env.current.myAuthToken = anonymousAuthToken;
       outgoingHandlers.sendLogin(anonymousAuthToken);
-      Navigator.push(
-          context, MaterialPageRoute(builder: (context) => const Rooms()));
+      Navigator.pushNamed(context, router.rooms.path);
     }
 
     if (isNetworkPending.value == true && incoming.needsCode != null) {

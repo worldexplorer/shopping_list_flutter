@@ -28,7 +28,9 @@ class StaticLogger {
     var withTime = '[$nowHms] $msg';
     debugPrint(withTime);
     buffer.add(withTime);
-    StaticLoggerNotifier.instance.notifyListeners();
+    Future.delayed(const Duration(milliseconds: 200), () async {
+      StaticLoggerNotifier.instance.notifyListeners();
+    });
   }
 
   static void clear() {

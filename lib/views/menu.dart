@@ -15,6 +15,11 @@ class Menu extends HookConsumerWidget {
     final router = ref.watch(routerProvider);
     final ui = ref.watch(uiStateProvider);
 
+    // final actionCompleted = useState(false);
+    // if (actionCompleted.value) {
+    //   return const SizedBox();
+    // }
+
     return Drawer(
       elevation: 10.0,
       child: ListView(
@@ -53,15 +58,17 @@ class Menu extends HookConsumerWidget {
           //     ],
           //   ),
           // ),
-
-          ...createMenuItems(router.visibleMenuItems, context)
+          ...createMenuItems(router.visibleMenuItems, context, () {
+            // actionCompleted.value = true;
+            Navigator.pop(context);
+          })
         ],
       ),
     );
   }
 
-  List<Widget> createMenuItems(
-      List<MenuItem> routeItems, BuildContext context) {
+  List<Widget> createMenuItems(List<MenuItem> routeItems, BuildContext context,
+      Function? onActionCompleted) {
     List<Widget> ret = [];
     for (var routeItem in routeItems) {
       if (routeItem.isVisibleInMenu == false) {
@@ -83,6 +90,9 @@ class Menu extends HookConsumerWidget {
           if (routeItem is ActionMenuItem) {
             ActionMenuItem actionMenuItem = routeItem;
             actionMenuItem.action();
+            if (onActionCompleted != null) {
+              onActionCompleted();
+            }
           }
         },
       );

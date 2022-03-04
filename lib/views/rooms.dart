@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:shopping_list_flutter/views/chat/chat_wrapper_slivers.dart';
 
 import '../network/incoming/incoming_state.dart';
 import '../utils/theme.dart';
 import '../utils/ui_state.dart';
 import 'menu.dart';
+import 'router.dart';
 
 class Rooms extends HookConsumerWidget {
   const Rooms({Key? key}) : super(key: key);
@@ -14,6 +14,7 @@ class Rooms extends HookConsumerWidget {
   @override
   build(BuildContext context, WidgetRef ref) {
     final ui = ref.watch(uiStateProvider);
+    final router = ref.watch(routerProvider);
 
     final incoming = ref.watch(incomingStateProvider);
     final socketConnected = incoming.connection.connectionState.socketConnected;
@@ -100,10 +101,7 @@ class Rooms extends HookConsumerWidget {
               child: GestureDetector(
                 onTap: () {
                   incoming.currentRoomId = room.id;
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const ChatWrapperSlivers()));
+                  Navigator.pushNamed(context, router.currentRoom.path);
                 },
                 child: Row(
                   children: [

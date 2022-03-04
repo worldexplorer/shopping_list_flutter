@@ -1,15 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'env/env.dart';
-import 'network/connection.dart';
 import 'network/incoming/incoming_state.dart';
 import 'utils/my_shared_preferences.dart';
 import 'utils/my_snack_bar.dart';
-import 'views/home.dart';
-import 'views/login/half-tiger.dart';
-import 'views/login/login.dart';
+import 'views/login/login_or_home.dart';
 import 'views/router.dart';
 
 Future<void> main() async {
@@ -40,32 +36,6 @@ class MyApp extends HookConsumerWidget {
     mySnackBar(context, serverError, clearServerError);
     mySnackBar(context, clientError, clearClientError);
 
-    final connection = ref.watch(connectionStateProvider(Env.current));
-    if (connection.connectionState.socketConnected == false) {
-      connection.connect(); // went to background; will notify listeners
-    }
-
-    final socketConnected = ref.watch(incomingStateProvider
-        .select((state) => state.connection.connectionState.socketConnected));
-
-    final isLoginSent = useState(false);
-
-    final outgoingHandlers = ref
-        .watch(incomingStateProvider.select((state) => state.outgoingHandlers));
-
-    if (Env.current.myAuthToken != null &&
-        socketConnected &&
-        isLoginSent.value == false) {
-      Future.delayed(const Duration(milliseconds: 200), () async {
-        outgoingHandlers.sendLogin(Env.current.myAuthToken!);
-      });
-      isLoginSent.value = true;
-    }
-
-    // outgoing.login() should receive incoming.onPerson()
-    final incomingPersonId =
-        ref.watch(incomingStateProvider.select((state) => state.personId));
-
     final router = ref.watch(routerProvider);
 
     return MaterialApp(
@@ -74,14 +44,12 @@ class MyApp extends HookConsumerWidget {
         primarySwatch: Colors.blue,
       ),
       scaffoldMessengerKey: messengerKey,
-      home: SafeArea(
-          child: connection.connectionState.socketConnected
-              ? isLoginSent.value
-                  ? incomingPersonId == -1
-                      ? const Login()
-                      : const Home()
-                  : const HalfTiger(message: "Logging in...")
-              : const HalfTiger(message: "Connecting...")),
+      home:
+          // Builder(
+          //   Builder makes Navigator available in its context (no exception anymore)
+          //   builder: (context) =>
+          const SafeArea(child: LoginOrHome()),
+      // ),
       debugShowCheckedModeBanner: true,
       routes: router.widgetByNamedRoute,
     );

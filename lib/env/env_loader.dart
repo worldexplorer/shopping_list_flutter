@@ -11,7 +11,7 @@ const forceHeroku = false;
 class EnvLoader {
   // https://blog.codemagic.io/flutter-ui-socket/
   static Future<Env> load([forceHeroku = true]) async {
-    Env ret = forceHeroku ? PROD_HEROKU : DEV_LOCAL;
+    Env ret = forceHeroku ? PROD_HEROKU : DEV_EMULATOR;
 
     bool isEmulator = true;
     // try {
