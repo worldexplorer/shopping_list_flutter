@@ -78,57 +78,53 @@ class Rooms extends HookConsumerWidget {
         ],
       ),
       body: ListView.builder(
+        padding: const EdgeInsets.symmetric(vertical: 10),
         scrollDirection: Axis.vertical,
         shrinkWrap: true,
         itemCount: incoming.rooms.length,
         itemBuilder: (BuildContext context, int index) {
           final room = incoming.rooms[index];
           final users = room.users;
+          const firstUsersLimit = 4;
           final majorUsers = users
-              .getRange(0, users.length >= 4 ? 4 : users.length - 1)
+              .getRange(
+                  0,
+                  users.length >= firstUsersLimit
+                      ? firstUsersLimit
+                      : users.length)
               .map((x) => x.name)
               .join(", ");
-          final minorUsers = users.length > 5 ? ' + ${users.length - 5}' : '';
+          final minorUsers = users.length > firstUsersLimit
+              ? ' + ${users.length - firstUsersLimit}'
+              : '';
           final label = room.name;
 
           String forceReRenderAfterPurItemFill =
               dateFormatterHmsMillis.format(DateTime.now());
           String key = room.id.toString() + '-' + forceReRenderAfterPurItemFill;
 
-          return Container(
-              key: Key(key),
-              margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-              child: GestureDetector(
-                onTap: () {
-                  incoming.currentRoomId = room.id;
-                  Navigator.pushNamed(context, router.currentRoom.path);
-                },
-                child: Row(
-                  children: [
-                    const CircleAvatar(
-                      backgroundColor: Colors.grey,
-                      foregroundColor: Colors.white,
-                      radius: 25,
-                    ),
-                    const SizedBox(width: 10),
-                    Column(
-                      children: [
-                        Text(
-                          label,
-                          style: const TextStyle(
-                              color: Colors.white, fontSize: 20),
-                        ),
-                        Text(
-                          majorUsers + minorUsers,
-                          style: TextStyle(
-                              color: Colors.white.withOpacity(0.6),
-                              fontSize: 14),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ));
+          return ListTile(
+            key: Key(key),
+            dense: false,
+            onTap: () {
+              incoming.currentRoomId = room.id;
+              Navigator.pushNamed(context, router.currentRoom.path);
+            },
+            leading: const CircleAvatar(
+              backgroundColor: Colors.grey,
+              foregroundColor: Colors.white,
+              radius: 25,
+            ),
+            title: Text(
+              label,
+              style: const TextStyle(color: Colors.white, fontSize: 20),
+            ),
+            subtitle: Text(
+              majorUsers + minorUsers,
+              style:
+                  TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 14),
+            ),
+          );
         },
       ),
       floatingActionButton: FloatingActionButton(

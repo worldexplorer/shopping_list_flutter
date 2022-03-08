@@ -95,6 +95,7 @@ class IncomingHandlers {
       //     connectionState.willGetMessagesOnReconnect = false;
       //   }
       // }
+      incomingState.notifyListeners();
     } catch (e) {
       StaticLogger.append('      FAILED onRooms(): ${e.toString()}');
     }

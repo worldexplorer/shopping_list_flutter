@@ -13,7 +13,7 @@ class PurchaseItem extends HookConsumerWidget {
   final int serno;
   final Function(PurItemDto purItemDto) fillPurItem;
 
-  static final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  // static final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   const PurchaseItem({
     Key? key,

@@ -10,7 +10,6 @@ import '../../utils/ui_state.dart';
 import '../home.dart';
 import '../router.dart';
 import 'half-tiger.dart';
-import 'login.dart';
 
 class LoginOrHome extends HookConsumerWidget {
   const LoginOrHome({Key? key}) : super(key: key);
@@ -70,7 +69,7 @@ class LoginOrHome extends HookConsumerWidget {
             );
           }
         } else {
-          return const Login();
+          return router.login.widget(context);
         }
       } else {
         return HalfTiger(

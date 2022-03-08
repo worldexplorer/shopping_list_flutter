@@ -23,7 +23,7 @@ final Env DEV_EMULATOR =
     Env(envName: 'DEV_EMULATOR', websocketURL: 'http://10.0.2.2:5000');
 
 final Env DEV_HOME =
-    Env(envName: 'DEV_HOME', websocketURL: 'http://192.168.43.105:5000');
+    Env(envName: 'DEV_HOME', websocketURL: 'http://192.168.43.106:5000');
 
 final Env PROD_HEROKU = Env(
     envName: 'PROD_HEROKU',

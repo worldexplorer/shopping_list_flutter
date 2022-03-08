@@ -16,6 +16,9 @@ Future<void> main() async {
 }
 
 class MyApp extends HookConsumerWidget {
+  static final GlobalKey<ScaffoldMessengerState> messengerKey =
+      GlobalKey<ScaffoldMessengerState>(debugLabel: 'main');
+
   const MyApp({Key? key}) : super(key: key);
 
   @override
@@ -32,7 +35,6 @@ class MyApp extends HookConsumerWidget {
     final clearClientError = ref
         .watch(incomingStateProvider.select((state) => state.clearClientError));
 
-    final messengerKey = GlobalKey<ScaffoldMessengerState>();
     mySnackBar(context, serverError, clearServerError);
     mySnackBar(context, clientError, clearClientError);
 

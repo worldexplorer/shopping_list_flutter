@@ -13,7 +13,8 @@ import '../router.dart';
 import 'timer.dart';
 
 class Login extends HookConsumerWidget {
-  static final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  static final GlobalKey<FormState> _formKey =
+      GlobalKey<FormState>(debugLabel: 'Login');
 
   const Login({Key? key}) : super(key: key);
 
@@ -115,14 +116,18 @@ class Login extends HookConsumerWidget {
 
       sentTo.value = incoming.sentTo_fromServerResponse;
 
-      codeFocusNode.requestFocus();
+      if (isCodeSent.value) {
+        codeFocusNode.requestFocus();
+      }
 
       timer.startTimer(onExpired: () {
         emailFocusNode.requestFocus();
         incoming.needsCode = null;
       }, onEachSecond: (int currentSecondsLeft) {
         if (currentSecondsLeft == 1) {
-          codeFocusNode.requestFocus();
+          if (isCodeSent.value) {
+            codeFocusNode.requestFocus();
+          }
         }
       });
     }
@@ -158,6 +163,7 @@ class Login extends HookConsumerWidget {
                 controller: emailInputCtrl,
                 enabled: canSendCode,
                 autofocus: true,
+                focusNode: emailFocusNode,
                 keyboardType: TextInputType.emailAddress,
                 decoration: inputDeco("Email"),
               )),
