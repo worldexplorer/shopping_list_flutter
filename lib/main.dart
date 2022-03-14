@@ -2,9 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'env/env.dart';
-import 'network/incoming/incoming_state.dart';
 import 'utils/my_shared_preferences.dart';
-import 'utils/my_snack_bar.dart';
 import 'views/login/login_or_home.dart';
 import 'views/router.dart';
 
@@ -23,21 +21,6 @@ class MyApp extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final serverError =
-        ref.watch(incomingStateProvider.select((state) => state.serverError));
-
-    final clearServerError = ref
-        .watch(incomingStateProvider.select((state) => state.clearServerError));
-
-    final clientError =
-        ref.watch(incomingStateProvider.select((state) => state.clientError));
-
-    final clearClientError = ref
-        .watch(incomingStateProvider.select((state) => state.clearClientError));
-
-    mySnackBar(context, serverError, clearServerError);
-    mySnackBar(context, clientError, clearClientError);
-
     final router = ref.watch(routerProvider);
 
     return MaterialApp(

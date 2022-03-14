@@ -2,7 +2,9 @@
 
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:shopping_list_flutter/network/incoming/person/person_dto.dart';
 
+import '../network/incoming/incoming_state.dart';
 import '../utils/static_logger.dart';
 import '../utils/ui_state.dart';
 import 'router.dart';
@@ -15,6 +17,9 @@ class Menu extends HookConsumerWidget {
     final router = ref.watch(routerProvider);
     final ui = ref.watch(uiStateProvider);
 
+    final person = ref
+        .watch(incomingStateProvider.select((state) => state.personNullable));
+
     // final actionCompleted = useState(false);
     // if (actionCompleted.value) {
     //   return const SizedBox();
@@ -24,40 +29,13 @@ class Menu extends HookConsumerWidget {
       elevation: 10.0,
       child: ListView(
         children: <Widget>[
-          // DrawerHeader(
-          //   decoration: BoxDecoration(color: Colors.grey.shade500),
-          //   child: Row(
-          //     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          //     children: <Widget>[
-          //       CircleAvatar(
-          //         backgroundImage: NetworkImage(
-          //             'https://pixel.nymag.com/imgs/daily/vulture/2017/06/14/14-tom-cruise.w700.h700.jpg'),
-          //         radius: 40.0,
-          //       ),
-          //       Column(
-          //         mainAxisAlignment: MainAxisAlignment.center,
-          //         crossAxisAlignment: CrossAxisAlignment.start,
-          //         children: <Widget>[
-          //           Text(
-          //             'Tom Cruise',
-          //             style: TextStyle(
-          //                 fontWeight: FontWeight.bold,
-          //                 color: Colors.white,
-          //                 fontSize: 25.0),
-          //           ),
-          //           SizedBox(height: 10.0),
-          //           Text(
-          //             'tomcruise@gmail.com',
-          //             style: TextStyle(
-          //                 fontWeight: FontWeight.bold,
-          //                 color: Colors.white,
-          //                 fontSize: 14.0),
-          //           ),
-          //         ],
-          //       )
-          //     ],
-          //   ),
-          // ),
+          DrawerHeader(
+            decoration: BoxDecoration(color: Colors.grey.shade500),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: myAvaNameEmailPhone(person),
+            ),
+          ),
           ...createMenuItems(router.visibleMenuItems, context, () {
             // actionCompleted.value = true;
             Navigator.pop(context);
@@ -65,6 +43,37 @@ class Menu extends HookConsumerWidget {
         ],
       ),
     );
+  }
+
+  List<Widget> myAvaNameEmailPhone(PersonDto? person) {
+    final List<Widget> ret = [
+      const CircleAvatar(
+        backgroundColor: Colors.blueGrey,
+        radius: 40.0,
+      ),
+      Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Text(
+            person != null ? person.name : '<Your name>',
+            style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+                fontSize: 25.0),
+          ),
+          const SizedBox(height: 10.0),
+          Text(
+            person != null ? person.email : '<Your Email>',
+            style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+                fontSize: 14.0),
+          ),
+        ],
+      )
+    ];
+    return ret;
   }
 
   List<Widget> createMenuItems(List<MenuItem> routeItems, BuildContext context,

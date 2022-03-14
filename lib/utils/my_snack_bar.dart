@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+
+import '../network/incoming/incoming_state.dart';
 
 void mySnackBar(
     BuildContext context,
@@ -48,5 +51,30 @@ void mySnackBar(
         clearMessage();
       });
     }
+  });
+}
+
+void buildSnackBar(BuildContext context, WidgetRef ref,
+    {Function(String serverError)? clearServerErrorCallback,
+    Function(String clientError)? clearClientErrorCallback}) {
+  final serverError =
+      ref.watch(incomingStateProvider.select((state) => state.serverError));
+
+  final clearServerError = ref
+      .watch(incomingStateProvider.select((state) => state.clearServerError));
+
+  final clientError =
+      ref.watch(incomingStateProvider.select((state) => state.clientError));
+
+  final clearClientError = ref
+      .watch(incomingStateProvider.select((state) => state.clearClientError));
+
+  mySnackBar(context, serverError, () {
+    clearServerError();
+    if (clearServerErrorCallback != null) clearServerErrorCallback(serverError);
+  });
+  mySnackBar(context, clientError, () {
+    clearClientError();
+    if (clearClientErrorCallback != null) clearClientErrorCallback(clientError);
   });
 }

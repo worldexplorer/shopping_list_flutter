@@ -48,8 +48,8 @@ class IncomingHandlers {
   void onPerson(data) {
     try {
       StaticLogger.append('   > PERSON [$data]');
-      final userParsed = PersonDto.fromJson(data);
-      incomingState.person = userParsed;
+      final personParsed = PersonDto.fromJson(data);
+      incomingState.personReceived = personParsed;
     } catch (e) {
       StaticLogger.append('      FAILED onPerson($data): ${e.toString()}');
     }

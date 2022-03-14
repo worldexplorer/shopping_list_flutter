@@ -52,12 +52,14 @@ class IncomingState extends ChangeNotifier {
     return ret;
   }
 
+  static const PERSON_DTO_NOT_RECEIVED = "PERSON_DTO_NOT_RECEIVED";
   PersonDto? _person;
-  PersonDto get person => _person!;
+  PersonDto? get personNullable => _person;
+  PersonDto get personReceived => _person!;
   int get personId => _person?.id ?? -1;
   bool isMyUserId(int id) => id == personId;
-  String get personName => _person?.name ?? "PERSON_DTO_NOT_RECEIVED";
-  set person(PersonDto val) {
+  String get personName => _person?.name ?? PERSON_DTO_NOT_RECEIVED;
+  set personReceived(PersonDto val) {
     _person = val;
     userLoggedIn();
     notifyListeners();

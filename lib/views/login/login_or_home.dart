@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:shopping_list_flutter/utils/static_logger.dart';
 
 import '../../env/env.dart';
 import '../../network/connection.dart';
 import '../../network/incoming/incoming_state.dart';
+import '../../utils/my_snack_bar.dart';
 import '../../utils/theme.dart';
 import '../../utils/ui_state.dart';
-import '../home.dart';
 import '../router.dart';
 import 'half-tiger.dart';
 
@@ -46,6 +47,20 @@ class LoginOrHome extends HookConsumerWidget {
         ref.watch(incomingStateProvider.select((state) => state.personId));
     final router = ref.watch(routerProvider);
 
+    final redirectDebounced = useState(false);
+    buildSnackBar(context, ref, clearServerErrorCallback: (String serverError) {
+      if (redirectDebounced.value == false) {
+        StaticLogger.append(serverError);
+        final redirectToLogin = serverError.contains('No AuthToken found');
+        if (redirectToLogin) {
+          redirectDebounced.value = true;
+          Future.delayed(const Duration(milliseconds: 100), () async {
+            Navigator.pushNamed(context, router.login.path);
+          });
+        }
+      }
+    });
+
     Widget loginOrHome() {
       if (connection.connectionState.socketConnected) {
         if (shouldLogIn) {
@@ -58,11 +73,11 @@ class LoginOrHome extends HookConsumerWidget {
                 },
               );
             } else {
-              return const Home();
+              return router.home.widget(context);
             }
           } else {
             return HalfTiger(
-              message: "Logging in...",
+              message: "Logging in..",
               onTap: () {
                 Navigator.pushNamed(context, router.log.path);
               },
