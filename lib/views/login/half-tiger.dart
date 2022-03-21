@@ -19,7 +19,7 @@ class HalfTiger extends HookConsumerWidget {
             child: Container(
               decoration: BoxDecoration(
                 image: DecorationImage(
-                  image: const AssetImage("images/half-tiger.jpg"),
+                  image: const AssetImage("assets/images/half-tiger.jpg"),
                   colorFilter: ColorFilter.mode(
                       Colors.black.withOpacity(0.6), BlendMode.darken),
                   fit: BoxFit.cover,

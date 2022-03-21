@@ -5,7 +5,6 @@ import 'dart:core';
 
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:shopping_list_flutter/views/send_sms.dart';
 
 import '../../network/incoming/incoming.dart';
 import '../utils/ui_state.dart';
@@ -97,14 +96,6 @@ class Router extends ChangeNotifier {
         isSelectedInMenu: false,
         isVisibleInMenu: true);
 
-    sendSms = RouteMenuItem(
-        page: Page.SendSms,
-        title: 'Send SMS Auth',
-        path: '/sendSms',
-        widget: (BuildContext context) => const SendSms(),
-        isSelectedInMenu: false,
-        isVisibleInMenu: true);
-
     reconnect = ActionMenuItem(
         page: Page.Reconnect,
         title: 'Reconnect',
@@ -146,7 +137,6 @@ class Router extends ChangeNotifier {
       Page.Settings: settings,
       Page.Log: log,
       Page.Login: login,
-      Page.SendSms: sendSms,
       Page.Reconnect: reconnect,
       Page.GetMessages: getMessages,
       Page.Refresh: refresh,
@@ -161,7 +151,6 @@ enum Page {
   Settings,
   Log,
   Login,
-  SendSms,
   Reconnect,
   GetMessages,
   Refresh

@@ -6,6 +6,8 @@ import 'package:shopping_list_flutter/utils/theme.dart';
 import 'package:shopping_list_flutter/utils/ui_state.dart';
 import 'package:shopping_list_flutter/widget/context_menu.dart';
 
+import '../notifications/notifications_test.dart';
+
 class Log extends HookConsumerWidget {
   final bool? showAppBar;
   const Log({Key? key, this.showAppBar}) : super(key: key);
@@ -13,9 +15,12 @@ class Log extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final ui = ref.watch(uiStateProvider);
-    final rebuildEveryBufferChanged = ref.watch(staticLoggerProvider);
+    final rebuildEveryBufferChanged =
+        ref.watch(staticLoggerProvider); // DONT_REMOVE
 
     final tapGlobalPosition = useState(const Offset(0, 0));
+
+    NotificationsTest().showMessagingNotification();
 
     return Scaffold(
       backgroundColor: chatBackground,

@@ -2,12 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'env/env.dart';
+import 'notifications/notifications_plugin.dart';
 import 'utils/my_shared_preferences.dart';
 import 'views/login/login_or_home.dart';
 import 'views/router.dart';
 
 Future<void> main() async {
   Env.current.myAuthToken = await MySharedPreferences.getMyAuthToken();
+  await NotificationsPlugin.instance.initInMain();
+
   runApp(const ProviderScope(
       // observers: [ProviderChangedLogger()],
       child: MyApp()));
