@@ -1,3 +1,4 @@
+// https://pub.dev/packages/flutter_local_notifications/example
 class ReceivedNotification {
   ReceivedNotification({
     required this.id,

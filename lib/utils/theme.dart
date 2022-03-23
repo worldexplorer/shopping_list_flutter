@@ -10,17 +10,17 @@ ThemeData theme(BuildContext _) {
     textTheme: GoogleFonts.manropeTextTheme(
       Theme.of(_).textTheme,
     ),
-    primaryColor: Color(0xff5B428F),
-    selectedRowColor: Color(0xdbead465),
-    primaryColorDark: Color(0xff262833),
-    primaryColorLight: Color(0xffFCF9F5),
+    primaryColor: const Color(0xff5B428F),
+    selectedRowColor: const Color(0xdbead465),
+    primaryColorDark: const Color(0xff262833),
+    primaryColorLight: const Color(0xffFCF9F5),
     primarySwatch: Colors.green,
     visualDensity: VisualDensity.adaptivePlatformDensity,
   );
 }
 
 Color get chatBackground =>
-    Platform.isIOS ? Color(0xff242f3e) : Color(0xff17263c);
+    Platform.isIOS ? const Color(0xff242f3e) : const Color(0xff17263c);
 Color get chatMessageSelected => Color.fromRGBO(
       Colors.yellow.red,
       Colors.yellow.green,
@@ -40,13 +40,20 @@ Color get chatMessageReply => Color.fromRGBO(
       0.5,
     );
 
-Color get menuBackgroundColor => Color(0xFF4A4A58);
+Color get menuBackgroundColor => const Color(0xFF4A4A58);
 
-Color get altColor => Platform.isIOS ? Color(0xff17263c) : Color(0xff28263c);
+Color get altColor =>
+    Platform.isIOS ? const Color(0xff17263c) : const Color(0xff28263c);
 
 TextStyle purchaseStyle = const TextStyle(color: Colors.white);
 TextStyle sernoStyle = TextStyle(
   color: Colors.white.withOpacity(0.4),
+);
+
+TextStyle chatSliverSubtitleStyle = GoogleFonts.manrope(
+  color: Colors.white.withOpacity(0.8),
+  fontWeight: FontWeight.w400,
+  fontSize: 13,
 );
 
 TextStyle pGroupStyle = const TextStyle(

@@ -84,9 +84,10 @@ class PurchaseEdit extends HookConsumerWidget {
           //TODO: move to incomingHandlers.onPurchaseEdited
           ui.messagesSelected.remove(purchase.message);
 
-          final indexFound = incoming.messageWidgets
+          final indexFound = incoming.rooms.currentRoomMessages.messageWidgets
               .indexWhere((x) => x.message.id == messageId);
-          incoming.messageWidgets[indexFound].selected = false;
+          incoming.rooms.currentRoomMessages.messageWidgets[indexFound]
+              .selected = false;
           ui.rebuild();
         } catch (e) {
           StaticLogger.append(
@@ -101,7 +102,8 @@ class PurchaseEdit extends HookConsumerWidget {
       } else {
         ui.messagesSelected.remove(messageId);
 
-        final msgWidget = incoming.messageWidgetById[messageId];
+        final msgWidget =
+            incoming.rooms.currentRoomMessages.messageWidgetById[messageId];
         if (msgWidget != null) {
           msgWidget.selected = false;
         }

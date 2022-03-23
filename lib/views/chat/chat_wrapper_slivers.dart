@@ -67,21 +67,23 @@ class ChatWrapperSlivers extends HookConsumerWidget {
               ),
               titleSpacing: 0,
               centerTitle: false,
-              title: Column(children: [
-                titleText(socketConnected,
-                    '${incoming.currentRoom.name} (${incoming.currentRoomUsersCsv})'),
-                if (incoming.typing.isNotEmpty) ...[
-                  const SizedBox(width: 4),
-                  Text(
-                    incoming.typing,
-                    style: GoogleFonts.manrope(
-                      color: Colors.white.withOpacity(0.4),
-                      fontWeight: FontWeight.w400,
-                      fontSize: 11,
-                    ),
-                  ),
-                ]
-              ]),
+              title: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    titleText(socketConnected, incoming.rooms.currentRoomDto.name),
+                    // const SizedBox(height: 4),
+                    if (incoming.typing.isNotEmpty) ...[
+                      Text(
+                        incoming.typing,
+                        style: chatSliverSubtitleStyle,
+                      ),
+                    ] else ...[
+                      Text(
+                        incoming.rooms.currentRoomUsersCsv,
+                        style: chatSliverSubtitleStyle,
+                      ),
+                    ]
+                  ]),
               actions: <Widget>[
                 IconButton(
                   icon: const Icon(Icons.more_vert),

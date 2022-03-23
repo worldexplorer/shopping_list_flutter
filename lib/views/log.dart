@@ -20,8 +20,6 @@ class Log extends HookConsumerWidget {
 
     final tapGlobalPosition = useState(const Offset(0, 0));
 
-    NotificationsTest().showMessagingNotification();
-
     return Scaffold(
       backgroundColor: chatBackground,
       appBar: showAppBar == true

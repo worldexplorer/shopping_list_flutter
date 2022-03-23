@@ -25,10 +25,10 @@ class MessageInput extends HookConsumerWidget {
       if (ui.msgInputCtrl.text.isEmpty) {
         return;
       }
-      if (incoming.isEditingMessageId > 0) {
+      if (incoming.rooms.isEditingMessageId > 0) {
         outgoingHandlers.sendEditMessage(
-            incoming.isEditingMessageId, ui.msgInputCtrl.text);
-        incoming.isEditingMessageId = 0;
+            incoming.rooms.isEditingMessageId, ui.msgInputCtrl.text);
+        incoming.rooms.isEditingMessageId = 0;
       } else {
         outgoingHandlers.sendMessage(
             ui.msgInputCtrl.text, ui.isReplyingToMessageId);

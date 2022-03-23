@@ -33,11 +33,12 @@ class ChatMessages extends HookConsumerWidget {
     return ListView.builder(
       controller: scrollController,
       reverse: true,
-      itemCount: incoming.getMessageWidgets.length,
+      itemCount: incoming.rooms.currentRoomMessages.getMessageWidgets.length,
       itemBuilder: (BuildContext context, int index) {
-        final MessageWidget msgWidget = incoming.getMessageWidgets[index];
-        Widget dismissibleMsgWidget =
-            makeDismissible(context, ref, incoming.getMessageWidgets, index);
+        final MessageWidget msgWidget =
+            incoming.rooms.currentRoomMessages.getMessageWidgets[index];
+        Widget dismissibleMsgWidget = makeDismissible(context, ref,
+            incoming.rooms.currentRoomMessages.getMessageWidgets, index);
         Widget ret = addLongTapSelection(
             dismissibleMsgWidget, msgWidget, ref, context, tapGlobalPosition);
         return ret;
@@ -227,7 +228,7 @@ class ChatMessages extends HookConsumerWidget {
             messagesSelected.isEmpty &&
             ui.msgInputCtrl.text == '') {
           ui.msgInputCtrl.text = msgWidget.message.content;
-          incoming.isEditingMessageId = msgWidget.message.id;
+          incoming.rooms.isEditingMessageId = msgWidget.message.id;
           // TODO: open soft keyboard
         }
 

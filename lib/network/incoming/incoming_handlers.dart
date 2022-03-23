@@ -68,7 +68,7 @@ class IncomingHandlers {
         //   firstRoomId = room.id;
         // }
 
-        if (incomingState.roomsById.containsKey(room.id)) {
+        if (incomingState.rooms.roomsById.containsKey(room.id)) {
           StaticLogger.append(
               '      DUPLICATE onRooms(): ${room.id}: ${room.name}');
           continue;
@@ -77,7 +77,7 @@ class IncomingHandlers {
         StaticLogger.append(
             '   > ROOM $i/${roomsParsed.rooms.length} [${room.toJson()}]');
 
-        incomingState.roomsById[room.id] = room;
+        incomingState.rooms.roomsById[room.id] = room;
 
         // changed = true;
       }
@@ -106,14 +106,14 @@ class IncomingHandlers {
     try {
       RoomDto roomParsed = RoomDto.fromJson(data);
 
-      if (incomingState.roomsById.containsKey(roomParsed.id)) {
+      if (incomingState.rooms.roomsById.containsKey(roomParsed.id)) {
         StaticLogger.append(
             '      DUPLICATE onRooms(): ${roomParsed.id}: ${roomParsed.name}');
         return;
       }
 
       StaticLogger.append('   > ROOM [${roomParsed.toJson()}]');
-      incomingState.roomsById[roomParsed.id] = roomParsed;
+      incomingState.rooms.roomsById[roomParsed.id] = roomParsed;
       incomingState.notifyListeners();
     } catch (e) {
       StaticLogger.append('      FAILED onRoom(): ${e.toString()}');
@@ -144,7 +144,7 @@ class IncomingHandlers {
       final msig =
           ' onMessage(): msgId[${msg.id}] ${msg.user_name}: ${msg.content}';
 
-      bool rebuildUi = incomingState.messageAddOrEdit(msg, msig);
+      bool rebuildUi = incomingState.rooms.messageAddOrEdit(msg, msig, true);
 
       if (rebuildUi) {
         incomingState.notifyListeners();
@@ -169,16 +169,23 @@ class IncomingHandlers {
       i = 1;
       total = msgs.messages.length;
 
+      int roomId = 0;
       for (; i <= total; i++) {
         final counter = '$i/$total';
         MessageDto msg = msgs.messages[i - 1];
         final msig =
             ' onMessages($counter/$total): msgId[${msg.id}] ${msg.user_name}: ${msg.content}';
 
-        final addedOrChanged = incomingState.messageAddOrEdit(msg, msig);
+        roomId = msg.id;
+        final addedOrChanged = incomingState.rooms.messageAddOrEdit(msg, msig);
         if (addedOrChanged) {
           addedOrChangedCounter++;
         }
+      }
+
+      final roomMessages = incomingState.rooms.getRoomMessagesForRoom(roomId);
+      if (roomMessages != null) {
+        roomMessages!.filledInitially = true;
       }
 
       if (addedOrChangedCounter > 0) {
@@ -210,14 +217,16 @@ class IncomingHandlers {
         final msig =
             ' onMessagesReadUpdated($counter): $msgId: ${msg.persons_read}';
 
-        final MessageDto? existingMsg = incomingState.messageDtoById[msgId];
+        final MessageDto? existingMsg =
+            incomingState.rooms.currentRoomMessages.messageDtoById[msgId];
         if (existingMsg == null) {
           StaticLogger.append('      $msig: messagesById[$msgId] NOT FOUND');
           continue;
           throw 'messagesById[msg.id] NOT FOUND';
         }
 
-        final log = incomingState.removeMessageFromMessagesUnreadById(msgId);
+        final log = incomingState.rooms.currentRoomMessages
+            .removeMessageFromMessagesUnreadById(msgId);
 
         StaticLogger.append('      MESSAGE_READ_UPDATED $msig: '
             '[${existingMsg.persons_read}] => [${msg.persons_read}]'
@@ -251,13 +260,15 @@ class IncomingHandlers {
         int msgId = msgsArchived.messageIds[i - 1];
         final msig = ' onArchivedMessages($counter): $msgId';
 
-        final MessageDto? existingMsg = incomingState.messageDtoById[msgId];
+        final MessageDto? existingMsg =
+            incomingState.rooms.currentRoomMessages.messageDtoById[msgId];
         if (existingMsg == null) {
           StaticLogger.append('      $msig: messagesById[$msgId] NOT FOUND');
           continue;
         }
 
-        final log = incomingState.removeMessageFromAllMaps(msgId);
+        final log = incomingState.rooms.currentRoomMessages
+            .removeMessageFromAllMaps(msgId);
         if (log != '') {
           messagesArchived++;
         }
@@ -291,13 +302,15 @@ class IncomingHandlers {
         int msgId = msgsDeleted.messageIds[i - 1];
         final msig = ' onDeletedMessages($counter): $msgId';
 
-        final MessageDto? existingMsg = incomingState.messageDtoById[msgId];
+        final MessageDto? existingMsg =
+            incomingState.rooms.currentRoomMessages.messageDtoById[msgId];
         if (existingMsg == null) {
           StaticLogger.append('      $msig: messagesById[$msgId] NOT FOUND');
           continue;
         }
 
-        final log = incomingState.removeMessageFromAllMaps(msgId);
+        final log = incomingState.rooms.currentRoomMessages
+            .removeMessageFromAllMaps(msgId);
         if (log != '') {
           messagesDeleted++;
         }

@@ -91,7 +91,7 @@ class OutgoingHandlers {
     sendTyping(false);
 
     final json = NewMessageDto(
-      room: incomingState.currentRoomId,
+      room: incomingState.rooms.currentRoomId,
       //person: incomingState.userId,
       content: msg,
       replyto_id: isReplyingToMessageId,
@@ -108,7 +108,7 @@ class OutgoingHandlers {
 
     final json = EditMessageDto(
       id: messageId,
-      room: incomingState.currentRoomId,
+      room: incomingState.rooms.currentRoomId,
       content: msg,
     ).toJson();
     connectionState.socket.emit("editMessage", json);
@@ -116,15 +116,18 @@ class OutgoingHandlers {
   }
 
   sendMarkMessagesRead() {
-    if (incomingState.messagesDtoUnreadById.isEmpty) {
+    final messagesDtoUnreadById =
+        incomingState.rooms.currentRoomMessages.messagesDtoUnreadById;
+    if (messagesDtoUnreadById.isEmpty) {
       return;
     }
 
-    final unreadMsgIds = incomingState.getOnlyUnreadMessages();
+    final unreadMsgIds =
+        incomingState.rooms.currentRoomMessages.getOnlyUnreadMessages();
     if (unreadMsgIds.isEmpty) {
       StaticLogger.append(
           '-- MARK_MESSAGE_READ all messages already marked READ:'
-          ' unreadMsgIds[0] while messagesUnreadById[${incomingState.messagesDtoUnreadById.length}]'
+          ' unreadMsgIds[0] while messagesUnreadById[${messagesDtoUnreadById.length}]'
           ' for userId[${incomingState.personId}]');
       return;
     }

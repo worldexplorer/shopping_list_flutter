@@ -5,11 +5,13 @@ import 'package:rxdart/subjects.dart';
 import 'notifications_plugin.dart';
 import 'received_notification.dart';
 
-class NotificationsStreamIOS {
+// https://pub.dev/packages/flutter_local_notifications/example
+class NotificationClickedHandler {
   late BuildContext context;
+  late String currentRoomPath;
   late BehaviorSubject<ReceivedNotification> didReceiveLocalNotificationSubject;
 
-  NotificationsStreamIOS(this.context) {
+  NotificationClickedHandler(this.context, this.currentRoomPath) {
     didReceiveLocalNotificationSubject =
         BehaviorSubject<ReceivedNotification>();
     _configureDidReceiveLocalNotificationSubject();
@@ -54,14 +56,20 @@ class NotificationsStreamIOS {
   void _configureSelectNotificationSubject() {
     NotificationsPlugin.instance.selectNotificationSubject.stream
         .listen((String? payload) async {
-      await Navigator.pushNamed(context, '/secondPage');
+      // await Navigator.pushNamed(context, '/secondPage');
+      if (payload != null) {
+        final int? roomId = int.tryParse(payload!);
+        if (roomId != null) {
+          await Navigator.pushNamed(context, currentRoomPath,
+              arguments: roomId!);
+        }
+      }
     });
   }
 
   // @override
   void dispose() {
     didReceiveLocalNotificationSubject.close();
-    NotificationsPlugin.instance.selectNotificationSubject.close();
     // super.dispose();
   }
 }

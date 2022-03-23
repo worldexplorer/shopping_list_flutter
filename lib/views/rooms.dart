@@ -56,11 +56,13 @@ class Rooms extends HookConsumerWidget {
       );
     }
 
+    final roomsList = incoming.rooms.roomsSnapList;
+
     return Scaffold(
       backgroundColor: chatBackground,
       drawer: const Menu(),
       appBar: AppBar(
-        title: titleText(socketConnected, "Rooms"),
+        title: titleText(socketConnected, "Shared Shopping List"),
         // leading: IconButton(
         //   icon: Icon(Icons.arrow_back,
         //       size: 20, color: whiteOrConnecting(socketConnected)),
@@ -81,9 +83,9 @@ class Rooms extends HookConsumerWidget {
         padding: const EdgeInsets.symmetric(vertical: 10),
         scrollDirection: Axis.vertical,
         shrinkWrap: true,
-        itemCount: incoming.rooms.length,
+        itemCount: roomsList.length,
         itemBuilder: (BuildContext context, int index) {
-          final room = incoming.rooms[index];
+          final room = roomsList[index];
           final users = room.users;
           const firstUsersLimit = 4;
           final majorUsers = users
@@ -107,8 +109,9 @@ class Rooms extends HookConsumerWidget {
             key: Key(key),
             dense: false,
             onTap: () {
-              incoming.currentRoomId = room.id;
-              Navigator.pushNamed(context, router.currentRoom.path);
+              incoming.rooms.setCurrentRoomId(room.id);
+              Navigator.pushNamed(context, router.currentRoom.path,
+                  arguments: room.id);
             },
             leading: const CircleAvatar(
               backgroundColor: Colors.grey,

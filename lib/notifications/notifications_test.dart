@@ -2,6 +2,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 import 'notifications_plugin.dart';
 
+// https://pub.dev/packages/flutter_local_notifications/example
 class NotificationsTest {
   Future<void> showMessagingNotification() async {
     // use a platform channel to resolve an Android drawable resource to a URI.
@@ -66,8 +67,8 @@ class NotificationsTest {
         messages: messages);
     final AndroidNotificationDetails androidPlatformChannelSpecifics =
         AndroidNotificationDetails('message channel id', 'message channel name',
-            sound:
-                const RawResourceAndroidNotificationSound('slow_spring_board'),
+            // sound: const RawResourceAndroidNotificationSound('slow_spring_board'),
+            playSound: true,
             channelDescription: 'message channel description',
             category: 'msg',
             styleInformation: messagingStyle);

@@ -13,8 +13,6 @@ import 'views.dart';
 final routerProvider = ChangeNotifierProvider<Router>((ref) => Router(ref));
 
 class Router extends ChangeNotifier {
-  RouteMenuItem get initialRoute => currentRoom;
-
   late RouteMenuItem home;
   late RouteMenuItem rooms;
   late RouteMenuItem currentRoom;
@@ -61,16 +59,17 @@ class Router extends ChangeNotifier {
       path: '/rooms',
       widget: (BuildContext context) => const Rooms(),
       isSelectedInMenu: false,
-      isVisibleInMenu: true,
+      isVisibleInMenu: false,
     );
 
     currentRoom = RouteMenuItem(
         page: Page.CurrentRoom,
         title: 'Current Room',
         path: '/currentRoom',
+        // parameters: {'roomId', '0'},
         widget: (BuildContext context) => const ChatWrapperSlivers(),
         isSelectedInMenu: false,
-        isVisibleInMenu: true);
+        isVisibleInMenu: false);
 
     settings = RouteMenuItem(
         page: Page.Settings,
@@ -86,7 +85,7 @@ class Router extends ChangeNotifier {
         path: '/log',
         widget: (BuildContext context) => const Log(showAppBar: true),
         isSelectedInMenu: false,
-        isVisibleInMenu: true);
+        isVisibleInMenu: false);
 
     login = RouteMenuItem(
         page: Page.Login,
@@ -101,7 +100,7 @@ class Router extends ChangeNotifier {
         title: 'Reconnect',
         action: () {
           final incoming = ref.watch(incomingStateProvider);
-          incoming.clearAllMessages();
+          incoming.clearAllMessagesInCurrentRoom();
           final connection = incoming.connection;
           connection.reconnect();
         },
@@ -114,7 +113,8 @@ class Router extends ChangeNotifier {
         action: () {
           final incoming = ref.watch(incomingStateProvider);
           // incoming.clearAllMessages();
-          incoming.outgoingHandlers.sendGetMessages(incoming.currentRoomId);
+          incoming.outgoingHandlers
+              .sendGetMessages(incoming.rooms.currentRoomId);
         },
         isSelectedInMenu: false,
         isVisibleInMenu: true);
