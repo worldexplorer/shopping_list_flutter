@@ -62,7 +62,14 @@ class Rooms extends HookConsumerWidget {
       backgroundColor: chatBackground,
       drawer: const Menu(),
       appBar: AppBar(
-        title: titleText(socketConnected, "Shared Shopping List"),
+        title: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          titleText(socketConnected, "Shared Shopping List"),
+          if (!socketConnected)
+            Text(
+              'connecting...',
+              style: chatSliverSubtitleStyle(false),
+            ),
+        ]),
         // leading: IconButton(
         //   icon: Icon(Icons.arrow_back,
         //       size: 20, color: whiteOrConnecting(socketConnected)),
@@ -74,7 +81,7 @@ class Rooms extends HookConsumerWidget {
           IconButton(
             icon: const Icon(Icons.more_vert),
             onPressed: () {
-              // debugExpanded.value = !debugExpanded.value;
+              Navigator.pushNamed(context, router.log.path);
             },
           ),
         ],
@@ -109,7 +116,7 @@ class Rooms extends HookConsumerWidget {
             key: Key(key),
             dense: false,
             onTap: () {
-              incoming.rooms.setCurrentRoomId(room.id);
+              // incoming.rooms.setCurrentRoomId(room.id);
               Navigator.pushNamed(context, router.currentRoom.path,
                   arguments: room.id);
             },

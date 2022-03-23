@@ -57,16 +57,19 @@ class IncomingState extends ChangeNotifier {
   int get personId => _person?.id ?? -1;
   String get personName => _person?.name ?? PERSON_DTO_NOT_RECEIVED;
   set personReceived(PersonDto personLoggedIn) {
-    if (_person != null && _person!.id != personLoggedIn.id) {
-      rooms.clearAllRooms();
+    bool firstTimeLogin = _person == null;
+    bool differentPersonLoggedIn =
+        _person != null && _person!.id != personLoggedIn.id;
+
+    if (firstTimeLogin || differentPersonLoggedIn) {
+      rooms = Rooms(
+          outgoingHandlers: outgoingHandlers,
+          myPersonId: personLoggedIn.id,
+          setClientError: (String msg) {
+            clientError = msg;
+          });
     }
     _person = personLoggedIn;
-    rooms = Rooms(
-        backend: outgoingHandlers,
-        myPersonId: personId,
-        setClientError: (String msg) {
-          clientError = msg;
-        });
     notifyListeners();
   }
 
@@ -177,15 +180,15 @@ class IncomingState extends ChangeNotifier {
   //     backend: outgoingHandlers,
   //     myPersonId: personId,
   //     setClientError: (String msg) {clientError=msg});
-  // set currentRoomId(int val) {
-  //   final shouldRebuildUI = rooms.setCurrentRoomId(val);
-  //   if (shouldRebuildUI) {
-  //     if (!rooms.currentRoomMessages.filledInitially) {
-  //       outgoingHandlers.sendGetMessages(rooms.currentRoomId, 0);
-  //     }
-  //     notifyListeners();
-  //   }
-  // }
+  set currentRoomId(int val) {
+    final shouldRebuildUI = rooms.setCurrentRoomId(val);
+    if (shouldRebuildUI) {
+      if (!rooms.currentRoomMessages.filledInitially) {
+        outgoingHandlers.sendGetMessages(rooms.currentRoomId, 0);
+      }
+      notifyListeners();
+    }
+  }
 
   void clearAllMessagesInCurrentRoom({bool notify = true}) {
     rooms.currentRoomMessages.clearAllMessages();

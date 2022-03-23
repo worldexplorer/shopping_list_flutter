@@ -11,11 +11,11 @@ class Rooms {
   final Map<int, RoomDto> roomsById = <int, RoomDto>{};
   List<RoomDto> get roomsSnapList => roomsById.values.toList();
 
-  OutgoingHandlers backend;
+  OutgoingHandlers outgoingHandlers;
   int myPersonId;
   Function(String err) setClientError;
   Rooms(
-      {required this.backend,
+      {required this.outgoingHandlers,
       required this.myPersonId,
       required this.setClientError});
 
@@ -37,15 +37,16 @@ class Rooms {
   }
 
   bool setCurrentRoomId(int val) {
+    const msig = ' //Rooms.setCurrentRoom()';
     if (!roomsById.containsKey(val)) {
       StaticLogger.append(
-          'CANT_SET_CURRENT_ROOM_BY_ID[$val], _roomsById.keys=[${roomsById.keys}]');
+          'CANT_SET_CURRENT_ROOM_BY_ID[$val], _roomsById.keys=[${roomsById.keys}] ${msig}');
       return false;
     }
     if (_currentRoomId == val) {
       StaticLogger.append(
-          'NOT_REQUESTING_SAME_CURRENT_ROOM[$val], _currentRoomId=[$_currentRoomId}]');
-      return false;
+          'NOT_REQUESTING_SAME_CURRENT_ROOM[$val], _currentRoomId=[$_currentRoomId}] ${msig}');
+      return true;
     }
     _currentRoomId = val;
 
@@ -55,8 +56,8 @@ class Rooms {
           () => RoomMessages(
               myPersonId: myPersonId, setClientError: setClientError));
       StaticLogger.append(
-          'EMPTY_MESSAGES_ADDED_ON_SWITCH_TO_EMPTY_ROOM[$_currentRoomId] //setCurrentRoom()');
-      backend.sendGetMessages(_currentRoomId);
+          'EMPTY_MESSAGES_ADDED_ON_SWITCH_TO_EMPTY_ROOM[$_currentRoomId] ${msig}');
+      // outgoingHandlers.sendGetMessages(_currentRoomId);
     }
     return true;
   }
@@ -105,7 +106,7 @@ class Rooms {
       StaticLogger.append('          MESSAGE_ADDED_TO_NON_CURRENT_ROOM $msg');
     }
 
-    if (fireNotification) {
+    if (msgReceived.user != myPersonId && fireNotification) {
       PersonDto? author;
       RoomDto? room = roomsById[msgReceived.room];
       if (room != null) {

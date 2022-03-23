@@ -7,6 +7,7 @@ import '../../hooks/scroll_controller_for_animation.dart';
 import '../../network/incoming/incoming_state.dart';
 import '../../utils/theme.dart';
 import '../../utils/ui_state.dart';
+import '../router.dart';
 import '../views.dart';
 import 'chat_messages.dart';
 import 'message_input.dart';
@@ -17,6 +18,7 @@ class ChatWrapperSlivers extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final ui = ref.watch(uiStateProvider);
+    final router = ref.watch(routerProvider);
     final incoming = ref.watch(incomingStateProvider);
 
     var debugExpanded = useState(false);
@@ -27,6 +29,9 @@ class ChatWrapperSlivers extends HookConsumerWidget {
         useScrollControllerForAnimation(hideFabAnimController);
 
     final socketConnected = incoming.connection.connectionState.socketConnected;
+
+    final roomId = ModalRoute.of(context)!.settings.arguments as int;
+    incoming.currentRoomId = roomId;
 
     return Scaffold(
       backgroundColor: chatBackground,
@@ -70,17 +75,17 @@ class ChatWrapperSlivers extends HookConsumerWidget {
               title: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    titleText(socketConnected, incoming.rooms.currentRoomDto.name),
-                    // const SizedBox(height: 4),
+                    titleText(
+                        socketConnected, incoming.rooms.currentRoomDto.name),
                     if (incoming.typing.isNotEmpty) ...[
                       Text(
                         incoming.typing,
-                        style: chatSliverSubtitleStyle,
+                        style: chatSliverSubtitleStyle(),
                       ),
                     ] else ...[
                       Text(
                         incoming.rooms.currentRoomUsersCsv,
-                        style: chatSliverSubtitleStyle,
+                        style: chatSliverSubtitleStyle(socketConnected),
                       ),
                     ]
                   ]),

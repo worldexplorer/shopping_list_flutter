@@ -6,8 +6,6 @@ import 'package:shopping_list_flutter/utils/theme.dart';
 import 'package:shopping_list_flutter/utils/ui_state.dart';
 import 'package:shopping_list_flutter/widget/context_menu.dart';
 
-import '../notifications/notifications_test.dart';
-
 class Log extends HookConsumerWidget {
   final bool? showAppBar;
   const Log({Key? key, this.showAppBar}) : super(key: key);
@@ -28,7 +26,14 @@ class Log extends HookConsumerWidget {
             )
           : null,
       body: Container(
-        margin: const EdgeInsets.all(15.0),
+        decoration: BoxDecoration(
+          border: Border.all(
+            color: Colors.blueGrey,
+            width: 1,
+          ),
+        ),
+        padding: const EdgeInsets.all(5.0),
+        margin: const EdgeInsets.all(5.0),
         child: wrapWithContextMenu(
           child: ListView.builder(
             scrollDirection: Axis.vertical,
