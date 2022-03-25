@@ -15,8 +15,8 @@ import 'person/register_confirm_dto.dart';
 import 'person/register_dto.dart';
 import 'purchase/edit_purchase_dto.dart';
 import 'purchase/new_purchase_dto.dart';
-import 'purchase/pur_item_filled_dto.dart';
-import 'purchase/purchase_filled_dto.dart';
+import 'purchase/pur_item_fill_dto.dart';
+import 'purchase/purchase_fill_dto.dart';
 import 'room/new_room_dto.dart';
 
 class OutgoingHandlers {
@@ -211,8 +211,8 @@ class OutgoingHandlers {
     final msig = 'sendFillPurchase($purchase.room)';
     if (!isConnected(msig)) return;
 
-    final purchaseFilled = PurchaseFilledDto.fromPurchaseDto(purchase);
-    final json = purchaseFilled.toJson();
+    final purchaseFill = PurchaseFillDto.fromPurchaseDto(purchase);
+    final json = purchaseFill.toJson();
     connectionState.socket.emit("fillPurchase", json);
     StaticLogger.append('<< FILL_PURCHASE [$json]');
   }
@@ -223,7 +223,7 @@ class OutgoingHandlers {
     final msig = 'sendFillPurItem($purchase.room)';
     if (!isConnected(msig)) return;
 
-    final purItemFilled = PurItemFilledDto.fromPurItem(purItem, purchase);
+    final purItemFilled = PurItemFillDto.fromPurItem(purItem, purchase);
     final json = purItemFilled.toJson();
     connectionState.socket.emit("fillPurItem", json);
     StaticLogger.append('<< FILL_PURITEM [$json]');

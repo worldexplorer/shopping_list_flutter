@@ -4,7 +4,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:shopping_list_flutter/utils/ui_state.dart';
 
 import '../../models/rooms.dart';
-import '../../views/chat/message_item.dart';
+import '../../views/chat/message_widget.dart';
 import '../connection.dart';
 import '../outgoing/outgoing_handlers.dart';
 import 'message/message_dto.dart';

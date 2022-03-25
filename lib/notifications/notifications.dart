@@ -1,4 +1,5 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:shopping_list_flutter/network/incoming/purchase/pur_item_filled_dto.dart';
 
 import '../network/incoming/message/message_dto.dart';
 import '../network/incoming/person/person_dto.dart';
@@ -7,7 +8,7 @@ class Notifications {
   late FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
   late List<Message> messages;
 
-  final  Person me = const Person(
+  final Person me = const Person(
     name: 'Me_NEVER_SHOWN',
     key: '2',
     uri: 'tel:9876543210',
@@ -30,8 +31,7 @@ class Notifications {
         msg.content, DateTime.now().add(const Duration(minutes: 5)), coworker);
     messages.add(message);
 
-    MessagingStyleInformation
-    messagingStyle = MessagingStyleInformation(me,
+    MessagingStyleInformation messagingStyle = MessagingStyleInformation(me,
         groupConversation: true,
         conversationTitle: roomName,
         htmlFormatContent: true,
@@ -55,5 +55,10 @@ class Notifications {
 
     flutterLocalNotificationsPlugin.show(
         0, 'message title', 'message body', platformChannelSpecifics);
+  }
+
+  showPurItemFilled(
+      PurItemFilledDto purItemFilled, String roomName, PersonDto? author) {
+    // TODO
   }
 }

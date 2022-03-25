@@ -263,3 +263,18 @@ int cycle0231(current, bool show_unknown, bool show_stop) {
   }
   return BOUGHT_UNCHECKED;
 }
+
+String bought2str(int current) {
+  switch (current) {
+    case BOUGHT_UNCHECKED:
+      return "BOUGHT_UNCHECKED";
+    case BOUGHT_CHECKED:
+      return "BOUGHT_CHECKED";
+    case BOUGHT_UNKNOWN:
+      return "BOUGHT_UNKNOWN";
+    case BOUGHT_STOP:
+      return "BOUGHT_STOP";
+  }
+
+  return "BOUGHT_UNRESOLVED";
+}

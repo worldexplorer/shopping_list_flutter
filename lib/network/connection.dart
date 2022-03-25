@@ -74,6 +74,7 @@ class Connection extends ChangeNotifier {
     _socket.on('deletedMessages', incomingHandlers.onDeletedMessages);
     _socket.on('messages', incomingHandlers.onMessages);
     _socket.on('error', incomingHandlers.onServerError);
+    _socket.on('purItemFilled', incomingHandlers.onPurItemFilled);
 
     StaticLogger.append(
         '#1/4 handlers hooked to a socket [${connectionState.sConnected}]');

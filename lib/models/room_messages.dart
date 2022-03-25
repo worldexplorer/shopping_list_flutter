@@ -1,10 +1,11 @@
 import 'package:flutter/widgets.dart';
+import 'package:shopping_list_flutter/network/incoming/purchase/pur_item_filled_dto.dart';
 
 import '../network/incoming/message/message_dto.dart';
 import '../network/incoming/purchase/pur_item_dto.dart';
 import '../utils/static_logger.dart';
 import '../utils/theme.dart';
-import '../views/chat/message_item.dart';
+import '../views/chat/message_widget.dart';
 
 class RoomMessages {
   final Map<int, MessageDto> messagesDtoUnreadById = <int, MessageDto>{};
@@ -201,5 +202,25 @@ class RoomMessages {
       log += ' NOT_FOUND_IN messageWidgets;';
     }
     return log;
+  }
+
+  bool purItemFilled(
+      PurItemFilledDto purItemFilled, int isEditingMessageId, String msig) {
+    final MessageDto? prevMsg = messageDtoById[purItemFilled.message];
+
+    if (prevMsg == null) {
+      return false;
+    }
+
+    final prevMsgFound = prevMsg!;
+    final puritemToFill = prevMsgFound.purchase?.purItems
+        .firstWhere((element) => element.id == purItemFilled.id);
+
+    if (puritemToFill == null) {
+      return false;
+    }
+    puritemToFill.bought = purItemFilled.bought;
+
+    return messageAddOrEdit(prevMsgFound, 0, msig);
   }
 }

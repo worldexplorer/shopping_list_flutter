@@ -1,6 +1,8 @@
 import 'package:shopping_list_flutter/network/incoming/person/registration_confirmed_dto.dart';
+import 'package:shopping_list_flutter/network/incoming/purchase/pur_item_filled_dto.dart';
 
 import '../../utils/static_logger.dart';
+import '../../views/purchase/purchase_item.dart';
 import '../common/typing_dto.dart';
 import '../connection_state.dart';
 import '../outgoing/outgoing_handlers.dart';
@@ -330,5 +332,24 @@ class IncomingHandlers {
   void onServerError(data) {
     StaticLogger.append('> SERVER_ERROR [$data]');
     incomingState.serverError = '$data';
+  }
+
+  void onPurItemFilled(data) {
+    StaticLogger.append('> PUR_ITEM_FILLED [$data]');
+    try {
+      PurItemFilledDto purItemFilled = PurItemFilledDto.fromJson(data);
+      final msig = ' onPurItemFilled(): msgId[${purItemFilled.id}]' +
+          '${purItemFilled.person_bought_ident}: ${bought2str(purItemFilled.bought)}';
+
+      bool rebuildUi =
+          incomingState.rooms.purItemFilled(purItemFilled, msig, false);
+
+      if (rebuildUi) {
+        incomingState.notifyListeners();
+        StaticLogger.append('         UI REBUILT onPurItemFilled()');
+      }
+    } catch (e) {
+      StaticLogger.append('      FAILED onPurItemFilled(): ${e.toString()}');
+    }
   }
 }

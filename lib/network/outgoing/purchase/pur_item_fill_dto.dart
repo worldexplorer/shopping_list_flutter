@@ -6,7 +6,7 @@ import 'package:json_annotation/json_annotation.dart';
 import 'package:shopping_list_flutter/network/incoming/purchase/pur_item_dto.dart';
 import 'package:shopping_list_flutter/network/incoming/purchase/purchase_dto.dart';
 
-part 'pur_item_filled_dto.g.dart';
+part 'pur_item_fill_dto.g.dart';
 
 @JsonSerializable(
     checked: true,
@@ -15,7 +15,7 @@ part 'pur_item_filled_dto.g.dart';
     explicitToJson: true,
     disallowUnrecognizedKeys: true,
     includeIfNull: true)
-class PurItemFilledDto {
+class PurItemFillDto {
   int id;
   String name;
   int room;
@@ -28,7 +28,7 @@ class PurItemFilledDto {
   double? bought_weight;
   String? comment;
 
-  PurItemFilledDto({
+  PurItemFillDto({
     required this.id,
     required this.name,
     required this.room,
@@ -41,9 +41,8 @@ class PurItemFilledDto {
     this.comment,
   });
 
-  static PurItemFilledDto fromPurItem(
-      PurItemDto purItem, PurchaseDto purchase) {
-    return PurItemFilledDto(
+  static PurItemFillDto fromPurItem(PurItemDto purItem, PurchaseDto purchase) {
+    return PurItemFillDto(
         id: purItem.id,
         name: purItem.name,
         room: purchase.room,
@@ -56,7 +55,7 @@ class PurItemFilledDto {
         comment: purItem.comment);
   }
 
-  factory PurItemFilledDto.fromJson(Map<String, dynamic> json) =>
-      _$PurItemFilledDtoFromJson(json);
-  Map<String, dynamic> toJson() => _$PurItemFilledDtoToJson(this);
+  factory PurItemFillDto.fromJson(Map<String, dynamic> json) =>
+      _$PurItemFillDtoFromJson(json);
+  Map<String, dynamic> toJson() => _$PurItemFillDtoToJson(this);
 }

@@ -23,7 +23,9 @@ PurItemFilledDto _$PurItemFilledDtoFromJson(Map<String, dynamic> json) =>
             'bought_qnty',
             'bought_price',
             'bought_weight',
-            'comment'
+            'comment',
+            'person_bought',
+            'person_bought_ident'
           ],
         );
         final val = PurItemFilledDto(
@@ -40,6 +42,9 @@ PurItemFilledDto _$PurItemFilledDtoFromJson(Map<String, dynamic> json) =>
           bought_weight:
               $checkedConvert('bought_weight', (v) => (v as num?)?.toDouble()),
           comment: $checkedConvert('comment', (v) => v as String?),
+          person_bought: $checkedConvert('person_bought', (v) => v as int),
+          person_bought_ident:
+              $checkedConvert('person_bought_ident', (v) => v as String?),
         );
         return val;
       },
@@ -57,4 +62,6 @@ Map<String, dynamic> _$PurItemFilledDtoToJson(PurItemFilledDto instance) =>
       'bought_price': instance.bought_price,
       'bought_weight': instance.bought_weight,
       'comment': instance.comment,
+      'person_bought': instance.person_bought,
+      'person_bought_ident': instance.person_bought_ident,
     };

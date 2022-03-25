@@ -1,14 +1,14 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'purchase_filled_dto.dart';
+part of 'purchase_fill_dto.dart';
 
 // **************************************************************************
 // JsonSerializableGenerator
 // **************************************************************************
 
-PurchaseFilledDto _$PurchaseFilledDtoFromJson(Map<String, dynamic> json) =>
+PurchaseFillDto _$PurchaseFillDtoFromJson(Map<String, dynamic> json) =>
     $checkedCreate(
-      'PurchaseFilledDto',
+      'PurchaseFillDto',
       json,
       ($checkedConvert) {
         $checkKeys(
@@ -23,7 +23,7 @@ PurchaseFilledDto _$PurchaseFilledDtoFromJson(Map<String, dynamic> json) =>
             'purItemsFilled'
           ],
         );
-        final val = PurchaseFilledDto(
+        final val = PurchaseFillDto(
           id: $checkedConvert('id', (v) => v as int),
           room: $checkedConvert('room', (v) => v as int),
           message: $checkedConvert('message', (v) => v as int),
@@ -35,15 +35,15 @@ PurchaseFilledDto _$PurchaseFilledDtoFromJson(Map<String, dynamic> json) =>
           purItemsFilled: $checkedConvert(
               'purItemsFilled',
               (v) => (v as List<dynamic>)
-                  .map((e) =>
-                      PurItemFilledDto.fromJson(e as Map<String, dynamic>))
+                  .map(
+                      (e) => PurItemFillDto.fromJson(e as Map<String, dynamic>))
                   .toList()),
         );
         return val;
       },
     );
 
-Map<String, dynamic> _$PurchaseFilledDtoToJson(PurchaseFilledDto instance) =>
+Map<String, dynamic> _$PurchaseFillDtoToJson(PurchaseFillDto instance) =>
     <String, dynamic>{
       'id': instance.id,
       'room': instance.room,

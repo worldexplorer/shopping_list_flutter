@@ -9,7 +9,7 @@ import '../../network/incoming/incoming_state.dart';
 import '../../utils/static_logger.dart';
 import '../../utils/theme.dart';
 import '../../utils/ui_state.dart';
-import '../../views/chat/message_item.dart';
+import '../../views/chat/message_widget.dart';
 import '../../widget/context_menu.dart';
 
 class ChatMessages extends HookConsumerWidget {
