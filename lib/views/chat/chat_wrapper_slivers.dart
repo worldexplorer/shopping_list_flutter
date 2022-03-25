@@ -30,8 +30,13 @@ class ChatWrapperSlivers extends HookConsumerWidget {
 
     final socketConnected = incoming.connection.connectionState.socketConnected;
 
-    final roomId = ModalRoute.of(context)!.settings.arguments as int;
-    incoming.currentRoomId = roomId;
+    // Future<void>.delayed(const Duration(milliseconds: 100), () async {
+      final roomId = ModalRoute.of(context)!.settings.arguments as int;
+      // when notifyListeners() happens inside build(), throws:
+      //    setState() or markNeedsBuild() called during build.
+      //    This UncontrolledProviderScope widget cannot be marked as needing to build b
+      incoming.currentRoomId = roomId;
+    // });
 
     return Scaffold(
       backgroundColor: chatBackground,
@@ -76,7 +81,8 @@ class ChatWrapperSlivers extends HookConsumerWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     titleText(
-                        socketConnected, incoming.rooms.currentRoomDto.name),
+                        socketConnected,
+                        incoming.rooms.currentRoomNameOrFetching),
                     if (incoming.typing.isNotEmpty) ...[
                       Text(
                         incoming.typing,

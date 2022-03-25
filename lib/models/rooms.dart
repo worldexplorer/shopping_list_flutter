@@ -8,8 +8,8 @@ import '../utils/static_logger.dart';
 import 'room_messages.dart';
 
 class Rooms {
-  final Map<int, RoomDto> roomsById = <int, RoomDto>{};
-  List<RoomDto> get roomsSnapList => roomsById.values.toList();
+  final Map<int, RoomDto> roomById = <int, RoomDto>{};
+  List<RoomDto> get roomsSnapList => roomById.values.toList();
 
   OutgoingHandlers outgoingHandlers;
   int myPersonId;
@@ -20,35 +20,46 @@ class Rooms {
       required this.setClientError});
 
   void clearAllRooms() {
-    roomsById.clear();
+    roomById.clear();
     currentRoomMessages.clearAllMessages();
   }
 
   int _currentRoomId = 0;
   int get currentRoomId => _currentRoomId;
-  RoomDto get currentRoomDto {
-    if (roomsById.containsKey(currentRoomId)) {
-      return roomsById[currentRoomId]!;
+  RoomDto? get currentRoomDto {
+    if (roomById.containsKey(currentRoomId)) {
+      return roomById[currentRoomId]!;
     } else {
       StaticLogger.append(
-          'ROOM_WAS_NOT_ADDED_ID[$currentRoomId], length=[${roomsById.length}]');
-      return RoomDto(id: 999, name: '<NO_ROOMS_RECEIVED>', users: []);
+          'ROOM_WILL_BE_ADDED[$currentRoomId] on data arrival in onRoom()/onRooms()');
+      // return RoomDto(id: 999, name: 'NO_ROOM_RECEIVED:[$currentRoomId]', users: []);
+      return null;
     }
   }
 
-  bool setCurrentRoomId(int val) {
-    const msig = ' //Rooms.setCurrentRoom()';
-    if (!roomsById.containsKey(val)) {
+  String get currentRoomNameOrFetching {
+    return currentRoomDto != null ? currentRoomDto!.name : 'Fetching...';
+  }
+
+  List<PersonDto> get currentRoomUsersOrEmpty {
+    return currentRoomDto != null ? currentRoomDto!.users : [];
+  }
+
+  bool setCurrentRoomId(int newRoomId) {
+    const msig = ' //Rooms.setCurrentRoomId()';
+    bool shouldRequestBackend = false;
+
+    if (!roomById.containsKey(newRoomId)) {
       StaticLogger.append(
-          'CANT_SET_CURRENT_ROOM_BY_ID[$val], _roomsById.keys=[${roomsById.keys}] ${msig}');
-      return false;
+          'CANT_SET_CURRENT_ROOM_BY_ID[$newRoomId], _roomsById.keys=[${roomById.keys}] ${msig}');
+      return shouldRequestBackend;
     }
-    if (_currentRoomId == val) {
+    if (_currentRoomId == newRoomId) {
       StaticLogger.append(
-          'NOT_REQUESTING_SAME_CURRENT_ROOM[$val], _currentRoomId=[$_currentRoomId}] ${msig}');
-      return true;
+          'NOT_REQUESTING_SAME_CURRENT_ROOM[$newRoomId], _currentRoomId=[$_currentRoomId}] ${msig}');
+      return shouldRequestBackend;
     }
-    _currentRoomId = val;
+    _currentRoomId = newRoomId;
 
     if (!_messagesByRoom.containsKey(_currentRoomId)) {
       _messagesByRoom.putIfAbsent(
@@ -58,12 +69,13 @@ class Rooms {
       StaticLogger.append(
           'EMPTY_MESSAGES_ADDED_ON_SWITCH_TO_EMPTY_ROOM[$_currentRoomId] ${msig}');
       // outgoingHandlers.sendGetMessages(_currentRoomId);
+      shouldRequestBackend = true;
     }
-    return true;
+    return shouldRequestBackend;
   }
 
   String get currentRoomUsersCsv {
-    return currentRoomDto.users.map((x) => x.name).join(", ");
+    return currentRoomUsersOrEmpty.map((x) => x.name).join(", ");
   }
 
   int isEditingMessageId = 0;
@@ -108,7 +120,7 @@ class Rooms {
 
     if (msgReceived.user != myPersonId && fireNotification) {
       PersonDto? author;
-      RoomDto? room = roomsById[msgReceived.room];
+      RoomDto? room = roomById[msgReceived.room];
       if (room != null) {
         author = room.users.firstWhere((x) => x.id == msgReceived.user);
       }

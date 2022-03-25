@@ -139,8 +139,8 @@ class IncomingState extends ChangeNotifier {
       copiedfrom_id: null,
       person_created: personId,
       person_created_name: personName,
-      persons_can_edit: rooms.currentRoomDto.users.map((x) => x.id).toList(),
-      persons_can_fill: rooms.currentRoomDto.users.map((x) => x.id).toList(),
+      persons_can_edit: rooms.currentRoomUsersOrEmpty.map((x) => x.id).toList(),
+      persons_can_fill: rooms.currentRoomUsersOrEmpty.map((x) => x.id).toList(),
       purchased: false,
       person_purchased: null,
       person_purchased_name: null,
@@ -180,13 +180,20 @@ class IncomingState extends ChangeNotifier {
   //     backend: outgoingHandlers,
   //     myPersonId: personId,
   //     setClientError: (String msg) {clientError=msg});
-  set currentRoomId(int val) {
-    final shouldRebuildUI = rooms.setCurrentRoomId(val);
-    if (shouldRebuildUI) {
+  // int get currentRoomId => rooms.currentRoomId;
+  set currentRoomId(int newRoomId) {
+    if (rooms.currentRoomId == newRoomId) {
+      return;
+    }
+    final shouldRequestBackend = rooms.setCurrentRoomId(newRoomId);
+    if (shouldRequestBackend) {
       if (!rooms.currentRoomMessages.filledInitially) {
         outgoingHandlers.sendGetMessages(rooms.currentRoomId, 0);
       }
-      notifyListeners();
+      // when notifyListeners() happens inside build(), throws:
+      //    setState() or markNeedsBuild() called during build.
+      //    This UncontrolledProviderScope widget cannot be marked as needing to build b
+      // notifyListeners();
     }
   }
 

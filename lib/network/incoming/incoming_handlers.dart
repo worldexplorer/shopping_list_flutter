@@ -68,7 +68,7 @@ class IncomingHandlers {
         //   firstRoomId = room.id;
         // }
 
-        if (incomingState.rooms.roomsById.containsKey(room.id)) {
+        if (incomingState.rooms.roomById.containsKey(room.id)) {
           StaticLogger.append(
               '      DUPLICATE onRooms(): ${room.id}: ${room.name}');
           continue;
@@ -77,7 +77,7 @@ class IncomingHandlers {
         StaticLogger.append(
             '   > ROOM $i/${roomsParsed.rooms.length} [${room.toJson()}]');
 
-        incomingState.rooms.roomsById[room.id] = room;
+        incomingState.rooms.roomById[room.id] = room;
 
         // changed = true;
       }
@@ -106,14 +106,14 @@ class IncomingHandlers {
     try {
       RoomDto roomParsed = RoomDto.fromJson(data);
 
-      if (incomingState.rooms.roomsById.containsKey(roomParsed.id)) {
+      if (incomingState.rooms.roomById.containsKey(roomParsed.id)) {
         StaticLogger.append(
             '      DUPLICATE onRooms(): ${roomParsed.id}: ${roomParsed.name}');
         return;
       }
 
       StaticLogger.append('   > ROOM [${roomParsed.toJson()}]');
-      incomingState.rooms.roomsById[roomParsed.id] = roomParsed;
+      incomingState.rooms.roomById[roomParsed.id] = roomParsed;
       incomingState.notifyListeners();
     } catch (e) {
       StaticLogger.append('      FAILED onRoom(): ${e.toString()}');

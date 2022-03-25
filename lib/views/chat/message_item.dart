@@ -26,10 +26,10 @@ class MessageWidget extends ConsumerWidget {
     final incoming = ref.watch(incomingStateProvider);
 
     final String personReadStatus =
-        '${message.persons_read.length} / ${incoming.rooms.currentRoomDto.users.length}';
+        '${message.persons_read.length} / ${incoming.rooms.currentRoomUsersOrEmpty.length}';
 
     final int personsUnread =
-        incoming.rooms.currentRoomDto.users.length - message.persons_read.length;
+        incoming.rooms.currentRoomUsersOrEmpty.length - message.persons_read.length;
     final bool allParticipantsReceived = personsUnread == 0;
 
     final ui = ref.watch(uiStateProvider);
