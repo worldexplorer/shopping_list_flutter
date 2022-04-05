@@ -15,8 +15,9 @@ part 'archived_messages_dto.g.dart';
     includeIfNull: true)
 class ArchivedMessagesDto {
   List<int> messageIds;
+  List<int> rooms;
 
-  ArchivedMessagesDto({required this.messageIds});
+  ArchivedMessagesDto({required this.messageIds, required this.rooms});
 
   factory ArchivedMessagesDto.fromJson(Map<String, dynamic> json) =>
       _$ArchivedMessagesDtoFromJson(json);

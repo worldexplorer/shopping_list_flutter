@@ -13,10 +13,12 @@ ArchivedMessagesDto _$ArchivedMessagesDtoFromJson(Map<String, dynamic> json) =>
       ($checkedConvert) {
         $checkKeys(
           json,
-          allowedKeys: const ['messageIds'],
+          allowedKeys: const ['messageIds', 'rooms'],
         );
         final val = ArchivedMessagesDto(
           messageIds: $checkedConvert('messageIds',
+              (v) => (v as List<dynamic>).map((e) => e as int).toList()),
+          rooms: $checkedConvert('rooms',
               (v) => (v as List<dynamic>).map((e) => e as int).toList()),
         );
         return val;
@@ -27,4 +29,5 @@ Map<String, dynamic> _$ArchivedMessagesDtoToJson(
         ArchivedMessagesDto instance) =>
     <String, dynamic>{
       'messageIds': instance.messageIds,
+      'rooms': instance.rooms,
     };

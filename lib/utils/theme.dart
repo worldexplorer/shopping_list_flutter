@@ -52,7 +52,8 @@ TextStyle sernoStyle = TextStyle(
 
 TextStyle pGroupStyle = const TextStyle(
     color: Color(0xD9E6FF8F), fontSize: 20, fontWeight: FontWeight.bold);
-TextStyle totalsStyle = const TextStyle(color: Colors.lightGreenAccent);
+TextStyle totalsStyleGreen = const TextStyle(color: Colors.lightGreenAccent);
+TextStyle totalsStyleGray = const TextStyle(color: Colors.white30);
 
 TextStyle textInputStyle = const TextStyle(color: Colors.white);
 
@@ -141,3 +142,7 @@ Text subtitleText(bool socketConnected, String text) {
     style: chatSliverSubtitleStyle(socketConnected),
   );
 }
+
+const unreadMessagesTextStyle = TextStyle(
+  fontSize: 11,
+);

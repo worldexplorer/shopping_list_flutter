@@ -31,11 +31,12 @@ class ChatWrapperSlivers extends HookConsumerWidget {
     final socketConnected = incoming.connection.connectionState.socketConnected;
 
     // Future<void>.delayed(const Duration(milliseconds: 100), () async {
-      final roomId = ModalRoute.of(context)!.settings.arguments as int;
-      // when notifyListeners() happens inside build(), throws:
-      //    setState() or markNeedsBuild() called during build.
-      //    This UncontrolledProviderScope widget cannot be marked as needing to build b
-      incoming.currentRoomId = roomId;
+    final roomId = ModalRoute.of(context)!.settings.arguments as int;
+    // when notifyListeners() happens inside build(), throws:
+    //    setState() or markNeedsBuild() called during build.
+    //    This UncontrolledProviderScope widget cannot be marked as needing to build b
+    // invoked every rebuild() but fetches room message only once
+    incoming.currentRoomId = roomId;
     // });
 
     return Scaffold(
@@ -68,8 +69,10 @@ class ChatWrapperSlivers extends HookConsumerWidget {
               // https://blog.logrocket.com/flutter-appbar-tutorial/
               // https://o7planning.org/12851/flutter-appbar
               leading: IconButton(
-                icon: Icon(Icons.arrow_back,
-                    size: 20, color: whiteOrConnecting(socketConnected)),
+                icon: const Icon(Icons.arrow_back,
+                    size: 20,
+                    // color: whiteOrConnecting(socketConnected)
+                    color: Colors.white),
                 onPressed: () {
                   // ui.toMenuAndBack();
                   Navigator.of(context).pop();
@@ -80,8 +83,7 @@ class ChatWrapperSlivers extends HookConsumerWidget {
               title: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    titleText(
-                        socketConnected,
+                    titleText(socketConnected,
                         incoming.rooms.currentRoomNameOrFetching),
                     if (incoming.typing.isNotEmpty) ...[
                       Text(
@@ -89,10 +91,8 @@ class ChatWrapperSlivers extends HookConsumerWidget {
                         style: chatSliverSubtitleStyle(),
                       ),
                     ] else ...[
-                      Text(
-                        incoming.rooms.currentRoomUsersCsv,
-                        style: chatSliverSubtitleStyle(socketConnected),
-                      ),
+                      subtitleText(
+                          socketConnected, incoming.rooms.currentRoomUsersCsv),
                     ]
                   ]),
               actions: <Widget>[

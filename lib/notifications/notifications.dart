@@ -53,8 +53,10 @@ class Notifications {
     final NotificationDetails platformChannelSpecifics =
         NotificationDetails(android: androidPlatformChannelSpecifics);
 
+    String payload = msg.room.toString();
     flutterLocalNotificationsPlugin.show(
-        0, 'message title', 'message body', platformChannelSpecifics);
+        0, 'message title', 'message body', platformChannelSpecifics,
+        payload: payload);
   }
 
   showPurItemFilled(

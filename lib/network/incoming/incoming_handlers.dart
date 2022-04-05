@@ -11,7 +11,7 @@ import 'message/archived_messages_dto.dart';
 import 'message/deleted_messages_dto.dart';
 import 'message/message_dto.dart';
 import 'message/messages_dto.dart';
-import 'message/update_messages_read_dto.dart';
+import 'message/updated_messages_read_dto.dart';
 import 'person/person_dto.dart';
 import 'person/registration_needs_code_dto.dart';
 import 'room/room_dto.dart';

@@ -58,13 +58,14 @@ class Purchase extends HookConsumerWidget {
               mainAxisSize: MainAxisSize.max,
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                if (purItemsCheckedCounter > 0)
-                  Padding(
-                      padding: const EdgeInsets.fromLTRB(20, 5, 0, 0),
-                      child: Text(
-                          '$purItemsCheckedCounter / ${purchase.purItems.length} items checked',
-                          softWrap: true,
-                          style: totalsStyle)),
+                Padding(
+                    padding: const EdgeInsets.fromLTRB(20, 5, 0, 0),
+                    child: Text(
+                        '$purItemsCheckedCounter / ${purchase.purItems.length} items checked',
+                        softWrap: true,
+                        style: purItemsCheckedCounter > 0
+                            ? totalsStyleGreen
+                            : totalsStyleGray)),
                 const Spacer(),
                 ...visualizeTotals(purchase, totals),
               ]),
@@ -74,7 +75,7 @@ class Purchase extends HookConsumerWidget {
   List<Widget> visualizeTotals(PurchaseDto purchase, PurchaseTotals totals) {
     if (purchase.show_qnty || purchase.show_price || purchase.show_weight) {
       return [
-        Text('Total:', style: totalsStyle),
+        Text('Total:', style: totalsStyleGreen),
         const SizedBox(width: 30),
         optionalTotal(
             "Qnty", purchase.show_qnty, qntyColumnWidth, totals.tQnty),

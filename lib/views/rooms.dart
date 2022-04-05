@@ -56,14 +56,15 @@ class Rooms extends HookConsumerWidget {
       );
     }
 
-    final roomsList = incoming.rooms.roomsSnapList;
+    final roomsList =
+        incoming.personNullable != null ? incoming.rooms.roomsSnapList : [];
 
     return Scaffold(
       backgroundColor: chatBackground,
       drawer: const Menu(),
       appBar: AppBar(
         title: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          titleText(socketConnected, "Shared Shopping List"),
+          titleText(true, "Shared Shopping List"),
           if (!socketConnected)
             Text(
               'connecting...',
@@ -108,6 +109,12 @@ class Rooms extends HookConsumerWidget {
               : '';
           final label = room.name;
 
+          final messagesUnread = incoming.rooms
+                  .getRoomMessagesForRoom(room.id)
+                  ?.getOnlyUnreadMessages()
+                  .length ??
+              0;
+
           String forceReRenderAfterPurItemFill =
               dateFormatterHmsMillis.format(DateTime.now());
           String key = room.id.toString() + '-' + forceReRenderAfterPurItemFill;
@@ -134,6 +141,15 @@ class Rooms extends HookConsumerWidget {
               style:
                   TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 14),
             ),
+            trailing: messagesUnread == 0
+                ? const SizedBox()
+                : CircleAvatar(
+                    backgroundColor: Colors.deepOrange.withOpacity(0.4),
+                    foregroundColor: Colors.white,
+                    radius: 10,
+                    child:
+                        Text('$messagesUnread', style: unreadMessagesTextStyle),
+                  ),
           );
         },
       ),

@@ -4,7 +4,7 @@
 
 import 'package:json_annotation/json_annotation.dart';
 
-part 'update_messages_read_dto.g.dart';
+part 'updated_messages_read_dto.g.dart';
 
 @JsonSerializable(
     checked: true,
@@ -33,8 +33,10 @@ class UpdatedMessagesReadDto {
 class UpdatedMessageReadDto {
   int id;
   List<int> persons_read;
+  int room;
 
-  UpdatedMessageReadDto({required this.id, required this.persons_read});
+  UpdatedMessageReadDto(
+      {required this.id, required this.persons_read, required this.room});
 
   factory UpdatedMessageReadDto.fromJson(Map<String, dynamic> json) =>
       _$UpdatedMessageReadDtoFromJson(json);
