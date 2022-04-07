@@ -58,10 +58,10 @@ class NotificationClickedHandler {
         .listen((String? payload) async {
       // await Navigator.pushNamed(context, '/secondPage');
       if (payload != null) {
-        final int? roomId = int.tryParse(payload!);
+        final int? roomId = int.tryParse(payload);
         if (roomId != null) {
           await Navigator.pushNamed(context, currentRoomPath,
-              arguments: roomId!);
+              arguments: roomId);
         }
       }
     });

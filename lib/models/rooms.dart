@@ -1,10 +1,9 @@
-import 'package:shopping_list_flutter/network/incoming/purchase/pur_item_filled_dto.dart';
-import 'package:shopping_list_flutter/network/outgoing/outgoing_handlers.dart';
-import 'package:shopping_list_flutter/notifications/notifications_plugin.dart';
-
 import '../network/incoming/message/message_dto.dart';
 import '../network/incoming/person/person_dto.dart';
+import '../network/incoming/purchase/pur_item_filled_dto.dart';
 import '../network/incoming/room/room_dto.dart';
+import '../network/outgoing/outgoing_handlers.dart';
+import '../notifications/notifications_plugin.dart';
 import '../utils/static_logger.dart';
 import 'room_messages.dart';
 
@@ -120,7 +119,7 @@ class Rooms {
       RoomDto? room = roomById[roomId];
       PersonDto? author =
           room?.users.firstWhere((x) => x.id == msgReceived.user);
-      String roomName = room != null ? room!.name : 'ROOM_NAME_UNKNOWN';
+      String roomName = room != null ? room.name : 'ROOM_NAME_UNKNOWN';
       NotificationsPlugin.instance.notificator
           .showIncomingMessage(msgReceived, roomName, author);
     }
@@ -146,7 +145,7 @@ class Rooms {
       RoomDto? room = roomById[purItemFilled.room];
       PersonDto? author =
           room?.users.firstWhere((x) => x.id == purItemFilled.person_bought);
-      String roomName = room != null ? room!.name : 'ROOM_NAME_UNKNOWN';
+      String roomName = room != null ? room.name : 'ROOM_NAME_UNKNOWN';
       NotificationsPlugin.instance.notificator
           .showPurItemFilled(purItemFilled, roomName, author);
     }

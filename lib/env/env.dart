@@ -6,7 +6,7 @@ class Env {
   // app runtime variables
   String? myAuthToken;
 
-  static bool forceHeroku = true;
+  static bool forceHeroku = false;
   static bool mi9se = false;
 
   static Env current = forceHeroku

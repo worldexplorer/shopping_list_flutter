@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:shopping_list_flutter/network/incoming/purchase/pur_item_dto.dart';
 
 import '../../network/incoming/incoming_state.dart';
+import '../../network/incoming/purchase/pur_item_dto.dart';
 import '../../network/incoming/purchase/purchase_dto.dart';
 import '../../utils/theme.dart';
 import '../../utils/ui_state.dart';

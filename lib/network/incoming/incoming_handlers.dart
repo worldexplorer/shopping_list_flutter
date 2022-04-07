@@ -1,10 +1,9 @@
-import 'package:shopping_list_flutter/network/incoming/person/registration_confirmed_dto.dart';
-import 'package:shopping_list_flutter/network/incoming/purchase/pur_item_filled_dto.dart';
-
 import '../../utils/static_logger.dart';
 import '../../views/purchase/purchase_item.dart';
 import '../common/typing_dto.dart';
 import '../connection_state.dart';
+import '../incoming/person/registration_confirmed_dto.dart';
+import '../incoming/purchase/pur_item_filled_dto.dart';
 import '../outgoing/outgoing_handlers.dart';
 import 'incoming_state.dart';
 import 'message/archived_messages_dto.dart';
@@ -187,7 +186,7 @@ class IncomingHandlers {
 
       final roomMessages = incomingState.rooms.getRoomMessagesForRoom(roomId);
       if (roomMessages != null) {
-        roomMessages!.filledInitially = true;
+        roomMessages.filledInitially = true;
       }
 
       if (addedOrChangedCounter > 0) {

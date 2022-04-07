@@ -2,8 +2,8 @@
 
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:shopping_list_flutter/network/incoming/person/person_dto.dart';
 
+import '../../../network/incoming/person/person_dto.dart';
 import '../network/incoming/incoming_state.dart';
 import '../utils/static_logger.dart';
 import '../utils/ui_state.dart';

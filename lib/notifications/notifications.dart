@@ -1,8 +1,8 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:shopping_list_flutter/network/incoming/purchase/pur_item_filled_dto.dart';
 
 import '../network/incoming/message/message_dto.dart';
 import '../network/incoming/person/person_dto.dart';
+import '../network/incoming/purchase/pur_item_filled_dto.dart';
 
 class Notifications {
   late FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
@@ -21,8 +21,8 @@ class Notifications {
 
   showIncomingMessage(MessageDto msg, String roomName, PersonDto? author) {
     Person coworker = Person(
-      name: author != null ? author!.name : 'AUTHOR_UNKNOWN',
-      key: author != null ? 'personId:${author!.id}' : 'AUTHOR_UNKNOWN',
+      name: author != null ? author.name : 'AUTHOR_UNKNOWN',
+      key: author != null ? 'personId:${author.id}' : 'AUTHOR_UNKNOWN',
       // uri: author != null ? author!.name : 'AUTHOR_UNKNOWN',
       // icon: FlutterBitmapAssetAndroidIcon('icons/coworker.png'),
     );
