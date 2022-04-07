@@ -59,15 +59,23 @@ class OutgoingHandlers {
     StaticLogger.append('<< REGISTER_CONFIRM [$json]');
   }
 
-  sendLogin(String auth) {
+  sendLogin(String auth, String invoker) {
     final msig = 'sendLogin($auth)';
     if (!isConnected(msig)) return;
 
     final json = LoginDto(
       auth: auth,
     ).toJson();
+
+    if (incomingState.waitingForLoginResponse) {
+      StaticLogger.append(
+          '-- LOGIN [$json] ($invoker/already waitingForLoginResponse)');
+      return;
+    }
+
+    incomingState.waitingForLoginResponse = true;
     connectionState.socket.emit("login", json);
-    StaticLogger.append('<< LOGIN [$json]');
+    StaticLogger.append('<< LOGIN [$json] ($invoker)');
   }
 
   sendTyping(bool typing) {

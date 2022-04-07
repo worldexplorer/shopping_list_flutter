@@ -64,17 +64,18 @@ class Login extends HookConsumerWidget {
 
     if (incoming.auth != null) {
       final auth = incoming.auth!;
-      Future.delayed(const Duration(milliseconds: 200), () async {
-        incoming.auth = null;
-        Navigator.pushNamed(context, router.rooms.path);
-      });
 
       timer.stopTimer();
-      outgoingHandlers.sendLogin(auth);
+      outgoingHandlers.sendLogin(auth, 'Login/auth');
       Env.current.myAuthToken = auth;
 
       isNetworkPending.value = false;
       MySharedPreferences.setMyAuthToken(auth);
+
+      Navigator.pushNamed(context, router.rooms.path);
+      Future.delayed(const Duration(milliseconds: 200), () async {
+        incoming.auth = null;
+      });
     }
 
     _handleSendCode() async {
@@ -105,7 +106,7 @@ class Login extends HookConsumerWidget {
     _handleTryAnonymous() {
       timer.stopTimer();
       Env.current.myAuthToken = anonymousAuthToken;
-      outgoingHandlers.sendLogin(anonymousAuthToken);
+      outgoingHandlers.sendLogin(anonymousAuthToken, 'Login/anonymous');
       Navigator.pushNamed(context, router.rooms.path);
     }
 

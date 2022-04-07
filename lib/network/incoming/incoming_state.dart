@@ -27,6 +27,8 @@ class IncomingState extends ChangeNotifier {
     notifyListeners();
   }
 
+  bool waitingForLoginResponse = false;
+
   RegistrationNeedsCodeDto? _needsCode;
   RegistrationNeedsCodeDto? get needsCode => _needsCode;
   set needsCode(RegistrationNeedsCodeDto? val) {

@@ -49,6 +49,7 @@ class IncomingHandlers {
   void onPerson(data) {
     try {
       StaticLogger.append('   > PERSON [$data]');
+      incomingState.waitingForLoginResponse = false;
       final personParsed = PersonDto.fromJson(data);
       incomingState.personReceived = personParsed;
     } catch (e) {
