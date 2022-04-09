@@ -4,8 +4,8 @@ import '../network/incoming/message/message_dto.dart';
 import '../network/incoming/purchase/pur_item_dto.dart';
 import '../network/incoming/purchase/pur_item_filled_dto.dart';
 import '../utils/static_logger.dart';
-import '../utils/theme.dart';
 import '../views/chat/message_widget.dart';
+import '../views/theme.dart';
 
 class RoomMessages {
   final Map<int, MessageDto> messagesDtoUnreadById = <int, MessageDto>{};

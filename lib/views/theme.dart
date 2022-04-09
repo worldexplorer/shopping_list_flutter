@@ -149,3 +149,73 @@ Text subtitleText(bool socketConnected, String text) {
 const unreadMessagesTextStyle = TextStyle(
   fontSize: 11,
 );
+
+final TextStyle ctxMenuItemTextStyle = TextStyle(
+  // GoogleFonts.poppins(
+  color: Colors.white.withOpacity(0.8),
+  fontSize: 15,
+);
+
+const TextStyle snackBarErrorTextStyle = TextStyle(
+  // GoogleFonts.poppins(
+  color: Colors.white,
+  fontSize: 20,
+);
+
+final TextStyle dismissibleTextStyle = TextStyle(
+  // GoogleFonts.poppins(
+  color: Colors.white.withOpacity(0.8),
+  fontSize: 18,
+);
+
+final TextStyle snackBarDismissedTextStyle = TextStyle(
+  // GoogleFonts.poppins(
+  color: Colors.red.withOpacity(0.8),
+  fontSize: 18,
+);
+
+TextStyle messageUserStyle(bool isMe) {
+  return TextStyle(
+      // GoogleFonts.manrope(
+      color: isMe ? Colors.grey : Colors.green,
+      fontSize: 15,
+      fontWeight: FontWeight.bold);
+}
+
+TextStyle messageContentStyle(bool isMe) {
+  return TextStyle(
+    // GoogleFonts.poppins(
+    color: Colors.white.withOpacity(isMe ? 1 : 0.8),
+    fontSize: 15,
+  );
+}
+
+TextStyle messageReadStatusStyle(bool isMe) {
+  return TextStyle(
+    //  GoogleFonts.poppins(
+    color: Colors.grey.withOpacity(isMe ? 1 : 0.8),
+    fontSize: 10,
+  );
+}
+
+TextStyle messageEditedStyle(bool isMe) {
+  return TextStyle(
+      // GoogleFonts.poppins(
+      color: Colors.yellowAccent.withOpacity(isMe ? 1 : 0.8),
+      fontSize: 10,
+      fontStyle: FontStyle.italic);
+}
+
+const TextStyle messageTimeAgoStyle = TextStyle(
+    // GoogleFonts.manrope(
+    color: Colors.grey,
+    fontSize: 10,
+    fontWeight: FontWeight.w300);
+
+TextStyle purchaseNameStyle(bool isMe) {
+  return TextStyle(
+    // GoogleFonts.poppins(
+    color: Colors.white.withOpacity(isMe ? 1 : 0.8),
+    fontSize: 15,
+  );
+}

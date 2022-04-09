@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:shopping_list_flutter/utils/theme.dart';
+import 'package:shopping_list_flutter/views/theme.dart';
 
 final staticLoggerProvider = ChangeNotifierProvider<StaticLoggerNotifier>(
     (ref) => StaticLoggerNotifier.instance);

@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:shopping_list_flutter/utils/static_logger.dart';
-import 'package:shopping_list_flutter/utils/theme.dart';
 import 'package:shopping_list_flutter/utils/ui_state.dart';
+import 'package:shopping_list_flutter/views/theme.dart';
 import 'package:shopping_list_flutter/widget/context_menu.dart';
 
 class Log extends HookConsumerWidget {

@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:shopping_list_flutter/utils/static_logger.dart';
-import 'package:shopping_list_flutter/views/purchase/puritem_states.dart';
 
 import '../../network/incoming/incoming_state.dart';
 import '../../network/incoming/purchase/pur_item_dto.dart';
 import '../../network/incoming/purchase/purchase_dto.dart';
-import '../../utils/theme.dart';
+import '../../utils/static_logger.dart';
 import '../../utils/ui_state.dart';
+import '../theme.dart';
 import 'grouping.dart';
 import 'pgroup_edit.dart';
 import 'purchase_item_edit.dart';
+import 'puritem_states.dart';
 
 class PurchaseEdit extends HookConsumerWidget {
   late PurchaseDto purchaseClone;

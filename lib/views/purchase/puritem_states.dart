@@ -30,7 +30,7 @@ Icon iconByBought(int bought) {
     case BOUGHT_HALFODNE:
       return const Icon(
         Icons.wine_bar,
-        color: Colors.brown,
+        color: Colors.purpleAccent,
       );
 
     case BOUGHT_QUESTION:

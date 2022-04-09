@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../utils/static_logger.dart';
-import '../../utils/theme.dart';
 import '../../utils/ui_state.dart';
 import '../router.dart';
+import '../theme.dart';
 
 class Menu extends HookConsumerWidget {
   const Menu({Key? key}) : super(key: key);

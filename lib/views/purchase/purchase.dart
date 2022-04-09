@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../network/incoming/incoming_state.dart';
 import '../../network/incoming/purchase/pur_item_dto.dart';
 import '../../network/incoming/purchase/purchase_dto.dart';
-import '../../utils/theme.dart';
 import '../../utils/ui_state.dart';
+import '../theme.dart';
 import 'grouping.dart';
 import 'purchase_item.dart';
 import 'purchase_totals.dart';
@@ -48,12 +47,7 @@ class Purchase extends HookConsumerWidget {
         // mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(purchase.name,
-              softWrap: true,
-              style: GoogleFonts.poppins(
-                color: Colors.white.withOpacity(isMe ? 1 : 0.8),
-                fontSize: 15,
-              )),
+          Text(purchase.name, softWrap: true, style: purchaseNameStyle(isMe)),
           ...flatOrGrouped(grouping, purchase, fillPurItem),
           Row(
               mainAxisSize: MainAxisSize.max,

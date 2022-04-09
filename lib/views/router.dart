@@ -8,7 +8,12 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../network/incoming/incoming.dart';
 import '../utils/ui_state.dart';
-import 'views.dart';
+import 'chat/chat_wrapper_slivers.dart';
+import 'home.dart';
+import 'log.dart';
+import 'login/login.dart';
+import 'rooms.dart';
+import 'settings.dart';
 
 final routerProvider = ChangeNotifierProvider<Router>((ref) => Router(ref));
 

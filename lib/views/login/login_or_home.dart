@@ -7,8 +7,9 @@ import '../../env/env.dart';
 import '../../network/connection.dart';
 import '../../network/incoming/incoming_state.dart';
 import '../../utils/my_snack_bar.dart';
-import '../../utils/theme.dart';
+import '../../utils/ui_state.dart';
 import '../router.dart';
+import '../theme.dart';
 import 'half-tiger.dart';
 
 class LoginOrHome extends HookConsumerWidget {
@@ -16,7 +17,7 @@ class LoginOrHome extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // final ui = ref.watch(uiStateProvider);
+    final ui = ref.watch(uiStateProvider);
 
     final connection = ref.watch(connectionStateProvider(Env.current));
     if (connection.connectionState.socketConnected == false) {
@@ -35,10 +36,10 @@ class LoginOrHome extends HookConsumerWidget {
 
     if (shouldLogIn && isLoginSent.value == false) {
       isLoginSent.value = true;
-      // Future.delayed(const Duration(milliseconds: 200), () async {
-      outgoingHandlers.sendLogin(Env.current.myAuthToken!, 'LoginOrHome');
-      // ui.rebuild(); // FIXME: I may not need your help
-      // });
+      Future.delayed(const Duration(milliseconds: 200), () async {
+        outgoingHandlers.sendLogin(Env.current.myAuthToken!, 'LoginOrHome');
+        ui.rebuild(); // FIXME: emulator logs in via local stored authToken here
+      });
     }
 
     // outgoing.login() should receive incoming.onPerson()

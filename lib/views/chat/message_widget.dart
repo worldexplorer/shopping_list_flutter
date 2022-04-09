@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../network/incoming/incoming_state.dart';
@@ -7,6 +6,7 @@ import '../../network/incoming/message/message_dto.dart';
 import '../../utils/ui_state.dart';
 import '../../views/purchase/purchase.dart';
 import '../../views/purchase/purchase_edit.dart';
+import '../theme.dart';
 import 'timeago.dart';
 
 class MessageWidget extends ConsumerWidget {
@@ -28,8 +28,8 @@ class MessageWidget extends ConsumerWidget {
     final String personReadStatus =
         '${message.persons_read.length} / ${incoming.rooms.currentRoomUsersOrEmpty.length}';
 
-    final int personsUnread =
-        incoming.rooms.currentRoomUsersOrEmpty.length - message.persons_read.length;
+    final int personsUnread = incoming.rooms.currentRoomUsersOrEmpty.length -
+        message.persons_read.length;
     final bool allParticipantsReceived = personsUnread == 0;
 
     final ui = ref.watch(uiStateProvider);
@@ -43,13 +43,8 @@ class MessageWidget extends ConsumerWidget {
         !incoming.editingNewPurchase(this)
             ? Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 10),
-                child: Text(
-                  isMe ? 'Me' : message.user_name,
-                  style: GoogleFonts.manrope(
-                      color: isMe ? Colors.grey : Colors.green,
-                      fontSize: 15,
-                      fontWeight: FontWeight.bold),
-                ),
+                child: Text(isMe ? 'Me' : message.user_name,
+                    style: messageUserStyle(isMe)),
               )
             : const SizedBox(height: 10),
         const SizedBox(height: 2),
@@ -89,10 +84,7 @@ class MessageWidget extends ConsumerWidget {
                         : Text(
                             message.content,
                             softWrap: true,
-                            style: GoogleFonts.poppins(
-                              color: Colors.white.withOpacity(isMe ? 1 : 0.8),
-                              fontSize: 15,
-                            ),
+                            style: messageContentStyle(isMe),
                           ),
                     ...messageStatus(incoming.editingNewPurchase(this),
                         allParticipantsReceived, personReadStatus),
@@ -126,28 +118,19 @@ class MessageWidget extends ConsumerWidget {
             const SizedBox(width: 5),
             Text(
               personReadStatus,
-              style: GoogleFonts.poppins(
-                color: Colors.grey.withOpacity(isMe ? 1 : 0.8),
-                fontSize: 10,
-              ),
+              style: messageReadStatusStyle(isMe),
             ),
             const SizedBox(width: 15),
             Text(
               message.edited ? 'edited' : '',
-              style: GoogleFonts.poppins(
-                  color: Colors.yellowAccent.withOpacity(isMe ? 1 : 0.8),
-                  fontSize: 10,
-                  fontStyle: FontStyle.italic),
+              style: messageEditedStyle(isMe),
             ),
             const SizedBox(width: 10),
             Text(
               message.edited
                   ? timeAgoSinceDate(message.date_updated)
                   : timeAgoSinceDate(message.date_created),
-              style: GoogleFonts.manrope(
-                  color: Colors.grey,
-                  fontSize: 10,
-                  fontWeight: FontWeight.w300),
+              style: messageTimeAgoStyle,
             ),
           ],
         )

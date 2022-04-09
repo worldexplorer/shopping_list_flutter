@@ -1,16 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../hooks/scroll_controller_for_animation.dart';
 import '../../network/incoming/incoming_state.dart';
 import '../../utils/static_logger.dart';
-import '../../utils/theme.dart';
 import '../../utils/ui_state.dart';
 import '../../views/chat/message_widget.dart';
 import '../../widget/context_menu.dart';
+import '../theme.dart';
 
 class ChatMessages extends HookConsumerWidget {
   const ChatMessages({Key? key}) : super(key: key);
@@ -50,16 +49,6 @@ class ChatMessages extends HookConsumerWidget {
       List<MessageWidget> msgWidgets, index) {
     final ui = ref.watch(uiStateProvider);
     final incoming = ref.watch(incomingStateProvider);
-
-    final TextStyle dismissibleTextStyle = GoogleFonts.poppins(
-      color: Colors.white.withOpacity(0.8),
-      fontSize: 18,
-    );
-
-    final TextStyle snackBarDismissedTextStyle = GoogleFonts.poppins(
-      color: Colors.red.withOpacity(0.8),
-      fontSize: 18,
-    );
 
     final msgWidget = msgWidgets[index];
     return Dismissible(

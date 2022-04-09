@@ -4,10 +4,10 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../hooks/scroll_controller_for_animation.dart';
 import '../../network/incoming/incoming_state.dart';
-import '../../utils/theme.dart';
 import '../../utils/ui_state.dart';
+import '../log.dart';
 import '../router.dart';
-import '../views.dart';
+import '../theme.dart';
 import 'chat_messages.dart';
 import 'message_input.dart';
 

@@ -1,6 +1,7 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+
+import '../views/theme.dart';
 
 class CtxMenuItem {
   String title;
@@ -16,11 +17,6 @@ class CtxMenuItem {
     // this.icon,
   );
 }
-
-final TextStyle ctxMenuItemTextStyle = GoogleFonts.poppins(
-  color: Colors.white.withOpacity(0.8),
-  fontSize: 15,
-);
 
 // https://stackoverflow.com/questions/50758121/how-dynamically-create-and-show-a-popup-menu-in-flutter
 showPopupMenu({

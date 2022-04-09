@@ -1,6 +1,6 @@
 // https://stackoverflow.com/questions/2799097/how-can-i-detect-when-an-android-application-is-running-in-the-emulator
 
-import 'package:shopping_list_flutter/env/device_info.dart';
+import 'package:shopping_list_flutter/_garbage/device_info.dart';
 
 class DeviceEmulatorDetector {
   static late DeviceInfo deviceInfo;

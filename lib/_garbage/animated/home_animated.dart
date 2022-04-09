@@ -6,9 +6,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import '../../utils/theme.dart';
 import '../../utils/ui_state.dart';
-import '../views.dart';
+import '../menu.dart';
+import '../rooms.dart';
+import '../theme.dart';
 
 class Home extends HookConsumerWidget {
   const Home({Key? key}) : super(key: key);

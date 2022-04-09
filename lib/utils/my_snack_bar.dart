@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../network/incoming/incoming_state.dart';
+import '../views/theme.dart';
 
 void mySnackBar(
     BuildContext context,
@@ -16,11 +16,6 @@ void mySnackBar(
 
   //https://stackoverflow.com/questions/47592301/setstate-or-markneedsbuild-called-during-build
   SchedulerBinding.instance?.addPostFrameCallback((_) {
-    final TextStyle snackBarErrorTextStyle = GoogleFonts.poppins(
-      color: Colors.white,
-      fontSize: 20,
-    );
-
     final snackControl = ScaffoldMessenger.of(context);
     // final snackControl = messengerKey.currentState;
 

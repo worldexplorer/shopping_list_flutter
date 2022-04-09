@@ -3,12 +3,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:shopping_list_flutter/views/router.dart';
 
 import '../notifications/notification_clicked_handler.dart';
+import 'menu.dart';
+import 'router.dart';
 // import '../notifications/notifications_plugin.dart';
-import '../utils/theme.dart';
-import 'views.dart';
+import 'theme.dart';
 
 class Home extends HookConsumerWidget {
   const Home({Key? key}) : super(key: key);
