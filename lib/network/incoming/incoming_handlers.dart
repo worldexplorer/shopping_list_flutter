@@ -1,5 +1,5 @@
 import '../../utils/static_logger.dart';
-import '../../views/purchase/purchase_item.dart';
+import '../../views/purchase/puritem_states.dart';
 import '../common/typing_dto.dart';
 import '../connection_state.dart';
 import '../incoming/person/registration_confirmed_dto.dart';

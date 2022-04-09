@@ -27,6 +27,8 @@ class BasePurchaseDto {
   bool show_weight;
   bool show_state_unknown;
   bool show_state_stop;
+  bool show_state_halfdone;
+  bool show_state_question;
 
   List<int> persons_can_edit;
   List<int> persons_can_fill;
@@ -42,6 +44,8 @@ class BasePurchaseDto {
     required this.show_weight,
     required this.show_state_unknown,
     required this.show_state_stop,
+    required this.show_state_halfdone,
+    required this.show_state_question,
     required this.persons_can_edit,
     required this.persons_can_fill,
   });

@@ -72,9 +72,9 @@ class Login extends HookConsumerWidget {
       isNetworkPending.value = false;
       MySharedPreferences.setMyAuthToken(auth);
 
-      Navigator.pushNamed(context, router.rooms.path);
       Future.delayed(const Duration(milliseconds: 200), () async {
         incoming.auth = null;
+        Navigator.pushNamed(context, router.rooms.path);
       });
     }
 

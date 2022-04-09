@@ -23,6 +23,10 @@ BasePurchaseDto _$BasePurchaseDtoFromJson(Map<String, dynamic> json) =>
           show_state_unknown:
               $checkedConvert('show_state_unknown', (v) => v as bool),
           show_state_stop: $checkedConvert('show_state_stop', (v) => v as bool),
+          show_state_halfdone:
+              $checkedConvert('show_state_halfdone', (v) => v as bool),
+          show_state_question:
+              $checkedConvert('show_state_question', (v) => v as bool),
           persons_can_edit: $checkedConvert('persons_can_edit',
               (v) => (v as List<dynamic>).map((e) => e as int).toList()),
           persons_can_fill: $checkedConvert('persons_can_fill',
@@ -44,6 +48,8 @@ Map<String, dynamic> _$BasePurchaseDtoToJson(BasePurchaseDto instance) =>
       'show_weight': instance.show_weight,
       'show_state_unknown': instance.show_state_unknown,
       'show_state_stop': instance.show_state_stop,
+      'show_state_halfdone': instance.show_state_halfdone,
+      'show_state_question': instance.show_state_question,
       'persons_can_edit': instance.persons_can_edit,
       'persons_can_fill': instance.persons_can_fill,
     };

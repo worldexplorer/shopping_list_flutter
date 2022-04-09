@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:shopping_list_flutter/utils/static_logger.dart';
+import 'package:shopping_list_flutter/views/purchase/puritem_states.dart';
 
 import '../../network/incoming/incoming_state.dart';
 import '../../network/incoming/purchase/pur_item_dto.dart';
@@ -174,7 +175,7 @@ class PurchaseEdit extends HookConsumerWidget {
                   Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        toggle('Groups', purchase.show_pgroup,
+                        toggleText('Groups', purchase.show_pgroup,
                             (bool newShowGroups) {
                           purchase.show_pgroup = newShowGroups;
                           ui.newPurchaseSettings.showPgroups = newShowGroups;
@@ -188,24 +189,37 @@ class PurchaseEdit extends HookConsumerWidget {
                         // Padding(
                         //     padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
                         //     child:
-                        toggle('Sequence', purchase.show_serno,
+                        toggleText('Sequence', purchase.show_serno,
                             (bool newShowSerno) {
                           purchase.show_serno = newShowSerno;
                           ui.newPurchaseSettings.showSerno = newShowSerno;
                         }, ui),
-                        toggle('Waiting state', purchase.show_state_unknown,
+                        toggleIconText(iconByBought(BOUGHT_UNKNOWN),
+                            'Waiting state', purchase.show_state_unknown,
                             (bool newShowThreeState) {
                           purchase.show_state_unknown = newShowThreeState;
                           ui.newPurchaseSettings.showStateUnknown =
                               newShowThreeState;
                         }, ui),
-                        toggle('Stop state', purchase.show_state_stop,
-                            (bool newShowStateStop) {
+                        toggleIconText(iconByBought(BOUGHT_STOP), 'Stop state',
+                            purchase.show_state_stop, (bool newShowStateStop) {
                           purchase.show_state_stop = newShowStateStop;
                           ui.newPurchaseSettings.showStateStop =
                               newShowStateStop;
-                          StaticLogger.append(
-                              'purchase.show_state_stop[${purchase.show_state_stop}]');
+                        }, ui),
+                        toggleIconText(iconByBought(BOUGHT_QUESTION),
+                            'Question state', purchase.show_state_question,
+                            (bool newShowStateQuestion) {
+                          purchase.show_state_question = newShowStateQuestion;
+                          ui.newPurchaseSettings.showStateQuestion =
+                              newShowStateQuestion;
+                        }, ui),
+                        toggleIconText(iconByBought(BOUGHT_HALFODNE),
+                            'Half Done', purchase.show_state_halfdone,
+                            (bool newShowStateHalfDone) {
+                          purchase.show_state_halfdone = newShowStateHalfDone;
+                          ui.newPurchaseSettings.showStateHalfDone =
+                              newShowStateHalfDone;
                         }, ui),
                       ]),
                   Expanded(
@@ -233,19 +247,19 @@ class PurchaseEdit extends HookConsumerWidget {
                             child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  toggle('Quantity', purchase.show_qnty,
+                                  toggleText('Quantity', purchase.show_qnty,
                                       (bool newShowQnty) {
                                     purchase.show_qnty = newShowQnty;
                                     ui.newPurchaseSettings.showQnty =
                                         newShowQnty;
                                   }, ui),
-                                  toggle('Total', purchase.show_price,
+                                  toggleText('Total', purchase.show_price,
                                       (bool newShowPrice) {
                                     purchase.show_price = newShowPrice;
                                     ui.newPurchaseSettings.showPrice =
                                         newShowPrice;
                                   }, ui),
-                                  toggle('Weight', purchase.show_weight,
+                                  toggleText('Weight', purchase.show_weight,
                                       (bool newShowWeight) {
                                     purchase.show_weight = newShowWeight;
                                     ui.newPurchaseSettings.showWeight =
@@ -292,8 +306,31 @@ class PurchaseEdit extends HookConsumerWidget {
         ]);
   }
 
-  Widget toggle(
+  Widget toggleText(
       String title, bool value, Function(bool newValue) onChange, UiState ui) {
+    return toggle(Text(title, style: purchaseStyle), value, onChange, ui);
+  }
+
+  Widget toggleIconText(Icon icon, String title, bool value,
+      Function(bool newValue) onChange, UiState ui) {
+    return toggle(
+        Row(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              icon,
+              const SizedBox(
+                width: 5,
+              ),
+              Text(title, style: purchaseStyle)
+            ]),
+        value,
+        onChange,
+        ui);
+  }
+
+  Widget toggle(Widget textOrIcon, bool value, Function(bool newValue) onChange,
+      UiState ui) {
     return Row(
       mainAxisSize: MainAxisSize.min,
       mainAxisAlignment: MainAxisAlignment.start,
@@ -313,7 +350,7 @@ class PurchaseEdit extends HookConsumerWidget {
             onChange(!value);
             ui.rebuild();
           },
-          child: Text(title, style: purchaseStyle),
+          child: textOrIcon,
           // )
         ),
       ],

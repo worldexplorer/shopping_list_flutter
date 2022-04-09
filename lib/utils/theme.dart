@@ -86,7 +86,8 @@ const double weightColumnWidth = 75;
 
 const double iconSize = 24;
 
-TextStyle logRecordStyle = GoogleFonts.poppins(
+TextStyle logRecordStyle = const TextStyle(
+  //GoogleFonts.poppins(
   color: Colors.white,
   fontSize: 13.0,
   // letterSpacing: 1,
@@ -110,7 +111,8 @@ const loginScreenTextStyle = TextStyle(
 );
 
 TextStyle appBarTextStyle(bool socketConnected) {
-  return GoogleFonts.manrope(
+  return TextStyle(
+    //GoogleFonts.manrope(
     color: whiteOrConnecting(socketConnected),
     fontWeight: FontWeight.w600,
     fontSize: 17,
@@ -129,7 +131,8 @@ Text titleText(bool socketConnected, String text) {
 }
 
 TextStyle chatSliverSubtitleStyle([bool socketConnected = true]) {
-  return GoogleFonts.manrope(
+  return TextStyle(
+    // GoogleFonts.manrope(
     color: whiteOrConnecting(socketConnected).withOpacity(0.8),
     fontWeight: FontWeight.w400,
     fontSize: 13,

@@ -5,6 +5,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '../../network/incoming/purchase/pur_item_dto.dart';
 import '../../network/incoming/purchase/purchase_dto.dart';
 import '../../utils/theme.dart';
+import 'puritem_states.dart';
 
 class PurchaseItem extends HookConsumerWidget {
   final PurchaseDto purchase;
@@ -63,8 +64,12 @@ class PurchaseItem extends HookConsumerWidget {
 
     onPurItemTap() {
       final prevBought = purItem.bought;
-      final nextBought = cycle0123(
-          prevBought, purchase.show_state_unknown, purchase.show_state_stop);
+      final nextBought = cycle012345(
+          prevBought,
+          purchase.show_state_unknown,
+          purchase.show_state_stop,
+          purchase.show_state_halfdone,
+          purchase.show_state_question);
       purItem.bought = nextBought;
       fillPurItem(purItem);
     }
@@ -132,35 +137,6 @@ class PurchaseItem extends HookConsumerWidget {
         ;
   }
 
-  Icon iconByBought(int bought) {
-    switch (bought) {
-      case BOUGHT_CHECKED:
-        return const Icon(
-          Icons.check_circle,
-          color: Colors.lightGreenAccent,
-        );
-
-      case BOUGHT_UNKNOWN:
-        return const Icon(
-          Icons.query_builder,
-          color: Colors.yellowAccent,
-        );
-
-      case BOUGHT_STOP:
-        return const Icon(
-          Icons.stop_circle_outlined,
-          color: Colors.red,
-        );
-
-      case BOUGHT_UNCHECKED:
-      default:
-        return const Icon(
-          Icons.check_circle_outline_rounded,
-          color: Colors.grey,
-        );
-    }
-  }
-
   Widget optionalNumberInput(bool showNumberInput, double width,
       TextEditingController textInputCtrl, String hintText) {
     return showNumberInput
@@ -202,79 +178,4 @@ List<Widget> qntyColumns(
       const SizedBox(width: 3),
     ];
   }
-}
-
-const int BOUGHT_UNCHECKED = 0;
-const int BOUGHT_CHECKED = 1;
-const int BOUGHT_UNKNOWN = 2;
-const int BOUGHT_STOP = 3;
-
-int cycle0123(int current, bool show_unknown, bool show_stop) {
-  // 0:unchecked => 1:checked => 2:unknown => 3:stop => 0
-  switch (current) {
-    case BOUGHT_UNCHECKED:
-      return BOUGHT_CHECKED;
-
-    case BOUGHT_CHECKED:
-      if (show_unknown) {
-        return BOUGHT_UNKNOWN;
-      }
-      if (show_stop) {
-        return BOUGHT_STOP;
-      }
-      return BOUGHT_UNCHECKED;
-
-    case BOUGHT_UNKNOWN:
-      if (show_stop) {
-        return BOUGHT_STOP;
-      }
-      return BOUGHT_UNCHECKED;
-
-    case BOUGHT_STOP:
-      return BOUGHT_UNCHECKED;
-  }
-
-  return BOUGHT_UNCHECKED;
-}
-
-int cycle0231(current, bool show_unknown, bool show_stop) {
-  // 0:unchecked => 2:unknown => 3:stop => 1:checked => 0
-  switch (current) {
-    case BOUGHT_UNCHECKED:
-      if (show_unknown) {
-        return BOUGHT_UNKNOWN;
-      }
-      if (show_stop) {
-        return BOUGHT_STOP;
-      }
-      return BOUGHT_CHECKED;
-
-    case BOUGHT_UNKNOWN:
-      if (show_stop) {
-        return BOUGHT_STOP;
-      }
-      return BOUGHT_CHECKED;
-
-    case BOUGHT_STOP:
-      return BOUGHT_CHECKED;
-
-    case BOUGHT_CHECKED:
-      return BOUGHT_UNCHECKED;
-  }
-  return BOUGHT_UNCHECKED;
-}
-
-String bought2str(int current) {
-  switch (current) {
-    case BOUGHT_UNCHECKED:
-      return "BOUGHT_UNCHECKED";
-    case BOUGHT_CHECKED:
-      return "BOUGHT_CHECKED";
-    case BOUGHT_UNKNOWN:
-      return "BOUGHT_UNKNOWN";
-    case BOUGHT_STOP:
-      return "BOUGHT_STOP";
-  }
-
-  return "BOUGHT_UNRESOLVED";
 }

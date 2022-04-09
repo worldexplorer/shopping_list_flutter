@@ -19,6 +19,8 @@ EditPurchaseDto _$EditPurchaseDtoFromJson(Map<String, dynamic> json) =>
       show_weight: json['show_weight'],
       show_state_unknown: json['show_state_unknown'],
       show_state_stop: json['show_state_stop'],
+      show_state_halfdone: json['show_state_halfdone'],
+      show_state_question: json['show_state_question'],
       persons_can_edit: json['persons_can_edit'],
       persons_can_fill: json['persons_can_fill'],
       purItems: (json['purItems'] as List<dynamic>)
@@ -38,6 +40,8 @@ Map<String, dynamic> _$EditPurchaseDtoToJson(EditPurchaseDto instance) =>
       'show_weight': instance.show_weight,
       'show_state_unknown': instance.show_state_unknown,
       'show_state_stop': instance.show_state_stop,
+      'show_state_halfdone': instance.show_state_halfdone,
+      'show_state_question': instance.show_state_question,
       'persons_can_edit': instance.persons_can_edit,
       'persons_can_fill': instance.persons_can_fill,
       'id': instance.id,

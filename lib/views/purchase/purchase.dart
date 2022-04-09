@@ -11,6 +11,7 @@ import '../../utils/ui_state.dart';
 import 'grouping.dart';
 import 'purchase_item.dart';
 import 'purchase_totals.dart';
+import 'puritem_states.dart';
 
 class Purchase extends HookConsumerWidget {
   final PurchaseDto purchase;

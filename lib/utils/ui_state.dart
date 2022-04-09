@@ -55,4 +55,6 @@ class NewPurchaseSettings {
   bool showWeight = false;
   bool showStateUnknown = true;
   bool showStateStop = true;
+  bool showStateHalfDone = true;
+  bool showStateQuestion = true;
 }
