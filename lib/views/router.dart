@@ -12,6 +12,7 @@ import 'chat/chat_wrapper_slivers.dart';
 import 'home.dart';
 import 'log.dart';
 import 'login/login.dart';
+import 'login/your_name.dart';
 import 'rooms.dart';
 import 'settings.dart';
 
@@ -24,7 +25,7 @@ class Router extends ChangeNotifier {
   late RouteMenuItem settings;
   late RouteMenuItem log;
   late RouteMenuItem login;
-  late RouteMenuItem sendSms;
+  late RouteMenuItem yourName;
   late ActionMenuItem reconnect;
   late ActionMenuItem getMessages;
   late ActionMenuItem refresh;
@@ -100,6 +101,14 @@ class Router extends ChangeNotifier {
         isSelectedInMenu: false,
         isVisibleInMenu: true);
 
+    yourName = RouteMenuItem(
+        page: Page.YourName,
+        title: 'Your Name',
+        path: '/yourName',
+        widget: (BuildContext context) => const YourName(),
+        isSelectedInMenu: false,
+        isVisibleInMenu: false);
+
     reconnect = ActionMenuItem(
         page: Page.Reconnect,
         title: 'Reconnect',
@@ -142,6 +151,7 @@ class Router extends ChangeNotifier {
       Page.Settings: settings,
       Page.Log: log,
       Page.Login: login,
+      Page.Login: yourName,
       Page.Reconnect: reconnect,
       Page.GetMessages: getMessages,
       Page.Refresh: refresh,
@@ -156,6 +166,7 @@ enum Page {
   Settings,
   Log,
   Login,
+  YourName,
   Reconnect,
   GetMessages,
   Refresh
