@@ -149,10 +149,7 @@ class Login extends HookConsumerWidget {
             const Center(
               child: Text(
                 "Shared Shopping List",
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: loginTitleStyle,
               ),
             ),
             SizedBox(height: size.height * 0.05),
@@ -200,7 +197,9 @@ class Login extends HookConsumerWidget {
               children: [
                 Expanded(
                   child: ElevatedButton(
-                    onPressed: canSendCode ? _handleSendCode : null,
+                    onPressed: canSendCode
+                        ? _handleSendCode
+                        : null, // null disables button
                     style: loginButtonStyle,
                     child: Text(
                       timer.isRunning
@@ -250,40 +249,40 @@ class Login extends HookConsumerWidget {
       ),
     );
   }
+}
 
-  Widget formDecorator(BuildContext context, Size size, Widget form) {
-    return Scaffold(
-      backgroundColor: chatBackground,
-      body:
-          // GestureDetector(
-          //   onTap: () {
-          //     Navigator.push(
-          //         context,
-          //         MaterialPageRoute(
-          //             builder: (context) => const Log(showAppBar: true)));
-          //   },
-          //   child:
-          Center(
-        child: Container(
-          width: size.width * 0.85,
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: SingleChildScrollView(child: form),
+Widget formDecorator(BuildContext context, Size size, Widget form) {
+  return Scaffold(
+    backgroundColor: chatBackground,
+    body:
+        // GestureDetector(
+        //   onTap: () {
+        //     Navigator.push(
+        //         context,
+        //         MaterialPageRoute(
+        //             builder: (context) => const Log(showAppBar: true)));
+        //   },
+        //   child:
+        Center(
+      child: Container(
+        width: size.width * 0.85,
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
         ),
+        child: SingleChildScrollView(child: form),
       ),
-      // )
-    );
-  }
+    ),
+    // )
+  );
+}
 
-  InputDecoration inputDeco(hintText) {
-    return InputDecoration(
-        hintText: hintText,
-        isDense: true,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-        ));
-  }
+InputDecoration inputDeco(hintText) {
+  return InputDecoration(
+      hintText: hintText,
+      isDense: true,
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(10),
+      ));
 }

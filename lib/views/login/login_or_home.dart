@@ -35,9 +35,9 @@ class LoginOrHome extends HookConsumerWidget {
     final shouldLogIn = Env.current.myAuthToken != null && socketConnected;
 
     if (shouldLogIn && isLoginSent.value == false) {
-      isLoginSent.value = true;
       Future.delayed(const Duration(milliseconds: 200), () async {
         outgoingHandlers.sendLogin(Env.current.myAuthToken!, 'LoginOrHome');
+        isLoginSent.value = true;
         ui.rebuild(); // FIXME: emulator logs in via local stored authToken here
       });
     }
@@ -45,6 +45,8 @@ class LoginOrHome extends HookConsumerWidget {
     // outgoing.login() should receive incoming.onPerson()
     final incomingPersonId =
         ref.watch(incomingStateProvider.select((state) => state.personId));
+    final incomingPersonName =
+        ref.watch(incomingStateProvider.select((state) => state.personName));
     final router = ref.watch(routerProvider);
 
     final redirectDebounced = useState(false);
@@ -58,6 +60,9 @@ class LoginOrHome extends HookConsumerWidget {
             Navigator.pushNamed(context, router.login.path);
           });
         }
+      } else {
+        StaticLogger.append(
+            'extra re-render while redirectDebounced.value == true');
       }
     });
 
@@ -73,7 +78,11 @@ class LoginOrHome extends HookConsumerWidget {
                 },
               );
             } else {
-              return router.home.widget(context);
+              if (incomingPersonName.isEmpty) {
+                return router.yourName.widget(context);
+              } else {
+                return router.home.widget(context);
+              }
             }
           } else {
             return HalfTiger(

@@ -29,12 +29,16 @@ showPopupMenu({
 }) async {
   final screenSize = MediaQuery.of(context).size;
   await showMenu(
-    color: Colors.blue,
+    useRootNavigator: true,
+    color: Colors.blueGrey,
     context: context,
+    // position: const RelativeRect.fromLTRB(200, 200, 0, 0),
     position: RelativeRect.fromLTRB(
-      offset.dx,
+      offset.dx > 0 ? offset.dx : screenSize.width + offset.dx,
       offset.dy,
-      screenSize.width - offset.dx,
+      // 0,
+      // 0
+      offset.dx > 0 ? screenSize.width - offset.dx : offset.dx,
       screenSize.height - offset.dy,
     ),
     shape: const RoundedRectangleBorder(
@@ -54,7 +58,7 @@ showPopupMenu({
     // elevation: 8.0,
   ).then((value) {
     if (value == null) {
-      // NOTE: even you didnt select item this method will be called
+      // NOTE: even you didn't select item this method will be called
       // with null of value so you should call your call back
       // with checking if value is not null
     } else {

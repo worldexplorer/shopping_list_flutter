@@ -1,3 +1,4 @@
+import 'package:fluentui_system_icons/fluentui_system_icons.dart';
 import 'package:flutter/material.dart';
 
 const int BOUGHT_UNCHECKED = 0;
@@ -18,7 +19,7 @@ Icon iconByBought(int bought) {
     case BOUGHT_UNKNOWN:
       return const Icon(
         Icons.query_builder,
-        color: Colors.yellowAccent,
+        color: Colors.tealAccent,
       );
 
     case BOUGHT_STOP:
@@ -35,8 +36,8 @@ Icon iconByBought(int bought) {
 
     case BOUGHT_QUESTION:
       return const Icon(
-        Icons.arrow_forward,
-        color: Colors.lightBlueAccent,
+        FluentIcons.question_16_filled,
+        color: Colors.orangeAccent,
       );
 
     case BOUGHT_UNCHECKED:

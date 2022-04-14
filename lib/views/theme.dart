@@ -219,3 +219,8 @@ TextStyle purchaseNameStyle(bool isMe) {
     fontSize: 15,
   );
 }
+
+const loginTitleStyle = TextStyle(
+  fontSize: 24,
+  fontWeight: FontWeight.bold,
+);

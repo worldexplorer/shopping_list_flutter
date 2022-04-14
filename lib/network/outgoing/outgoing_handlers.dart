@@ -11,6 +11,7 @@ import 'message/get_messages_dto.dart';
 import 'message/mark_message_read_dto.dart';
 import 'message/new_message_dto.dart';
 import 'person/login_dto.dart';
+import 'person/my_name_dto.dart';
 import 'person/register_confirm_dto.dart';
 import 'person/register_dto.dart';
 import 'purchase/edit_purchase_dto.dart';
@@ -70,12 +71,26 @@ class OutgoingHandlers {
     if (incomingState.waitingForLoginResponse) {
       StaticLogger.append(
           '-- LOGIN [$json] ($invoker/already waitingForLoginResponse)');
-      return;
+      // return;
     }
 
     incomingState.waitingForLoginResponse = true;
     connectionState.socket.emit("login", json);
     StaticLogger.append('<< LOGIN [$json] ($invoker)');
+  }
+
+  sendMyName(int personId, String auth, String myName, String invoker) {
+    final msig = 'sendMyName($personId:$auth:$myName)';
+    if (!isConnected(msig)) return;
+
+    final json = MyNameDto(
+      id: personId,
+      auth: auth,
+      name: myName,
+    ).toJson();
+
+    connectionState.socket.emit("myName", json);
+    StaticLogger.append('<< MY_NAME [$json] ($invoker)');
   }
 
   sendTyping(bool typing) {

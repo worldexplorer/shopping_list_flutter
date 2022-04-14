@@ -5,6 +5,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '../../hooks/scroll_controller_for_animation.dart';
 import '../../network/incoming/incoming_state.dart';
 import '../../utils/ui_state.dart';
+import '../../widget/context_menu.dart';
 import '../log.dart';
 import '../router.dart';
 import '../theme.dart';
@@ -97,7 +98,15 @@ class ChatWrapperSlivers extends HookConsumerWidget {
                 IconButton(
                   icon: const Icon(Icons.more_vert),
                   onPressed: () {
-                    debugExpanded.value = !debugExpanded.value;
+                    showPopupMenu(
+                        offset: const Offset(-80, 70),
+                        context: context,
+                        ctxItems: [
+                          CtxMenuItem('Get messages',
+                              () => router.getMessages.action()),
+                          CtxMenuItem('Log',
+                              () => debugExpanded.value = !debugExpanded.value),
+                        ]);
                   },
                 ),
               ],

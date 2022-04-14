@@ -83,7 +83,7 @@ class Router extends ChangeNotifier {
         path: '/settings',
         widget: (BuildContext context) => const Settings(),
         isSelectedInMenu: false,
-        isVisibleInMenu: true);
+        isVisibleInMenu: false);
 
     log = RouteMenuItem(
         page: Page.Log,
@@ -91,7 +91,7 @@ class Router extends ChangeNotifier {
         path: '/log',
         widget: (BuildContext context) => const Log(showAppBar: true),
         isSelectedInMenu: false,
-        isVisibleInMenu: false);
+        isVisibleInMenu: true);
 
     login = RouteMenuItem(
         page: Page.Login,
@@ -99,7 +99,7 @@ class Router extends ChangeNotifier {
         path: '/login',
         widget: (BuildContext context) => const Login(),
         isSelectedInMenu: false,
-        isVisibleInMenu: true);
+        isVisibleInMenu: false);
 
     yourName = RouteMenuItem(
         page: Page.YourName,
@@ -119,7 +119,7 @@ class Router extends ChangeNotifier {
           connection.reconnect();
         },
         isSelectedInMenu: false,
-        isVisibleInMenu: true);
+        isVisibleInMenu: false);
 
     getMessages = ActionMenuItem(
         page: Page.GetMessages,
@@ -131,7 +131,7 @@ class Router extends ChangeNotifier {
               .sendGetMessages(incoming.rooms.currentRoomId);
         },
         isSelectedInMenu: false,
-        isVisibleInMenu: true);
+        isVisibleInMenu: false);
 
     refresh = ActionMenuItem(
         page: Page.Refresh,
@@ -142,7 +142,7 @@ class Router extends ChangeNotifier {
           refresh.title = 'Refresh (${ui.refreshCounter})';
         },
         isSelectedInMenu: false,
-        isVisibleInMenu: true);
+        isVisibleInMenu: false);
 
     _menuItems = {
       Page.Home: home,
@@ -151,7 +151,7 @@ class Router extends ChangeNotifier {
       Page.Settings: settings,
       Page.Log: log,
       Page.Login: login,
-      Page.Login: yourName,
+      Page.YourName: yourName,
       Page.Reconnect: reconnect,
       Page.GetMessages: getMessages,
       Page.Refresh: refresh,

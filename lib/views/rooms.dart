@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:shopping_list_flutter/widget/context_menu.dart';
 
 import '../network/incoming/incoming_state.dart';
 import '../utils/ui_state.dart';
@@ -82,7 +83,15 @@ class Rooms extends HookConsumerWidget {
           IconButton(
             icon: const Icon(Icons.more_vert),
             onPressed: () {
-              Navigator.pushNamed(context, router.log.path);
+              showPopupMenu(
+                  offset: const Offset(-80, 70),
+                  context: context,
+                  ctxItems: [
+                    CtxMenuItem('Reconnect', () => router.reconnect.action()),
+                    CtxMenuItem('Log', () {
+                      Navigator.pushNamed(context, router.log.path);
+                    }),
+                  ]);
             },
           ),
         ],

@@ -4,7 +4,7 @@
 // import 'package:shopping_list_flutter/utils/static_logger.dart';
 // import 'device_emulator_detector.dart';
 
-import 'env.dart';
+import '../env/env.dart';
 
 const forceHeroku = false;
 
