@@ -71,7 +71,7 @@ class OutgoingHandlers {
     if (incomingState.waitingForLoginResponse) {
       StaticLogger.append(
           '-- LOGIN [$json] ($invoker/already waitingForLoginResponse)');
-      // return;
+      return;
     }
 
     incomingState.waitingForLoginResponse = true;

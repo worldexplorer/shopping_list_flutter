@@ -62,14 +62,15 @@ class YourName extends HookConsumerWidget {
           nameInputCtrl.value.text,
           'YourName widget');
 
-      const timeoutSec = 3;
-      Future.delayed(const Duration(seconds: timeoutSec), () async {
-        if (isNetworkPending.value == true) {
-          isNetworkPending.value = false;
-          mySnackBar(context,
-              'No reply from backend within $timeoutSec seconds', null);
-        }
-      });
+      // Unhandled Exception: A ValueNotifier<bool> was used after being disposed.
+      // const timeoutSec = 3;
+      // Future.delayed(const Duration(seconds: timeoutSec), () async {
+      //   if (isNetworkPending.value == true) {
+      //     isNetworkPending.value = false;
+      //     mySnackBar(context,
+      //         'No reply from backend within $timeoutSec seconds', null);
+      //   }
+      // });
     }
 
     final canSend = isNetworkPending.value == false

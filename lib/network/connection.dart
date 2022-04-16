@@ -42,21 +42,28 @@ class Connection extends ChangeNotifier {
   void createSocket() {
     _socket = io(_env.websocketURL, <String, dynamic>{
       'transports': ['websocket'],
-      'autoConnect': true,
+      'autoConnect': false,
     });
 
     _socket.on('connect', (_) {
       StaticLogger.append('#3/4 connected: [${connectionState.socketId}]');
-      // if (_env.myAuthToken != null) {
-      //   outgoingHandlers.sendLogin(_env.myAuthToken!, 'createSocket');
-      // } else {
-      _incomingState.notifyListeners(); // rebuild to show Login()
-      // }
+      if (_env.myAuthToken != null) {
+        outgoingHandlers.sendLogin(
+            _env.myAuthToken!, 'createSocket()/onConnected');
+      } else {
+        _incomingState.notifyListeners(); // rebuild to show Login()
+      }
     });
+
     _socket.on('disconnect', (_) {
-      StaticLogger.append(
-          'disconnected by server; willGetMessagesOnReconnect=true');
-      connectionState.willGetMessagesOnReconnect = true;
+      if (manuallyDisconnecting) {
+        StaticLogger.append('disconnected manually');
+        manuallyDisconnecting = false;
+      } else {
+        StaticLogger.append('disconnected by server; ENDLESS_LOGIN_LOOP?');
+        // connectionState.willGetMessagesOnReconnect = true;
+        connect();
+      }
     });
     _socket.on('fromServer', (_) => {StaticLogger.append(_)});
 
@@ -80,7 +87,13 @@ class Connection extends ChangeNotifier {
         '#1/4 handlers hooked to a socket [${connectionState.sConnected}]');
   }
 
-  void connect() async {
+  void connect() {
+    if (_socket.connected) {
+      StaticLogger.append(
+          '#2/4 ALREADY_CONNECTED: NOT connecting to [${_env.websocketURL}]');
+      return;
+    }
+
     try {
       _socket.connect();
       StaticLogger.append('#2/4 connecting to [${_env.websocketURL}]');
@@ -90,10 +103,18 @@ class Connection extends ChangeNotifier {
     }
   }
 
+  bool manuallyDisconnecting = false;
+
   void disconnect() {
+    if (_socket.disconnected) {
+      StaticLogger.append('#4/4 ALREADY_DISCONNECTED: NOT disconnecting');
+      return;
+    }
+
     try {
-      _socket.connect();
-      StaticLogger.append('#4/4 disconnected');
+      manuallyDisconnecting = true;
+      _socket.disconnect();
+      StaticLogger.append('#4/4 disconnected manually');
     } catch (e) {
       StaticLogger.append(e.toString());
     }
