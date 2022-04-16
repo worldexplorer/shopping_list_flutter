@@ -40,10 +40,11 @@ class Notifications {
 
     String groupKey = 'room:${msg.room}';
     final AndroidNotificationDetails androidPlatformChannelSpecifics =
-        AndroidNotificationDetails('message channel id', 'message channel name',
+        AndroidNotificationDetails(
+            'messagesAddedEdited', 'Messages added/edited',
             // sound: const RawResourceAndroidNotificationSound('slow_spring_board'),
             playSound: true,
-            channelDescription: 'message channel description',
+            channelDescription: 'Room messages added/edited',
             category: 'msg',
             styleInformation: messagingStyle,
             importance: Importance.max,

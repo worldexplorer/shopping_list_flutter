@@ -19,7 +19,7 @@ Icon iconByBought(int bought) {
     case BOUGHT_UNKNOWN:
       return const Icon(
         Icons.query_builder,
-        color: Colors.tealAccent,
+        color: Colors.yellowAccent,
       );
 
     case BOUGHT_STOP:
@@ -37,7 +37,7 @@ Icon iconByBought(int bought) {
     case BOUGHT_QUESTION:
       return const Icon(
         FluentIcons.question_16_filled,
-        color: Colors.orangeAccent,
+        color: Colors.orange,
       );
 
     case BOUGHT_UNCHECKED:
