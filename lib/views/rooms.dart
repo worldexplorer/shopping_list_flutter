@@ -4,6 +4,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:shopping_list_flutter/widget/context_menu.dart';
 
 import '../network/incoming/incoming_state.dart';
+import '../network/incoming/room/room_dto.dart';
 import '../utils/ui_state.dart';
 import 'menu.dart';
 import 'router.dart';
@@ -18,7 +19,7 @@ class Rooms extends HookConsumerWidget {
     final router = ref.watch(routerProvider);
 
     final incoming = ref.watch(incomingStateProvider);
-    final socketConnected = incoming.connection.connectionState.socketConnected;
+    final socketConnected = incoming.socketConnected;
 
     final nameController = useTextEditingController();
 
@@ -57,7 +58,7 @@ class Rooms extends HookConsumerWidget {
       );
     }
 
-    final roomsList =
+    final List<RoomDto> roomsList =
         incoming.personNullable != null ? incoming.rooms.roomsSnapList : [];
 
     return Scaffold(
@@ -102,8 +103,8 @@ class Rooms extends HookConsumerWidget {
         shrinkWrap: true,
         itemCount: roomsList.length,
         itemBuilder: (BuildContext context, int index) {
-          final room = roomsList[index];
-          final users = room.users;
+          final RoomDto room = roomsList[index];
+          final users = room.persons;
           const firstUsersLimit = 4;
           final majorUsers = users
               .getRange(

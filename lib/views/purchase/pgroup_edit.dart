@@ -67,14 +67,14 @@ class PgroupEdit extends HookConsumerWidget {
                 child: IconButton(
                   padding: EdgeInsets.zero,
                   constraints: const BoxConstraints(),
-                  iconSize: iconSize,
+                  iconSize: sendMessageInputIconSize,
                   icon: const Icon(Icons.delete_outline_outlined,
                       color: Colors.blue),
                   onPressed: onDelete,
                   enableFeedback: true,
                   // autofocus: true,
                 ))
-            : const SizedBox(width: iconSize),
+            : const SizedBox(width: sendMessageInputIconSize),
       ],
     );
   }

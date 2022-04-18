@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import '../../views/chat/message_widget.dart';
+import '../../views/room/message_widget.dart';
 import 'static_logger.dart';
 
 final uiStateProvider = ChangeNotifierProvider<UiState>((ref) => UiState());

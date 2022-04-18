@@ -110,11 +110,11 @@ class IncomingHandlers {
 
       if (incomingState.rooms.roomById.containsKey(roomParsed.id)) {
         StaticLogger.append(
-            '      DUPLICATE onRooms(): ${roomParsed.id}: ${roomParsed.name}');
-        return;
+            '      ROOM_REPLACED: ${roomParsed.id}: ${roomParsed.name}');
+      } else {
+        StaticLogger.append('   > ROOM [${roomParsed.toJson()}]');
       }
 
-      StaticLogger.append('   > ROOM [${roomParsed.toJson()}]');
       incomingState.rooms.roomById[roomParsed.id] = roomParsed;
       incomingState.notifyListeners();
     } catch (e) {
@@ -332,6 +332,7 @@ class IncomingHandlers {
   void onServerError(data) {
     StaticLogger.append('> SERVER_ERROR [$data]');
     incomingState.serverError = '$data';
+    incomingState.waitingForLoginResponse = false; // "No authtoken found for.."
   }
 
   void onPurItemFilled(data) {

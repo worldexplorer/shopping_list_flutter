@@ -96,7 +96,7 @@ class MessageInput extends HookConsumerWidget {
           IconButton(
             icon: const Icon(
               FluentIcons.send_28_filled,
-              size: iconSize,
+              size: sendMessageInputIconSize,
               color: Colors.green,
             ),
             onPressed: sendMessageFromInput,

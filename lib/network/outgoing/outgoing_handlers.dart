@@ -19,6 +19,7 @@ import 'purchase/new_purchase_dto.dart';
 import 'purchase/pur_item_fill_dto.dart';
 import 'purchase/purchase_fill_dto.dart';
 import 'room/new_room_dto.dart';
+import 'room/rename_room_dto.dart';
 
 class OutgoingHandlers {
   ConnectionState connectionState;
@@ -252,7 +253,7 @@ class OutgoingHandlers {
     StaticLogger.append('<< FILL_PURITEM [$json]');
   }
 
-  sendNewRoom(String name, List<int> userIds) {
+  void sendNewRoom(String name, List<int> userIds) {
     final msig = 'sendNewRoom($name)';
     if (!isConnected(msig)) return;
 
@@ -262,5 +263,17 @@ class OutgoingHandlers {
     ).toJson();
     connectionState.socket.emit("newRoom", json);
     StaticLogger.append('<< NEW_ROOM [$json]');
+  }
+
+  void sendRenameRoom(int roomId, String newName) {
+    final msig = 'sendRenameRoom($roomId, $newName)';
+    if (!isConnected(msig)) return;
+
+    final json = RenameRoomDto(
+      roomId: roomId,
+      newName: newName,
+    ).toJson();
+    connectionState.socket.emit("renameRoom", json);
+    StaticLogger.append('<< RENAME_ROOM [$json]');
   }
 }

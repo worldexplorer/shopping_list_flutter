@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:shopping_list_flutter/network/incoming/incoming.dart';
 
 import 'env/env.dart';
+import 'network/connection.dart';
 import 'notifications/notifications_plugin.dart';
 import 'utils/my_shared_preferences.dart';
 import 'views/login/login_or_home.dart';
@@ -26,8 +28,17 @@ class MyApp extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final router = ref.watch(routerProvider);
 
+    // unwraps state/incoming/outgoing
+    final connection = ref.watch(connectionStateProvider(Env.current));
+    if (connection.connectionState.socketConnected == false) {
+      connection.connect(); // went to background; will notify listeners
+    }
+
+    final incoming = ref.watch(incomingStateProvider);
+
     return MaterialApp(
-      title: 'Shared Shopping List',
+      title:
+          incoming.socketConnected ? 'Shared Shopping List' : 'Connecting...',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),

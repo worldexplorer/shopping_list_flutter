@@ -4,7 +4,6 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:shopping_list_flutter/utils/static_logger.dart';
 
 import '../../env/env.dart';
-import '../../network/connection.dart';
 import '../../network/incoming/incoming_state.dart';
 import '../../utils/my_snack_bar.dart';
 import '../../utils/ui_state.dart';
@@ -18,27 +17,21 @@ class LoginOrHome extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final ui = ref.watch(uiStateProvider);
-
-    final connection = ref.watch(connectionStateProvider(Env.current));
-    if (connection.connectionState.socketConnected == false) {
-      connection.connect(); // went to background; will notify listeners
-    }
-
-    final socketConnected = ref.watch(incomingStateProvider
-        .select((state) => state.connection.connectionState.socketConnected));
+    final incoming = ref.watch(incomingStateProvider);
 
     final isLoginSent = useState(false);
 
-    final outgoingHandlers = ref
-        .watch(incomingStateProvider.select((state) => state.outgoingHandlers));
-
-    final shouldLogIn = Env.current.myAuthToken != null && socketConnected;
+    final shouldLogIn =
+        Env.current.myAuthToken != null && incoming.socketConnected
+        // && incoming.personNullable == null // << LOGIN deduplicated
+        ;
 
     if (shouldLogIn && isLoginSent.value == false) {
       Future.delayed(const Duration(milliseconds: 200), () async {
-        outgoingHandlers.sendLogin(Env.current.myAuthToken!, 'LoginOrHome');
+        incoming.outgoingHandlers
+            .sendLogin(Env.current.myAuthToken!, 'LoginOrHome');
         isLoginSent.value = true;
-        ui.rebuild(); // FIXME: emulator logs in via local stored authToken here
+        // ui.rebuild(); // FIXME: emulator logs in via local stored authToken here
       });
     }
 
@@ -67,7 +60,7 @@ class LoginOrHome extends HookConsumerWidget {
     });
 
     Widget loginOrHome() {
-      if (connection.connectionState.socketConnected) {
+      if (incoming.socketConnected) {
         if (shouldLogIn) {
           if (isLoginSent.value) {
             if (incomingPersonId == -1) {

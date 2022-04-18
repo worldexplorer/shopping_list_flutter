@@ -1,13 +1,13 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'new_room_dto.dart';
+part of 'room_persons_dto.dart';
 
 // **************************************************************************
 // JsonSerializableGenerator
 // **************************************************************************
 
-Map<String, dynamic> _$NewRoomDtoToJson(NewRoomDto instance) =>
+Map<String, dynamic> _$RoomPersonsDtoToJson(RoomPersonsDto instance) =>
     <String, dynamic>{
-      'name': instance.name,
-      'userIds': instance.userIds,
+      'roomId': instance.roomId,
+      'personIds': instance.personIds,
     };

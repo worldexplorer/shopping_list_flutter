@@ -84,7 +84,8 @@ const double qntyColumnWidth = 55;
 const double priceColumnWidth = 80;
 const double weightColumnWidth = 75;
 
-const double iconSize = 24;
+const double editableInputIconSize = 24;
+const double sendMessageInputIconSize = 24;
 
 TextStyle logRecordStyle = const TextStyle(
   //GoogleFonts.poppins(

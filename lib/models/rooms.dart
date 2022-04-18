@@ -42,7 +42,17 @@ class Rooms {
   }
 
   List<PersonDto> get currentRoomUsersOrEmpty {
-    return currentRoomDto != null ? currentRoomDto!.users : [];
+    return currentRoomDto != null ? currentRoomDto!.persons : [];
+  }
+
+  bool get canEditCurrentRoom {
+    if (currentRoomDto != null) {
+      final iCanEdit =
+          currentRoomDto!.canEdit.where((x) => x == myPersonId).isNotEmpty;
+      return iCanEdit;
+    } else {
+      return false;
+    }
   }
 
   RoomMessages getOrCreateRoom(int roomId, String msig, [Function? onAdded]) {
@@ -118,7 +128,7 @@ class Rooms {
     if (msgReceived.user != myPersonId && fireNotification) {
       RoomDto? room = roomById[roomId];
       PersonDto? author =
-          room?.users.firstWhere((x) => x.id == msgReceived.user);
+          room?.persons.firstWhere((x) => x.id == msgReceived.user);
       String roomName = room != null ? room.name : 'ROOM_NAME_UNKNOWN';
       NotificationsPlugin.instance.notificator
           .showIncomingMessage(msgReceived, roomName, author);
@@ -144,7 +154,7 @@ class Rooms {
     if (purItemFilled.person_bought != myPersonId && fireNotification) {
       RoomDto? room = roomById[purItemFilled.room];
       PersonDto? author =
-          room?.users.firstWhere((x) => x.id == purItemFilled.person_bought);
+          room?.persons.firstWhere((x) => x.id == purItemFilled.person_bought);
       String roomName = room != null ? room.name : 'ROOM_NAME_UNKNOWN';
       NotificationsPlugin.instance.notificator
           .showPurItemFilled(purItemFilled, roomName, author);

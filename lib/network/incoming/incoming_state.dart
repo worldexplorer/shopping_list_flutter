@@ -4,7 +4,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:shopping_list_flutter/utils/ui_state.dart';
 
 import '../../models/rooms.dart';
-import '../../views/chat/message_widget.dart';
+import '../../views/room/message_widget.dart';
 import '../connection.dart';
 import '../outgoing/outgoing_handlers.dart';
 import 'message/message_dto.dart';
@@ -19,6 +19,12 @@ final incomingStateProvider =
 class IncomingState extends ChangeNotifier {
   late OutgoingHandlers outgoingHandlers;
   late Connection connection;
+
+  bool get socketConnected {
+    return connection != null
+        ? connection.connectionState.socketConnected
+        : false;
+  }
 
   String? _auth;
   String? get auth => _auth;

@@ -2,14 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import '../../hooks/scroll_controller_for_animation.dart';
 import '../../network/incoming/incoming_state.dart';
-import '../../utils/ui_state.dart';
 import '../../widget/context_menu.dart';
 import '../log.dart';
 import '../router.dart';
 import '../theme.dart';
 import 'chat_messages.dart';
+import 'editable.dart';
 import 'message_input.dart';
 
 class ChatWrapperSlivers extends HookConsumerWidget {
@@ -17,18 +16,18 @@ class ChatWrapperSlivers extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final ui = ref.watch(uiStateProvider);
+    // final ui = ref.watch(uiStateProvider);
     final router = ref.watch(routerProvider);
     final incoming = ref.watch(incomingStateProvider);
 
     var debugExpanded = useState(false);
 
-    final hideFabAnimController = useAnimationController(
-        duration: kThemeAnimationDuration, initialValue: 1);
-    final scrollController =
-        useScrollControllerForAnimation(hideFabAnimController);
+    // final hideFabAnimController = useAnimationController(
+    //     duration: kThemeAnimationDuration, initialValue: 1);
+    // final scrollController =
+    //     useScrollControllerForAnimation(hideFabAnimController);
 
-    final socketConnected = incoming.connection.connectionState.socketConnected;
+    final socketConnected = incoming.socketConnected;
 
     // Future<void>.delayed(const Duration(milliseconds: 100), () async {
     final roomId = ModalRoute.of(context)!.settings.arguments as int;
@@ -41,26 +40,8 @@ class ChatWrapperSlivers extends HookConsumerWidget {
 
     return Scaffold(
       backgroundColor: chatBackground,
-      // floatingActionButton: FadeTransition(
-      //   opacity: hideFabAnimController,
-      //   child: ScaleTransition(
-      //     scale: hideFabAnimController,
-      //     child: Padding(
-      //       padding: const EdgeInsets.fromLTRB(0, 0, 0, 80),
-      //       child: FloatingActionButton.small(
-      //         child: const Icon(
-      //           Icons.arrow_drop_down,
-      //           size: 28,
-      //         ),
-      //         onPressed: () {
-      //           // scrollController.sc
-      //         },
-      //       ),
-      //     ),
-      //   ),
-      // ),
       body: CustomScrollView(
-        controller: scrollController,
+        // controller: scrollController,
         slivers: <Widget>[
           SliverAppBar(
               pinned: true,
@@ -80,20 +61,26 @@ class ChatWrapperSlivers extends HookConsumerWidget {
               ),
               titleSpacing: 0,
               centerTitle: false,
-              title: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    titleText(true, incoming.rooms.currentRoomNameOrFetching),
-                    if (incoming.typing.isNotEmpty) ...[
-                      Text(
-                        incoming.typing,
-                        style: chatSliverSubtitleStyle(),
-                      ),
-                    ] else ...[
-                      subtitleText(
-                          socketConnected, incoming.rooms.currentRoomUsersCsv),
-                    ]
-                  ]),
+              title: Editable(
+                  text: incoming.rooms.currentRoomNameOrFetching,
+                  onSubmitted: (newText) {
+                    incoming.outgoingHandlers.sendRenameRoom(roomId, newText);
+                  },
+                  child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        titleText(
+                            true, incoming.rooms.currentRoomNameOrFetching),
+                        if (incoming.typing.isNotEmpty) ...[
+                          Text(
+                            incoming.typing,
+                            style: chatSliverSubtitleStyle(),
+                          ),
+                        ] else ...[
+                          subtitleText(socketConnected,
+                              incoming.rooms.currentRoomUsersCsv),
+                        ]
+                      ])),
               actions: <Widget>[
                 IconButton(
                   icon: const Icon(Icons.more_vert),
@@ -102,6 +89,15 @@ class ChatWrapperSlivers extends HookConsumerWidget {
                         offset: const Offset(-80, 70),
                         context: context,
                         ctxItems: [
+                          CtxMenuItem('Mute notifications',
+                              () => router.getMessages.action()),
+                          incoming.rooms.canEditCurrentRoom
+                              ? CtxMenuItem('Delete Room',
+                                  () => router.getMessages.action())
+                              : CtxMenuItem('Leave Room',
+                                  () => router.getMessages.action()),
+                          CtxMenuItem('__________________',
+                              () => router.getMessages.action()),
                           CtxMenuItem('Get messages',
                               () => router.getMessages.action()),
                           CtxMenuItem('Log',

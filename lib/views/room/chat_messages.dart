@@ -3,11 +3,10 @@ import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import '../../hooks/scroll_controller_for_animation.dart';
 import '../../network/incoming/incoming_state.dart';
 import '../../utils/static_logger.dart';
 import '../../utils/ui_state.dart';
-import '../../views/chat/message_widget.dart';
+import '../../views/room/message_widget.dart';
 import '../../widget/context_menu.dart';
 import '../theme.dart';
 
@@ -24,13 +23,13 @@ class ChatMessages extends HookConsumerWidget {
 
     final tapGlobalPosition = useState(const Offset(0, 0));
 
-    final hideFabAnimController = useAnimationController(
-        duration: kThemeAnimationDuration, initialValue: 1);
-    final scrollController =
-        useScrollControllerForAnimation(hideFabAnimController);
+    // final hideFabAnimController = useAnimationController(
+    //     duration: kThemeAnimationDuration, initialValue: 1);
+    // final scrollController =
+    //     useScrollControllerForAnimation(hideFabAnimController);
 
     return ListView.builder(
-      controller: scrollController,
+      // controller: scrollController,
       reverse: true,
       itemCount: incoming.rooms.currentRoomMessages.getMessageWidgets.length,
       itemBuilder: (BuildContext context, int index) {

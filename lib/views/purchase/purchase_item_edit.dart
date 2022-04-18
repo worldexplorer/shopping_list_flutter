@@ -80,9 +80,9 @@ class PurchaseItemEdit extends HookConsumerWidget {
                 child: IconButton(
                   padding: EdgeInsets.zero,
                   constraints: const BoxConstraints(),
-                  iconSize: iconSize,
+                  iconSize: sendMessageInputIconSize,
                   icon: const Icon(Icons.delete_outline_outlined,
-                      size: iconSize, color: Colors.blue),
+                      size: sendMessageInputIconSize, color: Colors.blue),
                   onPressed: () {
                     purchase.purItems.remove(purItem);
                     onDelete();
@@ -91,7 +91,7 @@ class PurchaseItemEdit extends HookConsumerWidget {
                   enableFeedback: true,
                   // autofocus: true,
                 ))
-            : const SizedBox(width: iconSize),
+            : const SizedBox(width: sendMessageInputIconSize),
       ],
     );
   }

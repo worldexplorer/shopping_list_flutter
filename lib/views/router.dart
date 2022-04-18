@@ -8,11 +8,11 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../network/incoming/incoming.dart';
 import '../utils/ui_state.dart';
-import 'chat/chat_wrapper_slivers.dart';
 import 'home.dart';
 import 'log.dart';
 import 'login/login.dart';
 import 'login/your_name.dart';
+import 'room/chat_wrapper_slivers.dart';
 import 'rooms.dart';
 import 'settings.dart';
 
@@ -99,7 +99,7 @@ class Router extends ChangeNotifier {
         path: '/login',
         widget: (BuildContext context) => const Login(),
         isSelectedInMenu: false,
-        isVisibleInMenu: false);
+        isVisibleInMenu: true);
 
     yourName = RouteMenuItem(
         page: Page.YourName,

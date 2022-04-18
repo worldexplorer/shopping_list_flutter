@@ -153,7 +153,7 @@ class PurchaseEdit extends HookConsumerWidget {
                       // fixedSize: const Size(20, 20)
                     ),
                     child: const Icon(Icons.save,
-                        size: iconSize, color: Colors.white),
+                        size: sendMessageInputIconSize, color: Colors.white),
                     onPressed: onSaveButtonPressed),
               ]),
           const SizedBox(height: 5),
@@ -234,12 +234,14 @@ class PurchaseEdit extends HookConsumerWidget {
                               if (!incoming.thisPurchaseIsNew(purchase))
                                 ElevatedButton(
                                     child: const Icon(Icons.undo_rounded,
-                                        color: Colors.white, size: iconSize),
+                                        color: Colors.white,
+                                        size: sendMessageInputIconSize),
                                     onPressed: onCancelButtonPressed),
                               const SizedBox(width: 10),
                               ElevatedButton(
                                   child: const Icon(Icons.save,
-                                      color: Colors.white, size: iconSize),
+                                      color: Colors.white,
+                                      size: sendMessageInputIconSize),
                                   onPressed: onSaveButtonPressed),
                             ]),
                         Padding(
@@ -283,7 +285,8 @@ class PurchaseEdit extends HookConsumerWidget {
                       onPressed: onCancelButtonPressed,
                       child: Row(children: [
                         const Icon(Icons.clear,
-                            size: iconSize, color: Colors.white),
+                            size: sendMessageInputIconSize,
+                            color: Colors.white),
                         const SizedBox(width: 10),
                         Text(btnLabelCancelPurchase, style: purchaseStyle),
                       ]),

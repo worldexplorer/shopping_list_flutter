@@ -18,9 +18,16 @@ part 'room_dto.g.dart';
 class RoomDto {
   int id;
   String name;
-  List<PersonDto> users;
+  List<PersonDto> persons;
+  List<int> canEdit;
+  List<int> canInvite;
 
-  RoomDto({required this.name, required this.id, required this.users});
+  RoomDto(
+      {required this.name,
+      required this.id,
+      required this.persons,
+      required this.canEdit,
+      required this.canInvite});
   factory RoomDto.fromJson(Map<String, dynamic> json) =>
       _$RoomDtoFromJson(json);
   Map<String, dynamic> toJson() => _$RoomDtoToJson(this);

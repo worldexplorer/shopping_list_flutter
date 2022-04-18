@@ -72,11 +72,11 @@ class Login extends HookConsumerWidget {
       isNetworkPending.value = false;
       MySharedPreferences.setMyAuthToken(auth);
 
-      // NPE as context is already gone (we went to another page)
-      // Future.delayed(const Duration(milliseconds: 200), () async {
-      incoming.auth = null;
-      //   Navigator.pushNamed(context, router.rooms.path);
-      // });
+      Future.delayed(const Duration(milliseconds: 200), () async {
+        incoming.auth = null;
+        // NPE as context is already gone (we went to another page)
+        // Navigator.pushNamed(context, router.rooms.path);
+      });
     }
 
     _handleSendCode() async {

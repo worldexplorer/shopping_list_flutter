@@ -4,7 +4,7 @@ import '../network/incoming/message/message_dto.dart';
 import '../network/incoming/purchase/pur_item_dto.dart';
 import '../network/incoming/purchase/pur_item_filled_dto.dart';
 import '../utils/static_logger.dart';
-import '../views/chat/message_widget.dart';
+import '../views/room/message_widget.dart';
 import '../views/theme.dart';
 
 class RoomMessages {
@@ -128,7 +128,7 @@ class RoomMessages {
           messageWidgetById[msgReceived.id] = replacementMsgWidget;
 
           // 1) after I edited a message, server sends new MessageDto
-          // 2) new widget was created with new text => we replace unedited copy for chat.dart
+          // 2) new widget was created with new text => we replace unedited copy for room.dart
           final indexFound =
               messageWidgets.indexWhere((x) => x.message.id == msgReceived.id);
           if (indexFound >= 0) {

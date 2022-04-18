@@ -8,18 +8,18 @@ part 'rename_room_dto.g.dart';
 
 @JsonSerializable(
     checked: true,
-    createFactory: true,
+    createFactory: false,
     createToJson: true,
     explicitToJson: true,
     disallowUnrecognizedKeys: true,
     includeIfNull: true)
 class RenameRoomDto {
-  int id;
+  int roomId;
   String newName;
 
-  RenameRoomDto({required this.id, required this.newName});
+  RenameRoomDto({required this.roomId, required this.newName});
 
-  factory RenameRoomDto.fromJson(Map<String, dynamic> json) =>
-      _$RenameRoomDtoFromJson(json);
+  // factory RenameRoomDto.fromJson(Map<String, dynamic> json) =>
+  //     _$RenameRoomDtoFromJson(json);
   Map<String, dynamic> toJson() => _$RenameRoomDtoToJson(this);
 }

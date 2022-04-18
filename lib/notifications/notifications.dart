@@ -39,10 +39,11 @@ class Notifications {
         messages: messages);
 
     String groupKey = 'room:${msg.room}';
-    final AndroidNotificationDetails androidPlatformChannelSpecifics =
+    final AndroidNotificationDetails androidPlatformMessageChannelSpecifics =
         AndroidNotificationDetails(
             'messagesAddedEdited', 'Messages added/edited',
-            // sound: const RawResourceAndroidNotificationSound('slow_spring_board'),
+            sound:
+                const RawResourceAndroidNotificationSound('slow_spring_board'),
             playSound: true,
             channelDescription: 'Room messages added/edited',
             category: 'msg',
@@ -51,12 +52,12 @@ class Notifications {
             priority: Priority.high,
             groupKey: groupKey);
 
-    final NotificationDetails platformChannelSpecifics =
-        NotificationDetails(android: androidPlatformChannelSpecifics);
+    final NotificationDetails platformMessageChannelSpecifics =
+        NotificationDetails(android: androidPlatformMessageChannelSpecifics);
 
     String payload = msg.room.toString();
     flutterLocalNotificationsPlugin.show(
-        0, 'message title', 'message body', platformChannelSpecifics,
+        0, 'message title', 'message body', platformMessageChannelSpecifics,
         payload: payload);
   }
 

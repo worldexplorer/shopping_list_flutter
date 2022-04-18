@@ -12,16 +12,20 @@ RoomDto _$RoomDtoFromJson(Map<String, dynamic> json) => $checkedCreate(
       ($checkedConvert) {
         $checkKeys(
           json,
-          allowedKeys: const ['id', 'name', 'users'],
+          allowedKeys: const ['id', 'name', 'persons', 'canEdit', 'canInvite'],
         );
         final val = RoomDto(
           name: $checkedConvert('name', (v) => v as String),
           id: $checkedConvert('id', (v) => v as int),
-          users: $checkedConvert(
-              'users',
+          persons: $checkedConvert(
+              'persons',
               (v) => (v as List<dynamic>)
                   .map((e) => PersonDto.fromJson(e as Map<String, dynamic>))
                   .toList()),
+          canEdit: $checkedConvert('canEdit',
+              (v) => (v as List<dynamic>).map((e) => e as int).toList()),
+          canInvite: $checkedConvert('canInvite',
+              (v) => (v as List<dynamic>).map((e) => e as int).toList()),
         );
         return val;
       },
@@ -30,5 +34,7 @@ RoomDto _$RoomDtoFromJson(Map<String, dynamic> json) => $checkedCreate(
 Map<String, dynamic> _$RoomDtoToJson(RoomDto instance) => <String, dynamic>{
       'id': instance.id,
       'name': instance.name,
-      'users': instance.users.map((e) => e.toJson()).toList(),
+      'persons': instance.persons.map((e) => e.toJson()).toList(),
+      'canEdit': instance.canEdit,
+      'canInvite': instance.canInvite,
     };
