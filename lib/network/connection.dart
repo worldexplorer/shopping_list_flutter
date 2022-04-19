@@ -5,7 +5,8 @@ import 'package:socket_io_client/socket_io_client.dart';
 import '../../env/env.dart';
 import '../../utils/static_logger.dart';
 import 'connection_state.dart';
-import 'incoming/incoming.dart';
+import 'incoming/incoming_handlers.dart';
+import 'incoming/incoming_state.dart';
 import 'outgoing/outgoing_handlers.dart';
 
 final connectionStateProvider =
@@ -46,11 +47,13 @@ class Connection extends ChangeNotifier {
     });
 
     _socket.on('connect', (_) {
-      StaticLogger.append('#3/4 connected: [${connectionState.socketId}]');
       if (_env.myAuthToken != null) {
+        StaticLogger.append('#3/4 connected: [${connectionState.socketId}]');
         outgoingHandlers.sendLogin(
             _env.myAuthToken!, 'createSocket()/onConnected');
       } else {
+        StaticLogger.append(
+            '#3/4 WILL_NOT_LOGIN connected: [${connectionState.socketId}]');
         _incomingState.notifyListeners(); // rebuild to show Login()
       }
     });
@@ -61,7 +64,7 @@ class Connection extends ChangeNotifier {
         manuallyDisconnecting = false;
       } else {
         StaticLogger.append('disconnected by server; ENDLESS_LOGIN_LOOP?');
-        // connectionState.willGetMessagesOnReconnect = true;
+        connectionState.willGetMessagesOnReconnect = true;
         connect();
       }
     });

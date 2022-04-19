@@ -7,7 +7,7 @@ import '../network/incoming/incoming_state.dart';
 import '../network/incoming/room/room_dto.dart';
 import '../utils/ui_state.dart';
 import 'menu.dart';
-import 'router.dart';
+import 'my_router.dart';
 import 'theme.dart';
 
 class Rooms extends HookConsumerWidget {

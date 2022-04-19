@@ -7,7 +7,7 @@ import '../../env/env.dart';
 import '../../network/incoming/incoming_state.dart';
 import '../../utils/my_snack_bar.dart';
 import '../../utils/ui_state.dart';
-import '../router.dart';
+import '../my_router.dart';
 import '../theme.dart';
 import 'half-tiger.dart';
 

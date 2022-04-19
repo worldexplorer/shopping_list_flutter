@@ -52,6 +52,12 @@ class IncomingHandlers {
       incomingState.waitingForLoginResponse = false;
       final personParsed = PersonDto.fromJson(data);
       incomingState.personReceived = personParsed;
+
+      if (connectionState.willGetMessagesOnReconnect) {
+        StaticLogger.append('      GETTING_MESSAGES_ON_RECONNECT');
+        outgoingHandlers.sendGetMessages(incomingState.rooms.currentRoomId, 0);
+        connectionState.willGetMessagesOnReconnect = false;
+      }
     } catch (e) {
       StaticLogger.append('      FAILED onPerson($data): ${e.toString()}');
     }

@@ -5,23 +5,25 @@ import 'dart:core';
 
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:shopping_list_flutter/views/room/members.dart';
 
-import '../../network/incoming/incoming.dart';
+import '../../network/incoming/incoming_state.dart';
 import '../utils/ui_state.dart';
 import 'home.dart';
 import 'log.dart';
 import 'login/login.dart';
 import 'login/your_name.dart';
-import 'room/chat_wrapper_slivers.dart';
+import 'room/room.dart';
 import 'rooms.dart';
 import 'settings.dart';
 
-final routerProvider = ChangeNotifierProvider<Router>((ref) => Router(ref));
+final routerProvider = ChangeNotifierProvider<MyRouter>((ref) => MyRouter(ref));
 
-class Router extends ChangeNotifier {
+class MyRouter extends ChangeNotifier {
   late RouteMenuItem home;
   late RouteMenuItem rooms;
   late RouteMenuItem currentRoom;
+  late RouteMenuItem roomMembers;
   late RouteMenuItem settings;
   late RouteMenuItem log;
   late RouteMenuItem login;
@@ -50,7 +52,7 @@ class Router extends ChangeNotifier {
     return ret;
   }
 
-  Router(ChangeNotifierProviderRef ref) {
+  MyRouter(ChangeNotifierProviderRef ref) {
     home = RouteMenuItem(
         page: Page.Home,
         title: 'HOME',
@@ -73,7 +75,15 @@ class Router extends ChangeNotifier {
         title: 'Current Room',
         path: '/currentRoom',
         // parameters: {'roomId', '0'},
-        widget: (BuildContext context) => const ChatWrapperSlivers(),
+        widget: (BuildContext context) => const Room(),
+        isSelectedInMenu: false,
+        isVisibleInMenu: false);
+
+    roomMembers = RouteMenuItem(
+        page: Page.RoomMembers,
+        title: 'Room Members',
+        path: '/roomMembers',
+        widget: (BuildContext context) => const Members(),
         isSelectedInMenu: false,
         isVisibleInMenu: false);
 
@@ -148,6 +158,7 @@ class Router extends ChangeNotifier {
       Page.Home: home,
       Page.Rooms: rooms,
       Page.CurrentRoom: currentRoom,
+      Page.RoomMembers: roomMembers,
       Page.Settings: settings,
       Page.Log: log,
       Page.Login: login,
@@ -163,6 +174,7 @@ enum Page {
   Home,
   Rooms,
   CurrentRoom,
+  RoomMembers,
   Settings,
   Log,
   Login,

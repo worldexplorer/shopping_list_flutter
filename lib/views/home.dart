@@ -6,7 +6,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../notifications/notification_clicked_handler.dart';
 import 'menu.dart';
-import 'router.dart';
+import 'my_router.dart';
 // import '../notifications/notifications_plugin.dart';
 import 'theme.dart';
 

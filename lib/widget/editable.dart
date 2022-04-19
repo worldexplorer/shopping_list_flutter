@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 
-import '../theme.dart';
+import '../views/theme.dart';
 
 class Editable extends HookWidget {
   final String text;
   final Widget child;
   final Function(String newText) onSubmitted;
+  final Function()? onTap;
   final String hint;
 
   const Editable(
@@ -14,6 +15,7 @@ class Editable extends HookWidget {
       required this.child,
       required this.text,
       required this.onSubmitted,
+      this.onTap,
       this.hint = 'Enter...'})
       : super(key: key);
 
@@ -26,6 +28,7 @@ class Editable extends HookWidget {
     );
 
     return GestureDetector(
+        onTap: onTap,
         onLongPressStart: (LongPressStartDetails details) {
           isEditing.value = true;
         },

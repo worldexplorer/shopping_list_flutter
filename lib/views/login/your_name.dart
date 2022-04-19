@@ -7,7 +7,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '../../env/env.dart';
 import '../../network/incoming/incoming_state.dart';
 import '../../utils/my_snack_bar.dart';
-import '../router.dart';
+import '../my_router.dart';
 import '../theme.dart';
 import 'login.dart';
 

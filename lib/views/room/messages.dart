@@ -10,8 +10,8 @@ import '../../views/room/message_widget.dart';
 import '../../widget/context_menu.dart';
 import '../theme.dart';
 
-class ChatMessages extends HookConsumerWidget {
-  const ChatMessages({Key? key}) : super(key: key);
+class Messages extends HookConsumerWidget {
+  const Messages({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

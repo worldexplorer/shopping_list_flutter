@@ -110,12 +110,12 @@ class IncomingState extends ChangeNotifier {
     clientError = '';
   }
 
-  MessageWidget? _newPurchaseMessageItem;
+  MessageWidget? _newPurchaseMessageWidget;
 
-  MessageWidget? get newPurchaseMessageItem => _newPurchaseMessageItem;
+  MessageWidget? get newPurchaseMessageItem => _newPurchaseMessageWidget;
 
   set newPurchaseMessageItem(MessageWidget? val) {
-    _newPurchaseMessageItem = val;
+    _newPurchaseMessageWidget = val;
     notifyListeners();
   }
 
