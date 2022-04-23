@@ -225,3 +225,9 @@ const loginTitleStyle = TextStyle(
   fontSize: 24,
   fontWeight: FontWeight.bold,
 );
+
+TextStyle listItemTitleStyle =
+    const TextStyle(color: Colors.white, fontSize: 20);
+
+TextStyle listItemSubtitleStyle =
+    TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 14);

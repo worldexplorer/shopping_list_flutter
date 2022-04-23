@@ -213,4 +213,21 @@ class IncomingState extends ChangeNotifier {
       notifyListeners();
     }
   }
+
+  bool waitingForPersonsFound = false;
+  // bool get waitingForPersonsFound => _waitingForPersonsFound;
+  // set waitingForPersonsFound(bool val) {
+  //   _waitingForPersonsFound = val;
+  //   notifyListeners();
+  // }
+
+  List<PersonDto>? _personsFound;
+  List<PersonDto>? get personsFound {
+    return _personsFound;
+  }
+
+  set personsFound(List<PersonDto>? val) {
+    _personsFound = val;
+    notifyListeners();
+  }
 }

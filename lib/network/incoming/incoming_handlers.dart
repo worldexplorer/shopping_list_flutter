@@ -12,6 +12,7 @@ import 'message/message_dto.dart';
 import 'message/messages_dto.dart';
 import 'message/updated_messages_read_dto.dart';
 import 'person/person_dto.dart';
+import 'person/persons_found_dto.dart';
 import 'person/registration_needs_code_dto.dart';
 import 'room/room_dto.dart';
 import 'room/rooms_dto.dart';
@@ -357,6 +358,23 @@ class IncomingHandlers {
       }
     } catch (e) {
       StaticLogger.append('      FAILED onPurItemFilled(): ${e.toString()}');
+    }
+  }
+
+  void onPersonsFound(data) {
+    StaticLogger.append('> PERSONS_FOUND [$data]');
+    try {
+      PersonsFoundDto personsFound = PersonsFoundDto.fromJson(data);
+      // final msig =
+      //     ' onPersonsFound(): found[${personsFound.personsFound.length}]';
+      incomingState.waitingForPersonsFound = false;
+      if (personsFound.personsFound.isNotEmpty) {
+        incomingState.personsFound = personsFound.personsFound;
+      } else {
+        incomingState.personsFound = null;
+      }
+    } catch (e) {
+      StaticLogger.append('      FAILED onPersonsFound(): ${e.toString()}');
     }
   }
 }

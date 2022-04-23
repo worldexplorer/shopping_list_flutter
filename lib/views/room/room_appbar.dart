@@ -19,7 +19,8 @@ Widget roomLeading(BuildContext context) {
   );
 }
 
-Widget roomTitle(IncomingState incoming, int roomId, bool socketConnected,
+Widget roomTitle(
+    IncomingState incoming, int roomId, bool socketConnected, String subtitle,
     [Function()? onTap]) {
   return Editable(
       text: incoming.rooms.currentRoomNameOrFetching,
@@ -34,7 +35,7 @@ Widget roomTitle(IncomingState incoming, int roomId, bool socketConnected,
             style: chatSliverSubtitleStyle(),
           ),
         ] else ...[
-          subtitleText(socketConnected, incoming.rooms.currentRoomUsersCsv),
+          subtitleText(socketConnected, subtitle),
         ]
       ]),
       onTap: onTap);

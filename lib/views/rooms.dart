@@ -144,12 +144,11 @@ class Rooms extends HookConsumerWidget {
             ),
             title: Text(
               label,
-              style: const TextStyle(color: Colors.white, fontSize: 20),
+              style: listItemTitleStyle,
             ),
             subtitle: Text(
               majorUsers + minorUsers,
-              style:
-                  TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 14),
+              style: listItemSubtitleStyle,
             ),
             trailing: messagesUnread == 0
                 ? const SizedBox()

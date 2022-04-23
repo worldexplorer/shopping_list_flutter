@@ -1,12 +1,12 @@
+import 'dart:async';
+
 import 'package:fluentui_system_icons/fluentui_system_icons.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../network/incoming/incoming_state.dart';
 import '../../utils/ui_state.dart';
-// import 'package:flutter_hooks/flutter_hooks.dart';
-// import 'dart:async';
-
 import '../theme.dart';
 
 class MessageInput extends HookConsumerWidget {
@@ -18,13 +18,9 @@ class MessageInput extends HookConsumerWidget {
     final incoming = ref.watch(incomingStateProvider);
     final outgoingHandlers = incoming.outgoingHandlers;
 
-    // final msgTyped = useState("");
-    // var debounce = useState(Timer); // TODO: use river_pod
+    var debounce = useState(Timer(Duration.zero, () {}));
 
     sendMessageFromInput() {
-      if (ui.msgInputCtrl.text.isEmpty) {
-        return;
-      }
       if (incoming.rooms.isEditingMessageId > 0) {
         outgoingHandlers.sendEditMessage(
             incoming.rooms.isEditingMessageId, ui.msgInputCtrl.text);
@@ -37,16 +33,6 @@ class MessageInput extends HookConsumerWidget {
     }
 
     return Container(
-      // decoration: BoxDecoration(
-      //   color: altColor,
-      //   borderRadius: BorderRadius.circular(6),
-      //   boxShadow: [
-      //     BoxShadow(
-      //       color: Colors.black.withOpacity(0.05),
-      //       blurRadius: 10,
-      //     )
-      //   ],
-      // ),
       color: altColor,
       padding: const EdgeInsets.fromLTRB(5, 0, 10, 0),
       child: Row(
@@ -64,18 +50,19 @@ class MessageInput extends HookConsumerWidget {
           // https://stackoverflow.com/questions/57803737/flutter-renderflex-children-have-non-zero-flex-but-incoming-height-constraints
           Expanded(
             child: TextField(
-                // onChanged: (String text) {
-                //   outgoing.sendTyping(true);
-                //   if (debounce.value.isActive ?? false) debounce.cancel();
-                //   debounce = Timer(const Duration(milliseconds: 2000), () {
-                //     outgoing.sendTyping(false);
-                //   });
-                // },
+                onChanged: (String text) {
+                  outgoingHandlers.sendTyping(true);
+                  if (debounce.value.isActive) debounce.value.cancel();
+                  debounce.value =
+                      Timer(const Duration(milliseconds: 2000), () {
+                    outgoingHandlers.sendTyping(false);
+                  });
+                },
                 textInputAction: TextInputAction.newline,
                 keyboardType: TextInputType.multiline,
                 minLines: 1,
                 maxLines: 12,
-                onSubmitted: (txt) => sendMessageFromInput,
+                // onSubmitted: (txt) => sendMessageFromInput,
                 controller: ui.msgInputCtrl,
                 decoration: InputDecoration(
                   hintText: "Enter Message...",

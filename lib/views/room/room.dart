@@ -52,7 +52,8 @@ class Room extends HookConsumerWidget {
               leading: roomLeading(context),
               titleSpacing: 0,
               centerTitle: false,
-              title: roomTitle(incoming, roomId, socketConnected, () {
+              title: roomTitle(incoming, roomId, socketConnected,
+                  incoming.rooms.currentRoomUsersCsv, () {
                 Navigator.pushNamed(context, router.roomMembers.path,
                     arguments: roomId);
               }),

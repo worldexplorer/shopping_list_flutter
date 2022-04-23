@@ -18,6 +18,7 @@ import 'purchase/edit_purchase_dto.dart';
 import 'purchase/new_purchase_dto.dart';
 import 'purchase/pur_item_fill_dto.dart';
 import 'purchase/purchase_fill_dto.dart';
+import 'room/find_persons_dto.dart';
 import 'room/new_room_dto.dart';
 import 'room/rename_room_dto.dart';
 
@@ -275,5 +276,16 @@ class OutgoingHandlers {
     ).toJson();
     connectionState.socket.emit("renameRoom", json);
     StaticLogger.append('<< RENAME_ROOM [$json]');
+  }
+
+  void sendFindPersons(String keyword, int roomId) {
+    final msig = 'sendFindPersons($keyword, $roomId)';
+    if (!isConnected(msig)) return;
+
+    incomingState.waitingForPersonsFound = true;
+    incomingState.personsFound = null;
+    final json = FindPersonsDto(keyword: keyword, roomId: roomId).toJson();
+    connectionState.socket.emit("findPersons", json);
+    StaticLogger.append('<< FIND_PERSONS [$json]');
   }
 }

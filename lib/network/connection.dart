@@ -43,7 +43,7 @@ class Connection extends ChangeNotifier {
   void createSocket() {
     _socket = io(_env.websocketURL, <String, dynamic>{
       'transports': ['websocket'],
-      'autoConnect': false,
+      'autoConnect': true,
     });
 
     _socket.on('connect', (_) {
@@ -53,7 +53,7 @@ class Connection extends ChangeNotifier {
             _env.myAuthToken!, 'createSocket()/onConnected');
       } else {
         StaticLogger.append(
-            '#3/4 WILL_NOT_LOGIN connected: [${connectionState.socketId}]');
+            '#3/4 WILL_NOT_LOGIN(myAuthToken=null) connected: [${connectionState.socketId}]');
         _incomingState.notifyListeners(); // rebuild to show Login()
       }
     });
@@ -65,7 +65,8 @@ class Connection extends ChangeNotifier {
       } else {
         StaticLogger.append('disconnected by server; ENDLESS_LOGIN_LOOP?');
         connectionState.willGetMessagesOnReconnect = true;
-        connect();
+        // connect();
+        reconnect();
       }
     });
     _socket.on('fromServer', (_) => {StaticLogger.append(_)});
@@ -85,6 +86,7 @@ class Connection extends ChangeNotifier {
     _socket.on('messages', incomingHandlers.onMessages);
     _socket.on('error', incomingHandlers.onServerError);
     _socket.on('purItemFilled', incomingHandlers.onPurItemFilled);
+    _socket.on('personsFound', incomingHandlers.onPersonsFound);
 
     StaticLogger.append(
         '#1/4 handlers hooked to a socket [${connectionState.sConnected}]');
@@ -126,10 +128,12 @@ class Connection extends ChangeNotifier {
   void reconnect() {
     disconnect();
     connectionState.willGetMessagesOnReconnect = true;
+    dispose();
+    createSocket();
     connect();
-    if (_env.myAuthToken != null) {
-      outgoingHandlers.sendLogin(_env.myAuthToken!, 'reconnect');
-    }
+    // if (_env.myAuthToken != null) {
+    //   outgoingHandlers.sendLogin(_env.myAuthToken!, 'reconnect');
+    // }
   }
 
   @override
