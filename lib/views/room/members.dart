@@ -42,7 +42,8 @@ class Members extends HookConsumerWidget {
           IconButton(
             icon: const Icon(Icons.check),
             onPressed: () {
-              Navigator.of(context).pop();
+              // Navigator.of(context).pop();
+              incoming.outgoingHandlers.sendEditRoomMembers();
             },
           ),
           // roomActionsDropdown(context, router, incoming, [

@@ -4,7 +4,7 @@
 
 import 'package:json_annotation/json_annotation.dart';
 
-part 'room_persons_dto.g.dart';
+part 'room_member_dto.g.dart';
 
 @JsonSerializable(
     checked: true,
@@ -13,13 +13,19 @@ part 'room_persons_dto.g.dart';
     explicitToJson: true,
     disallowUnrecognizedKeys: true,
     includeIfNull: true)
-class RoomPersonsDto {
-  int roomId;
-  List<int> personIds;
+class RoomMemberDto {
+  int person;
+  String? person_name;
+  bool can_edit;
+  bool can_invite;
 
-  RoomPersonsDto({required this.roomId, required this.personIds});
+  RoomMemberDto(
+      {required this.person,
+      this.person_name,
+      required this.can_edit,
+      required this.can_invite});
 
-  // factory RoomPersonsDto.fromJson(Map<String, dynamic> json) =>
-  //     _$RoomPersonsDtoFromJson(json);
-  Map<String, dynamic> toJson() => _$RoomPersonsDtoToJson(this);
+  // factory RoomMemberDto.fromJson(Map<String, dynamic> json) =>
+  //     _$RoomMemberDtoFromJson(json);
+  Map<String, dynamic> toJson() => _$RoomMemberDtoToJson(this);
 }

@@ -18,9 +18,11 @@ import 'purchase/edit_purchase_dto.dart';
 import 'purchase/new_purchase_dto.dart';
 import 'purchase/pur_item_fill_dto.dart';
 import 'purchase/purchase_fill_dto.dart';
+import 'room/edit_room_members_dto.dart';
 import 'room/find_persons_dto.dart';
 import 'room/new_room_dto.dart';
 import 'room/rename_room_dto.dart';
+import 'room/room_member_dto.dart';
 
 class OutgoingHandlers {
   ConnectionState connectionState;
@@ -276,6 +278,31 @@ class OutgoingHandlers {
     ).toJson();
     connectionState.socket.emit("renameRoom", json);
     StaticLogger.append('<< RENAME_ROOM [$json]');
+  }
+
+  void sendEditRoomMembers(
+      int personEditing,
+      String? personEditing_name,
+      int roomId,
+      List<RoomMemberDto> personsToAdd,
+      String? welcomeMsg,
+      List<RoomMemberDto> personsToRemove,
+      String? goodByeMsg) {
+    final msig =
+        'sendEditRoomMembers($roomId, +${personsToAdd.length} +${personsToRemove.length})';
+    if (!isConnected(msig)) return;
+
+    final json = EditRoomMembersDto(
+      personEditing: personEditing,
+      personEditing_name: personEditing_name,
+      roomId: roomId,
+      personsToAdd: personsToAdd,
+      welcomeMsg: welcomeMsg,
+      personsToRemove: personsToRemove,
+      goodByeMsg: goodByeMsg,
+    ).toJson();
+    connectionState.socket.emit("editRoomMembers", json);
+    StaticLogger.append('<< EDIT_ROOM_MEMBERS [$json]');
   }
 
   void sendFindPersons(String keyword, int roomId) {

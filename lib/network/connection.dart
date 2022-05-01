@@ -17,6 +17,8 @@ final connectionStateProvider =
   return conn;
 });
 
+bool autoconnect = false;
+
 class Connection extends ChangeNotifier {
   final Env _env;
 
@@ -43,17 +45,17 @@ class Connection extends ChangeNotifier {
   void createSocket() {
     _socket = io(_env.websocketURL, <String, dynamic>{
       'transports': ['websocket'],
-      'autoConnect': true,
+      'autoConnect': autoconnect,
     });
 
     _socket.on('connect', (_) {
       if (_env.myAuthToken != null) {
-        StaticLogger.append('#3/4 connected: [${connectionState.socketId}]');
+        StaticLogger.append('#3/5 connected: [${connectionState.socketId}]');
         outgoingHandlers.sendLogin(
             _env.myAuthToken!, 'createSocket()/onConnected');
       } else {
         StaticLogger.append(
-            '#3/4 WILL_NOT_LOGIN(myAuthToken=null) connected: [${connectionState.socketId}]');
+            '#3/5 WILL_NOT_LOGIN(myAuthToken=null) connected: [${connectionState.socketId}]');
         _incomingState.notifyListeners(); // rebuild to show Login()
       }
     });
@@ -89,19 +91,21 @@ class Connection extends ChangeNotifier {
     _socket.on('personsFound', incomingHandlers.onPersonsFound);
 
     StaticLogger.append(
-        '#1/4 handlers hooked to a socket [${connectionState.sConnected}]');
+        '#1/5 handlers hooked to a new socket [${connectionState.sConnected}]' +
+            'autoconnect=' +
+            (autoconnect ? 'true' : 'false'));
   }
 
   void connect() {
     if (_socket.connected) {
       StaticLogger.append(
-          '#2/4 ALREADY_CONNECTED: NOT connecting to [${_env.websocketURL}]');
+          '#2/5 ALREADY_CONNECTED: NOT connecting to [${_env.websocketURL}]');
       return;
     }
 
     try {
       _socket.connect();
-      StaticLogger.append('#2/4 connecting to [${_env.websocketURL}]');
+      StaticLogger.append('#2/5 connecting to [${_env.websocketURL}]');
       connectionState.socket = _socket;
     } catch (e) {
       StaticLogger.append(e.toString());
@@ -112,14 +116,14 @@ class Connection extends ChangeNotifier {
 
   void disconnect() {
     if (_socket.disconnected) {
-      StaticLogger.append('#4/4 ALREADY_DISCONNECTED: NOT disconnecting');
+      StaticLogger.append('#4/5 ALREADY_DISCONNECTED: NOT disconnecting');
       return;
     }
 
     try {
       manuallyDisconnecting = true;
       _socket.disconnect();
-      StaticLogger.append('#4/4 disconnected manually');
+      StaticLogger.append('#4/5 disconnected manually');
     } catch (e) {
       StaticLogger.append(e.toString());
     }
@@ -139,5 +143,6 @@ class Connection extends ChangeNotifier {
   @override
   void dispose() {
     _socket.dispose();
+    StaticLogger.append('#5/5 socket disposed');
   }
 }
