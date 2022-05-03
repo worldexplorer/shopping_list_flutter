@@ -15,13 +15,17 @@ part 'room_member_dto.g.dart';
     includeIfNull: true)
 class RoomMemberDto {
   int person;
-  String? person_name;
+  String person_name;
+  String person_email;
+  String person_phone;
   bool can_edit;
   bool can_invite;
 
   RoomMemberDto(
       {required this.person,
-      this.person_name,
+      required this.person_name,
+      required this.person_email,
+      required this.person_phone,
       required this.can_edit,
       required this.can_invite});
 
