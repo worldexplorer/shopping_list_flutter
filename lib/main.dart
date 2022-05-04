@@ -31,7 +31,8 @@ class MyApp extends HookConsumerWidget {
     // unwraps state/incoming/outgoing
     final connection = ref.watch(connectionStateProvider(Env.current));
     if (connection.connectionState.socketConnected == false) {
-      connection.connect(); // went to background; will notify listeners
+      // connection.connect(true); // went to background; will notify listeners
+      connection.reconnect(); // went to background; will notify listeners
     }
 
     final incoming = ref.watch(incomingStateProvider);

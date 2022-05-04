@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import '../../network/incoming/incoming_state.dart';
 import '../../widget/context_menu.dart';
 import '../../widget/editable.dart';
-import '../my_router.dart';
 import '../theme.dart';
 
 Widget roomLeading(BuildContext context) {
@@ -41,8 +40,7 @@ Widget roomTitle(
       onTap: onTap);
 }
 
-Widget roomActionsDropdown(BuildContext context, MyRouter router,
-    IncomingState incoming, List<CtxMenuItem> ctxItems) {
+Widget roomActionsDropdown(BuildContext context, List<CtxMenuItem> ctxItems) {
   return IconButton(
     icon: const Icon(Icons.more_vert),
     onPressed: () {

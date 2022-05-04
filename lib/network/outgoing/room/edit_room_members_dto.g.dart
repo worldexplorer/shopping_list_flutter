@@ -11,8 +11,11 @@ Map<String, dynamic> _$EditRoomMembersDtoToJson(EditRoomMembersDto instance) =>
       'personEditing': instance.personEditing,
       'personEditing_name': instance.personEditing_name,
       'roomId': instance.roomId,
-      'personsToAdd': instance.personsToAdd,
+      'personsToChangePermissions':
+          instance.personsToChangePermissions?.map((e) => e.toJson()).toList(),
+      'personsToAdd': instance.personsToAdd?.map((e) => e.toJson()).toList(),
       'welcomeMsg': instance.welcomeMsg,
-      'personsToRemove': instance.personsToRemove,
+      'personsToRemove':
+          instance.personsToRemove?.map((e) => e.toJson()).toList(),
       'goodByeMsg': instance.goodByeMsg,
     };

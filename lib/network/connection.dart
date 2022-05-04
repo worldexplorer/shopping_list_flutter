@@ -17,7 +17,7 @@ final connectionStateProvider =
   return conn;
 });
 
-bool autoconnect = false;
+bool autoconnect = true;
 
 class Connection extends ChangeNotifier {
   final Env _env;
@@ -65,9 +65,8 @@ class Connection extends ChangeNotifier {
         StaticLogger.append('disconnected manually');
         manuallyDisconnecting = false;
       } else {
-        StaticLogger.append('disconnected by server; ENDLESS_LOGIN_LOOP?');
+        StaticLogger.append('disconnected by server => reconnect()');
         connectionState.willGetMessagesOnReconnect = true;
-        // connect();
         reconnect();
       }
     });
@@ -92,24 +91,29 @@ class Connection extends ChangeNotifier {
 
     StaticLogger.append(
         '#1/5 handlers hooked to a new socket [${connectionState.sConnected}]' +
-            'autoconnect=' +
+            ' autoconnect=' +
             (autoconnect ? 'true' : 'false'));
   }
 
-  void connect() {
+  void connect([bool forceConnect = false]) {
     if (_socket.connected) {
       StaticLogger.append(
           '#2/5 ALREADY_CONNECTED: NOT connecting to [${_env.websocketURL}]');
       return;
     }
 
-    try {
-      _socket.connect();
-      StaticLogger.append('#2/5 connecting to [${_env.websocketURL}]');
-      connectionState.socket = _socket;
-    } catch (e) {
-      StaticLogger.append(e.toString());
+    if (autoconnect == false || forceConnect) {
+      try {
+        StaticLogger.append('#2/5 connecting to [${_env.websocketURL}]');
+        _socket.connect();
+      } catch (e) {
+        StaticLogger.append(e.toString());
+      }
+    } else {
+      StaticLogger.append(
+          '#2/5 skip connecting to [${_env.websocketURL}] due to autoconnect=true');
     }
+    connectionState.socket = _socket;
   }
 
   bool manuallyDisconnecting = false;
@@ -134,7 +138,7 @@ class Connection extends ChangeNotifier {
     connectionState.willGetMessagesOnReconnect = true;
     dispose();
     createSocket();
-    connect();
+    connect(true);
     // if (_env.myAuthToken != null) {
     //   outgoingHandlers.sendLogin(_env.myAuthToken!, 'reconnect');
     // }

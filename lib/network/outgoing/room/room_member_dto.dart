@@ -18,6 +18,7 @@ class RoomMemberDto {
   String person_name;
   String person_email;
   String person_phone;
+  String person_color;
   bool can_edit;
   bool can_invite;
 
@@ -26,6 +27,7 @@ class RoomMemberDto {
       required this.person_name,
       required this.person_email,
       required this.person_phone,
+      required this.person_color,
       required this.can_edit,
       required this.can_invite});
 

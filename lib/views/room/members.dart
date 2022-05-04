@@ -6,11 +6,14 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '../../network/incoming/incoming_state.dart';
 import '../../network/incoming/person/person_dto.dart';
 import '../../network/outgoing/room/room_member_dto.dart';
+import '../../utils/ui_state.dart';
+import '../../widget/context_menu.dart';
+import '../my_router.dart';
 import '../theme.dart';
 import 'room_appbar.dart';
 
 const trailingIconsSize = 20.0;
-const trailingIconsSpacing = 10.0;
+const trailingIconsSpacing = 2.0;
 const trailingIconsContainerWidth =
     // 3 * trailingIconsSize + 3 * trailingIconsSpacing + 3 * 40 - 15; // ElevatedButton
     3 * trailingIconsSize + 3 * trailingIconsSpacing + 90; // IconButton
@@ -21,27 +24,19 @@ class Members extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // final ui = ref.watch(uiStateProvider);
-    // final router = ref.watch(routerProvider);
+    final ui = ref.watch(uiStateProvider);
+    final router = ref.watch(routerProvider);
     final incoming = ref.watch(incomingStateProvider);
     final rooms = incoming.rooms;
 
     final roomId = rooms.currentRoomId;
-    final List<RoomMemberDto> currentRoomMembers =
-        rooms.currentRoomUsersOrEmpty.map(personToMember).toList();
-
-    final Set<int> currentRoomMembersIds =
-        currentRoomMembers.map((e) => e.person).toSet();
-    final Map<int, RoomMemberDto> personsFoundAsMembersById = {};
-    if (incoming.personsFound != null) {
-      for (var eachFound in incoming.personsFound!) {
-        final alreadyMember = currentRoomMembersIds.contains(eachFound.id);
-        if (!alreadyMember) {
-          personsFoundAsMembersById.putIfAbsent(
-              eachFound.id, () => personToMember(eachFound));
-        }
-      }
-    }
+    final RoomMemberDto myselfMemberDto =
+        personToMember(incoming.personNullable!);
+    final List<RoomMemberDto> currentRoomMembersExceptMyself = rooms
+        .currentRoomUsersOrEmpty
+        .where((x) => x.id != incoming.personId)
+        .map(personToMember)
+        .toList();
 
     final searchInputCtrl = useTextEditingController(text: '');
     final searchFocusNode = useFocusNode(
@@ -54,8 +49,25 @@ class Members extends HookConsumerWidget {
     final personsCanEditById = useState<Map<int, RoomMemberDto>>({});
     final personsCanInviteById = useState<Map<int, RoomMemberDto>>({});
 
+    final membersToChangePermissionsById =
+        useState<Map<int, RoomMemberDto>>({});
     final membersToAddById = useState<Map<int, RoomMemberDto>>({});
     final membersToRemoveById = useState<Map<int, RoomMemberDto>>({});
+
+    final Set<int> currentRoomMembersIds =
+        currentRoomMembersExceptMyself.map((e) => e.person).toSet();
+    final Map<int, RoomMemberDto> personsFoundAsMembersById = {};
+    if (incoming.personsFound != null) {
+      for (var eachFound in incoming.personsFound!) {
+        final alreadyMember = currentRoomMembersIds.contains(eachFound.id);
+        final inAddList = membersToAddById.value.containsKey(eachFound.id);
+        if (alreadyMember || inAddList) {
+          continue;
+        }
+        personsFoundAsMembersById.putIfAbsent(
+            eachFound.id, () => personToMember(eachFound));
+      }
+    }
 
     final permissionsChanged = useState(false);
     final sentNewRoomMembers = useState(false);
@@ -72,23 +84,42 @@ class Members extends HookConsumerWidget {
         membersToRemoveById.value.isNotEmpty;
 
     final welcomeMsg = useState('');
+    final welcomeInputCtrl = useTextEditingController(text: '');
+    final welcomeFocusNode = useFocusNode(
+      debugLabel: 'welcomeMessageFocusNode',
+    );
+
     final goodByeMsg = useState('');
     final goodByeInputCtrl = useTextEditingController(text: '');
     final goodByeFocusNode = useFocusNode(
       debugLabel: 'goodByeMessageFocusNode',
     );
 
-    final List<RoomMemberDto> currentAndAdded = [
-      ...currentRoomMembers,
-      ...membersToAddById.value.values.toList()
-    ];
+    myselfMemberIconsRenderer(RoomMemberDto eachMember) {
+      final canEdit = personsCanEditById.value.containsKey(eachMember.person);
+      final canInvite =
+          personsCanInviteById.value.containsKey(eachMember.person);
+      return [
+        ...liToggle(Icons.android, canEdit, null, 1),
+        ...liToggle(Icons.add_to_photos, canInvite, null, 2),
+        const SizedBox(width: trailingIconsSize * 2 + 8.0),
+      ];
+    }
 
     currentMembersIconsRenderer(RoomMemberDto eachMember) {
       final inRemoveList =
           membersToRemoveById.value.containsKey(eachMember.person);
+      final inAddList = membersToAddById.value.containsKey(eachMember.person);
       List<Widget> ret = [
         ...liToggle(Icons.remove_circle, inRemoveList, () {
-          togglePresenceInMembersMap(membersToRemoveById, eachMember);
+          if (inAddList) {
+            togglePresenceInMembersMap(membersToAddById, eachMember);
+          } else {
+            togglePresenceInMembersMap(membersToRemoveById, eachMember);
+            if (goodByeMsg.value.isEmpty) {
+              goodByeFocusNode.requestFocus();
+            }
+          }
         }, 0, Colors.redAccent)
       ];
 
@@ -122,8 +153,30 @@ class Members extends HookConsumerWidget {
         ...liToggle(Icons.add_circle,
             membersToAddById.value.containsKey(eachFound.person), () {
           togglePresenceInMembersMap(membersToAddById, eachFound);
+          if (welcomeMsg.value.isEmpty) {
+            welcomeFocusNode.requestFocus();
+          }
         }),
       ];
+    }
+
+    onSavePressed() {
+      incoming.outgoingHandlers.sendEditRoomMembers(
+        incoming.personId,
+        incoming.personName,
+        roomId,
+        membersToChangePermissionsById.value.values.toList(),
+        membersToAddById.value.values.toList(),
+        welcomeMsg.value,
+        membersToRemoveById.value.values.toList(),
+        goodByeMsg.value,
+      );
+      sentNewRoomMembers.value = true;
+      permissionsChanged.value = false;
+      membersToAddById.value.clear();
+      membersToRemoveById.value.clear();
+      searchInputCtrl.text = '';
+      ui.rebuild();
     }
 
     return Scaffold(
@@ -141,32 +194,37 @@ class Members extends HookConsumerWidget {
                       enableFeedback: true,
                     ),
                     child: const Icon(Icons.save),
-                    onPressed: () {
-                      incoming.outgoingHandlers.sendEditRoomMembers(
-                        incoming.personId,
-                        incoming.personName,
-                        roomId,
-                        membersToAddById.value.values.toList(),
-                        welcomeMsg.value,
-                        membersToRemoveById.value.values.toList(),
-                        goodByeMsg.value,
-                      );
-                      sentNewRoomMembers.value = true;
-                    }),
+                    onPressed: onSavePressed),
               ]
-            : [],
+            : [
+                roomActionsDropdown(context, [
+                  CtxMenuItem('Reconnect', () => router.reconnect.action()),
+                  CtxMenuItem(
+                      'Get messages', () => router.getMessages.action()),
+                ])
+              ],
       ),
       body: Column(
         children: [
+          roomMembersList(
+              [myselfMemberDto], myselfMemberIconsRenderer, null, true),
           SingleChildScrollView(
             child: roomMembersList(
-                currentAndAdded,
+                currentRoomMembersExceptMyself,
                 currentMembersIconsRenderer,
                 (RoomMemberDto eachMember) =>
                     membersToRemoveById.value.containsKey(eachMember.person)),
           ),
           if (membersToRemoveById.value.isNotEmpty)
             goodByeField(goodByeFocusNode, goodByeInputCtrl, goodByeMsg),
+          if (membersToAddById.value.isNotEmpty) ...[
+            welcomeField(welcomeFocusNode, welcomeInputCtrl, welcomeMsg),
+            roomMembersList(
+                membersToAddById.value.values.toList(),
+                currentMembersIconsRenderer,
+                (RoomMemberDto eachMember) =>
+                    membersToRemoveById.value.containsKey(eachMember.person)),
+          ],
           searchField(searchFocusNode, searchInputCtrl, sendSearchPerson),
           SingleChildScrollView(
             child: incoming.waitingForPersonsFound == true
@@ -185,8 +243,8 @@ class Members extends HookConsumerWidget {
                     : Container(
                         padding: const EdgeInsets.all(20),
                         alignment: Alignment.center,
-                        child:
-                            Text('No users found', style: listItemTitleStyle)),
+                        child: Text('No (new) users found',
+                            style: listItemTitleStyle)),
           ),
         ],
       ),
@@ -194,14 +252,19 @@ class Members extends HookConsumerWidget {
   }
 }
 
-List<Widget> liToggle(IconData icon, bool pressed, Function() onTap,
-    [int rightMargin = 0, Color colorPressed = Colors.lightGreenAccent]) {
+List<Widget> liToggle(IconData icon, bool pressed,
+    [Function()? onTap,
+    int rightMargin = 0,
+    Color colorPressed = Colors.lightGreenAccent]) {
+  var color = pressed ? colorPressed : Colors.white;
+  if (onTap == null) {
+    color =
+        pressed ? colorPressed.withOpacity(0.4) : Colors.white.withOpacity(0.4);
+  }
   return [
     IconButton(
       onPressed: onTap,
-      icon: Icon(icon,
-          color: pressed ? colorPressed : Colors.white,
-          size: trailingIconsSize),
+      icon: Icon(icon, color: color, size: trailingIconsSize),
     ),
     if (rightMargin > 0)
       SizedBox(
@@ -212,7 +275,8 @@ List<Widget> liToggle(IconData icon, bool pressed, Function() onTap,
 
 ListView roomMembersList(List<RoomMemberDto> members,
     List<Widget> Function(RoomMemberDto member) trailingIcons,
-    [bool Function(RoomMemberDto member)? markedForDeletion]) {
+    [bool Function(RoomMemberDto member)? markedForDeletion,
+    bool isMyself = false]) {
   return ListView.builder(
       padding: const EdgeInsets.symmetric(vertical: 10),
       scrollDirection: Axis.vertical,
@@ -237,13 +301,19 @@ ListView roomMembersList(List<RoomMemberDto> members,
             ),
             title: Text(
               member.person_name,
-              style: greyOut ? listItemTitleStyleGreyedOut : listItemTitleStyle,
+              style: greyOut
+                  ? listItemTitleStyleGreyedOut
+                  : isMyself
+                      ? listItemTitleStyleMyself
+                      : listItemTitleStyle,
             ),
             subtitle: Text(
               member.person_email,
               style: greyOut
                   ? listItemSubtitleStyleGreyedOut
-                  : listItemSubtitleStyle,
+                  : isMyself
+                      ? listItemSubtitleStyleMyself
+                      : listItemSubtitleStyle,
             ),
             trailing: Container(
                 width: trailingIconsContainerWidth,
@@ -291,6 +361,17 @@ Widget searchField(FocusNode searchFocusNode,
           style: const TextStyle(color: Colors.white),
         )),
         const SizedBox(width: 5),
+        if (searchInputCtrl.value.text.isNotEmpty) ...[
+          IconButton(
+            icon: const Icon(
+              Icons.west,
+              size: sendMessageInputIconSize,
+              color: Colors.green,
+            ),
+            onPressed: () => searchInputCtrl.text = '',
+          ),
+          const SizedBox(width: 5),
+        ],
         IconButton(
           icon: const Icon(
             Icons.search,
@@ -299,6 +380,48 @@ Widget searchField(FocusNode searchFocusNode,
           ),
           onPressed: sendSearchPerson,
         ),
+      ],
+    ),
+  );
+}
+
+Widget welcomeField(FocusNode welcomeFocusNode,
+    TextEditingController welcomeInputCtrl, ValueNotifier<String> welcomeMsg) {
+  return Container(
+    color: altColor,
+    padding: const EdgeInsets.fromLTRB(5, 0, 10, 0),
+    // decoration: textInputDecoration,
+    margin: const EdgeInsets.symmetric(vertical: 5),
+    child: Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Flexible(
+            child: TextField(
+          autofocus: true,
+          focusNode: welcomeFocusNode,
+          textInputAction: TextInputAction.search,
+          keyboardType: TextInputType.multiline,
+          minLines: 3,
+          maxLines: 10,
+          onSubmitted: (modifiedText) => welcomeMsg.notifyListeners(),
+          controller: welcomeInputCtrl,
+          decoration: InputDecoration(
+            hintText:
+                'Introduce room topic to the users (below) you are adding',
+            hintStyle: TextStyle(
+              color: Colors.white.withOpacity(0.6),
+            ),
+            border: InputBorder.none,
+            contentPadding: const EdgeInsets.fromLTRB(
+              12.0,
+              10.0,
+              12.0,
+              10.0,
+            ),
+          ),
+          style: const TextStyle(color: Colors.white),
+        )),
       ],
     ),
   );
@@ -361,6 +484,7 @@ RoomMemberDto personToMember(PersonDto personDto) {
       person_name: personDto.name,
       person_email: personDto.email,
       person_phone: personDto.phone,
+      person_color: personDto.color,
       can_edit: false,
       can_invite: true);
 }

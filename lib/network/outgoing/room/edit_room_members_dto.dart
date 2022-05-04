@@ -19,19 +19,21 @@ class EditRoomMembersDto {
   int personEditing;
   String? personEditing_name;
   int roomId;
-  List<RoomMemberDto> personsToAdd;
+  List<RoomMemberDto>? personsToChangePermissions;
+  List<RoomMemberDto>? personsToAdd;
   String? welcomeMsg;
-  List<RoomMemberDto> personsToRemove;
+  List<RoomMemberDto>? personsToRemove;
   String? goodByeMsg;
 
   EditRoomMembersDto(
       {required this.personEditing,
       this.personEditing_name,
       required this.roomId,
-      required this.personsToAdd,
-      required this.welcomeMsg,
-      required this.personsToRemove,
-      required this.goodByeMsg});
+      this.personsToChangePermissions,
+      this.personsToAdd,
+      this.welcomeMsg,
+      this.personsToRemove,
+      this.goodByeMsg});
 
   // factory EditRoomMembersDto.fromJson(Map<String, dynamic> json) =>
   //     _$EditRoomMembersDtoFromJson(json);

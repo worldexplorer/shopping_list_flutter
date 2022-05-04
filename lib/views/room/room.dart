@@ -58,7 +58,7 @@ class Room extends HookConsumerWidget {
                     arguments: roomId);
               }),
               actions: [
-                roomActionsDropdown(context, router, incoming, [
+                roomActionsDropdown(context, [
                   CtxMenuItem(
                       'Mute notifications', () => router.getMessages.action()),
                   incoming.rooms.canEditCurrentRoom

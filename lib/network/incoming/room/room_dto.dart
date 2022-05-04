@@ -21,6 +21,7 @@ class RoomDto {
   List<PersonDto> persons;
   List<int> canEdit;
   List<int> canInvite;
+  // List<RoomMemberDto> members;
 
   RoomDto(
       {required this.name,

@@ -284,6 +284,7 @@ class OutgoingHandlers {
       int personEditing,
       String? personEditing_name,
       int roomId,
+      List<RoomMemberDto> personsToChangePermissions,
       List<RoomMemberDto> personsToAdd,
       String? welcomeMsg,
       List<RoomMemberDto> personsToRemove,

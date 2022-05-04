@@ -229,11 +229,17 @@ const loginTitleStyle = TextStyle(
 TextStyle listItemTitleStyle =
     const TextStyle(color: Colors.white, fontSize: 20);
 
+TextStyle listItemTitleStyleMyself =
+    const TextStyle(color: Colors.blueGrey, fontSize: 20);
+
 TextStyle listItemTitleStyleGreyedOut =
     const TextStyle(color: Colors.grey, fontSize: 20);
 
 TextStyle listItemSubtitleStyle =
     TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 14);
+
+TextStyle listItemSubtitleStyleMyself =
+    TextStyle(color: Colors.blueGrey.withOpacity(0.4), fontSize: 14);
 
 TextStyle listItemSubtitleStyleGreyedOut =
     TextStyle(color: Colors.grey.withOpacity(0.4), fontSize: 14);
