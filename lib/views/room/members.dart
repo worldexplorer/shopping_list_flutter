@@ -5,7 +5,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../network/incoming/incoming_state.dart';
 import '../../network/incoming/person/person_dto.dart';
-import '../../network/outgoing/room/room_member_dto.dart';
+import '../../network/incoming/room/room_member_dto.dart';
 import '../../utils/ui_state.dart';
 import '../../widget/context_menu.dart';
 import '../my_router.dart';
@@ -34,8 +34,7 @@ class Members extends HookConsumerWidget {
         personToMember(incoming.personNullable!);
     final List<RoomMemberDto> currentRoomMembersExceptMyself = rooms
         .currentRoomUsersOrEmpty
-        .where((x) => x.id != incoming.personId)
-        .map(personToMember)
+        .where((x) => x.person != incoming.personId)
         .toList();
 
     final searchInputCtrl = useTextEditingController(text: '');
@@ -48,6 +47,16 @@ class Members extends HookConsumerWidget {
 
     final personsCanEditById = useState<Map<int, RoomMemberDto>>({});
     final personsCanInviteById = useState<Map<int, RoomMemberDto>>({});
+    for (var eachRoomMember in currentRoomMembersExceptMyself) {
+      if (eachRoomMember.can_edit) {
+        personsCanEditById.value
+            .putIfAbsent(eachRoomMember.person, () => eachRoomMember);
+      }
+      if (eachRoomMember.can_invite) {
+        personsCanInviteById.value
+            .putIfAbsent(eachRoomMember.person, () => eachRoomMember);
+      }
+    }
 
     final membersToChangePermissionsById =
         useState<Map<int, RoomMemberDto>>({});
@@ -69,7 +78,6 @@ class Members extends HookConsumerWidget {
       }
     }
 
-    final permissionsChanged = useState(false);
     final sentNewRoomMembers = useState(false);
 
     useEffect(() {
@@ -134,14 +142,16 @@ class Members extends HookConsumerWidget {
           personsCanInviteById.value.containsKey(eachMember.person);
       ret = [
         ...liToggle(Icons.android, canEdit, () {
+          eachMember.can_edit = !eachMember.can_edit;
+          membersToChangePermissionsById.value
+              .putIfAbsent(eachMember.person, () => eachMember);
           togglePresenceInMembersMap(personsCanEditById, eachMember);
-          permissionsChanged.value = true;
-          permissionsChanged.notifyListeners();
         }, 1),
         ...liToggle(Icons.add_to_photos, canInvite, () {
+          eachMember.can_invite = !eachMember.can_invite;
+          membersToChangePermissionsById.value
+              .putIfAbsent(eachMember.person, () => eachMember);
           togglePresenceInMembersMap(personsCanInviteById, eachMember);
-          permissionsChanged.value = true;
-          permissionsChanged.notifyListeners();
         }, 2),
         ...ret,
       ];
@@ -172,9 +182,9 @@ class Members extends HookConsumerWidget {
         goodByeMsg.value,
       );
       sentNewRoomMembers.value = true;
-      permissionsChanged.value = false;
       membersToAddById.value.clear();
       membersToRemoveById.value.clear();
+      membersToChangePermissionsById.value.clear();
       searchInputCtrl.text = '';
       ui.rebuild();
     }
@@ -187,7 +197,7 @@ class Members extends HookConsumerWidget {
         centerTitle: false,
         title: roomTitle(
             incoming, roomId, incoming.socketConnected, 'Editing room members'),
-        actions: hasChanges || permissionsChanged.value
+        actions: hasChanges || membersToChangePermissionsById.value.isNotEmpty
             ? [
                 ElevatedButton(
                     style: ElevatedButton.styleFrom(
@@ -485,6 +495,7 @@ RoomMemberDto personToMember(PersonDto personDto) {
       person_email: personDto.email,
       person_phone: personDto.phone,
       person_color: personDto.color,
+      person_username: personDto.username,
       can_edit: false,
       can_invite: true);
 }

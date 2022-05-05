@@ -104,18 +104,18 @@ class Rooms extends HookConsumerWidget {
         itemCount: roomsList.length,
         itemBuilder: (BuildContext context, int index) {
           final RoomDto room = roomsList[index];
-          final users = room.persons;
+          final members = room.members;
           const firstUsersLimit = 4;
-          final majorUsers = users
+          final majorUsers = members
               .getRange(
                   0,
-                  users.length >= firstUsersLimit
+                  members.length >= firstUsersLimit
                       ? firstUsersLimit
-                      : users.length)
-              .map((x) => x.name)
+                      : members.length)
+              .map((x) => x.person_name)
               .join(", ");
-          final minorUsers = users.length > firstUsersLimit
-              ? ' + ${users.length - firstUsersLimit}'
+          final minorUsers = members.length > firstUsersLimit
+              ? ' + ${members.length - firstUsersLimit}'
               : '';
           final label = room.name;
 

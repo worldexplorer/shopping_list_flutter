@@ -8,7 +8,7 @@ part 'room_member_dto.g.dart';
 
 @JsonSerializable(
     checked: true,
-    createFactory: false,
+    createFactory: true,
     createToJson: true,
     explicitToJson: true,
     disallowUnrecognizedKeys: true,
@@ -19,6 +19,7 @@ class RoomMemberDto {
   String person_email;
   String person_phone;
   String person_color;
+  String person_username;
   bool can_edit;
   bool can_invite;
 
@@ -28,10 +29,11 @@ class RoomMemberDto {
       required this.person_email,
       required this.person_phone,
       required this.person_color,
+      required this.person_username,
       required this.can_edit,
       required this.can_invite});
 
-  // factory RoomMemberDto.fromJson(Map<String, dynamic> json) =>
-  //     _$RoomMemberDtoFromJson(json);
+  factory RoomMemberDto.fromJson(Map<String, dynamic> json) =>
+      _$RoomMemberDtoFromJson(json);
   Map<String, dynamic> toJson() => _$RoomMemberDtoToJson(this);
 }

@@ -149,8 +149,10 @@ class IncomingState extends ChangeNotifier {
       copiedfrom_id: null,
       person_created: personId,
       person_created_name: personName,
-      persons_can_edit: rooms.currentRoomUsersOrEmpty.map((x) => x.id).toList(),
-      persons_can_fill: rooms.currentRoomUsersOrEmpty.map((x) => x.id).toList(),
+      persons_can_edit:
+          rooms.currentRoomUsersOrEmpty.map((x) => x.person).toList(),
+      persons_can_fill:
+          rooms.currentRoomUsersOrEmpty.map((x) => x.person).toList(),
       purchased: false,
       person_purchased: null,
       person_purchased_name: null,

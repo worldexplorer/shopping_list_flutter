@@ -4,6 +4,7 @@ import '../connection_state.dart';
 import '../incoming/incoming_state.dart';
 import '../incoming/purchase/pur_item_dto.dart';
 import '../incoming/purchase/purchase_dto.dart';
+import '../incoming/room/room_member_dto.dart';
 import 'message/archive_messages_dto.dart';
 import 'message/delete_messages_dto.dart';
 import 'message/edit_message_dto.dart';
@@ -22,7 +23,6 @@ import 'room/edit_room_members_dto.dart';
 import 'room/find_persons_dto.dart';
 import 'room/new_room_dto.dart';
 import 'room/rename_room_dto.dart';
-import 'room/room_member_dto.dart';
 
 class OutgoingHandlers {
   ConnectionState connectionState;
@@ -297,6 +297,7 @@ class OutgoingHandlers {
       personEditing: personEditing,
       personEditing_name: personEditing_name,
       roomId: roomId,
+      personsToChangePermissions: personsToChangePermissions,
       personsToAdd: personsToAdd,
       welcomeMsg: welcomeMsg,
       personsToRemove: personsToRemove,

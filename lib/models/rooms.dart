@@ -1,7 +1,7 @@
 import '../network/incoming/message/message_dto.dart';
-import '../network/incoming/person/person_dto.dart';
 import '../network/incoming/purchase/pur_item_filled_dto.dart';
 import '../network/incoming/room/room_dto.dart';
+import '../network/incoming/room/room_member_dto.dart';
 import '../network/outgoing/outgoing_handlers.dart';
 import '../notifications/notifications_plugin.dart';
 import '../utils/static_logger.dart';
@@ -41,14 +41,15 @@ class Rooms {
     return currentRoomDto != null ? currentRoomDto!.name : 'Fetching...';
   }
 
-  List<PersonDto> get currentRoomUsersOrEmpty {
-    return currentRoomDto != null ? currentRoomDto!.persons : [];
+  List<RoomMemberDto> get currentRoomUsersOrEmpty {
+    return currentRoomDto != null ? currentRoomDto!.members : [];
   }
 
   bool get canEditCurrentRoom {
     if (currentRoomDto != null) {
-      final iCanEdit =
-          currentRoomDto!.canEdit.where((x) => x == myPersonId).isNotEmpty;
+      final iCanEdit = currentRoomDto!.members
+          .where((x) => x.person == myPersonId)
+          .isNotEmpty;
       return iCanEdit;
     } else {
       return false;
@@ -96,7 +97,7 @@ class Rooms {
   }
 
   String get currentRoomUsersCsv {
-    return currentRoomUsersOrEmpty.map((x) => x.name).join(", ");
+    return currentRoomUsersOrEmpty.map((x) => x.person_name).join(", ");
   }
 
   int isEditingMessageId = 0;
@@ -127,8 +128,8 @@ class Rooms {
 
     if (msgReceived.user != myPersonId && fireNotification) {
       RoomDto? room = roomById[roomId];
-      PersonDto? author =
-          room?.persons.firstWhere((x) => x.id == msgReceived.user);
+      RoomMemberDto? author =
+          room?.members.firstWhere((x) => x.person == msgReceived.user);
       String roomName = room != null ? room.name : 'ROOM_NAME_UNKNOWN';
       NotificationsPlugin.instance.notificator
           .showIncomingMessage(msgReceived, roomName, author);
@@ -153,8 +154,8 @@ class Rooms {
 
     if (purItemFilled.person_bought != myPersonId && fireNotification) {
       RoomDto? room = roomById[purItemFilled.room];
-      PersonDto? author =
-          room?.persons.firstWhere((x) => x.id == purItemFilled.person_bought);
+      RoomMemberDto? author = room?.members
+          .firstWhere((x) => x.person == purItemFilled.person_bought);
       String roomName = room != null ? room.name : 'ROOM_NAME_UNKNOWN';
       NotificationsPlugin.instance.notificator
           .showPurItemFilled(purItemFilled, roomName, author);

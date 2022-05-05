@@ -1,4 +1,5 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:shopping_list_flutter/network/incoming/room/room_member_dto.dart';
 
 import '../network/incoming/message/message_dto.dart';
 import '../network/incoming/person/person_dto.dart';
@@ -19,10 +20,10 @@ class Notifications {
     messages = [];
   }
 
-  showIncomingMessage(MessageDto msg, String roomName, PersonDto? author) {
+  showIncomingMessage(MessageDto msg, String roomName, RoomMemberDto? author) {
     Person coworker = Person(
-      name: author != null ? author.name : 'AUTHOR_UNKNOWN',
-      key: author != null ? 'personId:${author.id}' : 'AUTHOR_UNKNOWN',
+      name: author != null ? author.person_name : 'AUTHOR_UNKNOWN',
+      key: author != null ? 'personId:${author.person}' : 'AUTHOR_UNKNOWN',
       // uri: author != null ? author!.name : 'AUTHOR_UNKNOWN',
       // icon: FlutterBitmapAssetAndroidIcon('icons/coworker.png'),
     );
@@ -62,7 +63,7 @@ class Notifications {
   }
 
   showPurItemFilled(
-      PurItemFilledDto purItemFilled, String roomName, PersonDto? author) {
+      PurItemFilledDto purItemFilled, String roomName, RoomMemberDto? author) {
     // TODO
   }
 }

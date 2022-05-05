@@ -4,7 +4,7 @@
 
 import 'package:json_annotation/json_annotation.dart';
 
-import 'room_member_dto.dart';
+import '../../incoming/room/room_member_dto.dart';
 
 part 'edit_room_members_dto.g.dart';
 
