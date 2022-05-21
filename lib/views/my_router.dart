@@ -32,9 +32,9 @@ class MyRouter extends ChangeNotifier {
   late ActionMenuItem getMessages;
   late ActionMenuItem refresh;
 
-  late Map<Page, MenuItem> _menuItems;
+  late Map<Page, MyMenuItem> _menuItems;
 
-  List<MenuItem> get visibleMenuItems => _menuItems.values
+  List<MyMenuItem> get visibleMenuItems => _menuItems.values
       .toList()
       .where((x) => x.isVisibleInMenu == true)
       .toList();
@@ -184,13 +184,13 @@ enum Page {
   Refresh
 }
 
-class MenuItem {
+class MyMenuItem {
   Page page;
   String title;
   bool isVisibleInMenu = true;
   bool isSelectedInMenu = false;
 
-  MenuItem({
+  MyMenuItem({
     required this.page,
     required this.title,
     required this.isVisibleInMenu,
@@ -198,7 +198,7 @@ class MenuItem {
   });
 }
 
-class RouteMenuItem extends MenuItem {
+class RouteMenuItem extends MyMenuItem {
   String path;
   WidgetBuilder widget;
   Map<String, String>? parameters;
@@ -219,7 +219,7 @@ class RouteMenuItem extends MenuItem {
         );
 }
 
-class ActionMenuItem extends MenuItem {
+class ActionMenuItem extends MyMenuItem {
   Function() action;
 
   ActionMenuItem({

@@ -15,7 +15,7 @@ void mySnackBar(
   }
 
   //https://stackoverflow.com/questions/47592301/setstate-or-markneedsbuild-called-during-build
-  SchedulerBinding.instance?.addPostFrameCallback((_) {
+  SchedulerBinding.instance.addPostFrameCallback((_) {
     final snackControl = ScaffoldMessenger.of(context);
     // final snackControl = messengerKey.currentState;
 

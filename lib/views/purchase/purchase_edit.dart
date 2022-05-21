@@ -14,19 +14,16 @@ import 'purchase_item_edit.dart';
 import 'puritem_states.dart';
 
 class PurchaseEdit extends HookConsumerWidget {
-  late PurchaseDto purchaseClone;
-
-  final PurchaseDto purchaseToClone;
   final int messageId;
-  // final PurItemDto? newItemToFocus;
+  final PurchaseDto purchase;
+  final PurchaseDto purchaseClone;
 
-  PurchaseEdit({
+  const PurchaseEdit({
     Key? key,
-    required this.purchaseToClone,
     required this.messageId,
-  }) : super(key: key) {
-    purchaseClone = purchaseToClone.clone();
-  }
+    required this.purchase,
+    required this.purchaseClone,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -53,16 +50,35 @@ class PurchaseEdit extends HookConsumerWidget {
           (incoming.newPurchaseMessageItem != null ? ' Purchase' : ' Editing');
     }
 
-    addProduct(int? pgroup_id) {
-      final newItemToFocus = PurItemDto(
+    final ValueNotifier<List<PurchaseItemEdit>> purItemEditors = useState(
+        purchase.purItems
+            .map(
+                (purItem) =>
+                    createPurItemEditor(purchase, purItem, pgroupFocused),
+                addProduct)
+            .toList());
+
+    addProduct(int? pgroupId, [int? index]) {
+      final newPurItem = PurItemDto(
         id: 0,
         bought: 0,
         name: '',
-        pgroup_id: pgroup_id,
+        pgroup_id: pgroupId,
       );
-      purchase.purItems.add(newItemToFocus);
+
+      final editor =
+          createPurItemEditor(purchase, newPurItem, pgroupFocused, addProduct);
+
+      if (index != null) {
+        purchase.purItems.insert(index, newPurItem);
+        purItemEditors.value.insert(index, editor);
+      } else {
+        purchase.purItems.add(newPurItem);
+        purItemEditors.value.add(editor);
+      }
+
       if (purchase.show_pgroup) {
-        grouping.value.addProduct(newItemToFocus);
+        grouping.value.addProduct(newPurItem);
       }
       ui.rebuild();
     }
@@ -113,6 +129,12 @@ class PurchaseEdit extends HookConsumerWidget {
       }
     }
 
+    List<Widget> flatOrGrouped() {
+      return purchase.show_pgroup
+          ? groupedEditors(grouping, purchase, ui, pgroupFocused, addProduct)
+          : purItemEditors.value;
+    }
+
     return Column(
         mainAxisSize: MainAxisSize.max,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -127,6 +149,7 @@ class PurchaseEdit extends HookConsumerWidget {
                         child: TextField(
                             textInputAction: TextInputAction.newline,
                             keyboardType: TextInputType.multiline,
+                            enableSuggestions: true,
                             minLines: 1,
                             maxLines: 3,
                             controller: titleInputCtrl,
@@ -157,7 +180,9 @@ class PurchaseEdit extends HookConsumerWidget {
                     onPressed: onSaveButtonPressed),
               ]),
           const SizedBox(height: 5),
-          ...flatOrGrouped(grouping, purchase, ui, pgroupFocused, addProduct),
+
+          ...flatOrGrouped(),
+
           const SizedBox(height: 5),
           if (settingsExpanded.value)
             // Wrap(
@@ -279,8 +304,8 @@ class PurchaseEdit extends HookConsumerWidget {
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   if (incoming.thisPurchaseIsNew(purchase)) ...[
-                    const SizedBox(
-                        width: 10), // away from left round phone corner
+                    // away from left round phone corner
+                    const SizedBox(width: 10),
                     ElevatedButton(
                       onPressed: onCancelButtonPressed,
                       child: Row(children: [
@@ -308,158 +333,170 @@ class PurchaseEdit extends HookConsumerWidget {
                 ]),
         ]);
   }
+}
 
-  Widget toggleText(
-      String title, bool value, Function(bool newValue) onChange, UiState ui) {
-    return toggle(Text(title, style: purchaseStyle), value, onChange, ui);
-  }
+Widget toggleText(
+    String title, bool value, Function(bool newValue) onChange, UiState ui) {
+  return toggle(Text(title, style: purchaseStyle), value, onChange, ui);
+}
 
-  Widget toggleIconText(Icon icon, String title, bool value,
-      Function(bool newValue) onChange, UiState ui) {
-    return toggle(
-        Row(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              icon,
-              const SizedBox(
-                width: 5,
-              ),
-              Text(title, style: purchaseStyle)
-            ]),
-        value,
-        onChange,
-        ui);
-  }
+Widget toggleIconText(Icon icon, String title, bool value,
+    Function(bool newValue) onChange, UiState ui) {
+  return toggle(
+      Row(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            icon,
+            const SizedBox(
+              width: 5,
+            ),
+            Text(title, style: purchaseStyle)
+          ]),
+      value,
+      onChange,
+      ui);
+}
 
-  Widget toggle(Widget textOrIcon, bool value, Function(bool newValue) onChange,
-      UiState ui) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: [
-        Switch(
-          value: value,
-          onChanged: (newValue) {
-            onChange(newValue);
-            ui.rebuild();
-          },
-        ),
-        // const SizedBox(width: 3),
-        // Expanded(
-        //     child:
-        GestureDetector(
-          onTapDown: (TapDownDetails details) {
-            onChange(!value);
-            ui.rebuild();
-          },
-          child: textOrIcon,
-          // )
-        ),
-      ],
-    );
-  }
+Widget toggle(Widget textOrIcon, bool value, Function(bool newValue) onChange,
+    UiState ui) {
+  return Row(
+    mainAxisSize: MainAxisSize.min,
+    mainAxisAlignment: MainAxisAlignment.start,
+    children: [
+      Switch(
+        value: value,
+        onChanged: (newValue) {
+          onChange(newValue);
+          ui.rebuild();
+        },
+      ),
+      // const SizedBox(width: 3),
+      // Expanded(
+      //     child:
+      GestureDetector(
+        onTapDown: (TapDownDetails details) {
+          onChange(!value);
+          ui.rebuild();
+        },
+        child: textOrIcon,
+        // )
+      ),
+    ],
+  );
+}
 
-  Iterable<Widget> flatOrGrouped(
-      ValueNotifier<Grouping> groupingNotifier,
-      PurchaseDto purchase,
-      UiState ui,
-      ValueNotifier<int?> pgroupFocused,
-      Function(int?) addProduct) {
-    final grouping = groupingNotifier.value;
-    if (purchase.show_pgroup) {
-      // grouping.buildGroups();
+List<Widget> groupedEditors(
+    ValueNotifier<Grouping> groupingNotifier,
+    PurchaseDto purchase,
+    UiState ui,
+    ValueNotifier<int?> pgroupFocused,
+    Function(int?, [int?]) addProduct) {
+  final grouping = groupingNotifier.value;
+  // grouping.buildGroups();
+  final List<Widget> ret = [];
 
-      final List<Widget> ret = [];
+  int indexPgroup = 0;
+  final hasDragHandle = grouping.pgroupById.length > 1;
+  for (MapEntry<int, String> idPgroup in grouping.pgroupById.entries) {
+    final int pgroupId = idPgroup.key;
+    final String pgroupName = idPgroup.value;
 
-      int indexPgroup = 0;
-      final hasDragHandle = grouping.pgroupById.length > 1;
-      for (MapEntry<int, String> idPgroup in grouping.pgroupById.entries) {
-        final int pgroupId = idPgroup.key;
-        final String pgroupName = idPgroup.value;
+    ret.add(PgroupEdit(
+        key: Key('${indexPgroup++}:$pgroupId'),
+        name: pgroupName,
+        onTapNotifyFocused: () {
+          pgroupFocused.value = pgroupId;
+        },
+        onChanged: (newName) {
+          final addedNewGroupBelow =
+              grouping.changeGroupName(pgroupId, newName);
+          if (addedNewGroupBelow) {
+            // insert a new product into this group
+            addProduct(pgroupId);
+          }
+        },
+        canDelete: grouping.canDeleteGroup(pgroupId),
+        onDelete: () {
+          grouping.deleteGroup(pgroupId);
+          ui.rebuild();
+        },
+        hasDragHandle: hasDragHandle));
 
-        ret.add(PgroupEdit(
-            key: Key('${indexPgroup++}:$pgroupId'),
-            name: pgroupName,
-            onTapNotifyFocused: () {
-              pgroupFocused.value = pgroupId;
-            },
-            onChanged: (newName) {
-              final addedNewGroupBelow =
-                  grouping.changeGroupName(pgroupId, newName);
-              if (addedNewGroupBelow) {
-                // insert a new product into this group
-                addProduct(pgroupId);
-              }
-            },
-            canDelete: grouping.canDeleteGroup(pgroupId),
-            onDelete: () {
-              grouping.deleteGroup(pgroupId);
-              ui.rebuild();
-            },
-            hasDragHandle: hasDragHandle));
-
-        int indexProduct = 0;
-        for (PurItemDto product in grouping.productsByPgroup[pgroupId] ?? []) {
-          ret.add(PurchaseItemEdit(
-            key: Key(
-                '$indexPgroup:$pgroupId:${indexProduct++}:${product.product_id}'),
-            purchase: purchase,
-            purItem: product,
-            onTapNotifyFocused: () {
-              pgroupFocused.value = pgroupId;
-            },
-            onChangedAddProduct: (newName) {
-              final shouldAddProductBelow =
-                  grouping.productNameChanged(product);
-              if (shouldAddProductBelow) {
-                addProduct(pgroupId);
-              }
-            },
-            canDelete: grouping.canDeleteProduct(product, pgroupId, pgroupName),
-            onDelete: () {
-              if (purchase.show_pgroup) {
-                grouping.deleteProduct(product);
-              }
-            },
-          ));
-        }
-      }
-      return ret;
-    } else {
-      int i = 1;
-      return purchase.purItems.map((x) => PurchaseItemEdit(
-            key: Key('${i++}:${x.id}:${x.pgroup_id}:${x.product_id}'),
-            purchase: purchase,
-            purItem: x,
-            onTapNotifyFocused: () {
-              pgroupFocused.value = null;
-            },
-            onChangedAddProduct: (newName) {
-              final shouldAddProduct = allPurItemsHaveName(purchase.purItems);
-              if (shouldAddProduct) {
-                addProduct(null);
-              }
-            },
-            canDelete: true,
-            onDelete: () {},
-          ));
-
-      // ListView.builder(
-      //   shrinkWrap: true,
-      //   itemCount: purchase.purItems.length,
-      //   itemBuilder: (BuildContext context, int index) {
-      //     final purItem = purchase.purItems[index];
-      //     final widget = PurchaseItemEdit(
-      //       key: Key(DateTime.now().microsecond.toString()),
-      //       purchase: purchase,
-      //       purItem: purItem,
-      //       isMe: isMe,
-      //     );
-      //     // return Text(purItem.name, softWrap: true, style: purchaseStyle);
-      //     return widget;
-      //   },
-      // ),
+    int indexProduct = 0;
+    for (PurItemDto product in grouping.productsByPgroup[pgroupId] ?? []) {
+      ret.add(PurchaseItemEdit(
+        key: Key(
+            '$indexPgroup:$pgroupId:${indexProduct++}:${product.product_id}'),
+        purchase: purchase,
+        purItem: product,
+        onTapNotifyFocused: () {
+          pgroupFocused.value = pgroupId;
+        },
+        onChangedAddProduct: (newName) {
+          final shouldAddProductBelow = grouping.productNameChanged(product);
+          if (shouldAddProductBelow) {
+            addProduct(pgroupId);
+          }
+        },
+        canDelete: grouping.canDeleteProduct(product, pgroupId, pgroupName),
+        onDelete: () {
+          if (purchase.show_pgroup) {
+            grouping.deleteProduct(product);
+          }
+        },
+        onEnter: () {
+          addProduct(null, indexProduct + 1);
+        },
+        autofocus: false,
+      ));
     }
   }
+  return ret;
+  // ListView.builder(
+  //   shrinkWrap: true,
+  //   itemCount: purchase.purItems.length,
+  //   itemBuilder: (BuildContext context, int index) {
+  //     final purItem = purchase.purItems[index];
+  //     final widget = PurchaseItemEdit(
+  //       key: Key(DateTime.now().microsecond.toString()),
+  //       purchase: purchase,
+  //       purItem: purItem,
+  //       isMe: isMe,
+  //     );
+  //     // return Text(purItem.name, softWrap: true, style: purchaseStyle);
+  //     return widget;
+  //   },
+  // ),
+  // }
+}
+
+int i = 0;
+PurchaseItemEdit createPurItemEditor(
+    PurchaseDto purchase, PurItemDto purItem, ValueNotifier<int?> pgroupFocused,
+    [Function(int?, [int?])? addProduct, bool autofocus = false]) {
+  return PurchaseItemEdit(
+    key: Key('${i++}:${purItem.id}:${purItem.pgroup_id}:${purItem.product_id}'),
+    purchase: purchase,
+    purItem: purItem,
+    onTapNotifyFocused: () {
+      pgroupFocused.value = null;
+    },
+    onChangedAddProduct: (newName) {
+      final shouldAddProduct = allPurItemsHaveName(purchase.purItems);
+      if (shouldAddProduct) {
+        if (addProduct != null) {
+          addProduct(null);
+        }
+      }
+    },
+    canDelete: true,
+    onDelete: () {},
+    onEnter: () {
+      if (addProduct != null) {
+        addProduct(null, i + 1);
+      }
+    },
+    autofocus: autofocus,
+  );
 }

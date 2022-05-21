@@ -66,7 +66,7 @@ class Rooms extends HookConsumerWidget {
       drawer: const Menu(),
       appBar: AppBar(
         title: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          titleText(true, "Shared Shopping List"),
+          titleText(socketConnected, "Shared Shopping List"),
           if (!socketConnected)
             Text(
               'connecting...',

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:shopping_list_flutter/utils/static_logger.dart';
 
 import '../../network/incoming/purchase/pur_item_dto.dart';
 import '../../network/incoming/purchase/purchase_dto.dart';
@@ -16,6 +17,8 @@ class PurchaseItemEdit extends HookConsumerWidget {
   final Function(String newName) onChangedAddProduct;
   final bool canDelete;
   final Function() onDelete;
+  final Function() onEnter;
+  final bool autofocus;
 
   const PurchaseItemEdit({
     Key? key,
@@ -25,6 +28,8 @@ class PurchaseItemEdit extends HookConsumerWidget {
     required this.onChangedAddProduct,
     required this.canDelete,
     required this.onDelete,
+    required this.onEnter,
+    required this.autofocus,
   }) : super(key: key);
 
   @override
@@ -55,13 +60,20 @@ class PurchaseItemEdit extends HookConsumerWidget {
                 child: TextField(
                     textInputAction: TextInputAction.newline,
                     keyboardType: TextInputType.multiline,
+                    enableSuggestions: true,
+                    autofocus: autofocus,
                     minLines: 1,
                     maxLines: 5,
                     controller: nameInputCtrl,
                     onChanged: (String text) {
-                      purItem.name = text;
-                      onChangedAddProduct(text);
-                      // ui.rebuild();
+                      if (text.endsWith("\n")) {
+                        StaticLogger.append('ENDS_WITH_NEWLINE: $text');
+                        onEnter();
+                      } else {
+                        purItem.name = text;
+                        onChangedAddProduct(text);
+                      }
+                      ui.rebuild();
                     },
                     onTap: onTapNotifyFocused,
                     decoration: InputDecoration(

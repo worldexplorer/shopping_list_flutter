@@ -74,9 +74,10 @@ class MessageWidget extends ConsumerWidget {
                             ? SingleChildScrollView(
                                 scrollDirection: Axis.vertical,
                                 child: PurchaseEdit(
-                                  // after SAVE, Purchase() will receive a new incoming...message.purchase
-                                  purchaseToClone: message.purchase!,
                                   messageId: message.id,
+                                  purchase: message.purchase!,
+                                  // after SAVE, Purchase() will receive a new incoming...message.purchase
+                                  purchaseClone: message.purchase!.clone(),
                                 ))
                             : Purchase(
                                 purchase: message.purchase!,

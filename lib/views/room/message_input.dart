@@ -62,6 +62,7 @@ class MessageInput extends HookConsumerWidget {
                 keyboardType: TextInputType.multiline,
                 minLines: 1,
                 maxLines: 12,
+                enableSuggestions: true,
                 // onSubmitted: (txt) => sendMessageFromInput,
                 controller: ui.msgInputCtrl,
                 decoration: InputDecoration(

@@ -76,8 +76,8 @@ class Menu extends HookConsumerWidget {
     return ret;
   }
 
-  List<Widget> createMenuItems(List<MenuItem> routeItems, BuildContext context,
-      Function? onActionCompleted) {
+  List<Widget> createMenuItems(List<MyMenuItem> routeItems,
+      BuildContext context, Function? onActionCompleted) {
     List<Widget> ret = [];
     for (var routeItem in routeItems) {
       if (routeItem.isVisibleInMenu == false) {
