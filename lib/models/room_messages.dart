@@ -214,7 +214,7 @@ class RoomMessages {
 
     final prevMsgFound = prevMsg;
     final puritemToFill = prevMsgFound.purchase?.purItems
-        .firstWhere((element) => element.id == purItemFilled.id);
+        .firstWhere((x) => x.id == purItemFilled.id);
 
     if (puritemToFill == null) {
       return false;

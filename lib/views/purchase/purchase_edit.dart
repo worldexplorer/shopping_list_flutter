@@ -34,7 +34,8 @@ class PurchaseEdit extends HookConsumerWidget {
     final purchase = purchaseState.value;
 
     final settingsExpanded = useState(true);
-    final grouping = useState(Grouping(purchase.purItems));
+    final ValueNotifier<Grouping> grouping =
+        useState(Grouping(purchase.purItems));
     final ValueNotifier<int?> pgroupFocused = useState(null);
 
     final titleInputCtrl = useTextEditingController();
@@ -50,37 +51,14 @@ class PurchaseEdit extends HookConsumerWidget {
           (incoming.newPurchaseMessageItem != null ? ' Purchase' : ' Editing');
     }
 
-    final ValueNotifier<List<PurchaseItemEdit>> purItemEditors = useState(
-        purchase.purItems
-            .map(
-                (purItem) =>
-                    createPurItemEditor(purchase, purItem, pgroupFocused),
-                addProduct)
-            .toList());
+    late ValueNotifier<List<PurchaseItemEdit>> purItemEditors = useState([]);
 
-    addProduct(int? pgroupId, [int? index]) {
-      final newPurItem = PurItemDto(
-        id: 0,
-        bought: 0,
-        name: '',
-        pgroup_id: pgroupId,
-      );
-
-      final editor =
-          createPurItemEditor(purchase, newPurItem, pgroupFocused, addProduct);
-
-      if (index != null) {
-        purchase.purItems.insert(index, newPurItem);
-        purItemEditors.value.insert(index, editor);
-      } else {
-        purchase.purItems.add(newPurItem);
-        purItemEditors.value.add(editor);
-      }
-
-      if (purchase.show_pgroup) {
-        grouping.value.addProduct(newPurItem);
-      }
-      ui.rebuild();
+    if (purItemEditors.value.isEmpty) {
+      // initialization each time will cause AUTOFOCUS_ON_STORE_NAME
+      purItemEditors.value = purchase.purItems
+          .map((purItem) => createPurItemEditor(
+              purchase, purItem, pgroupFocused, purItemEditors, grouping, ui))
+          .toList();
     }
 
     onSaveButtonPressed() {
@@ -129,10 +107,24 @@ class PurchaseEdit extends HookConsumerWidget {
       }
     }
 
+    addPurItemDtoShort(int? pgroupId, [int? insertIndex]) {
+      addPurItemDto(purchase, pgroupFocused, purItemEditors, grouping, ui,
+          pgroupId, insertIndex);
+    }
+
     List<Widget> flatOrGrouped() {
       return purchase.show_pgroup
-          ? groupedEditors(grouping, purchase, ui, pgroupFocused, addProduct)
+          ? groupedEditors(
+              grouping, purchase, ui, pgroupFocused, addPurItemDtoShort)
           : purItemEditors.value;
+    }
+
+    final storeFocusNode = useFocusNode(
+      debugLabel: 'storeFocusNode',
+    );
+
+    if (purchase.purItems.isEmpty) {
+      storeFocusNode.requestFocus();
     }
 
     return Column(
@@ -149,12 +141,22 @@ class PurchaseEdit extends HookConsumerWidget {
                         child: TextField(
                             textInputAction: TextInputAction.newline,
                             keyboardType: TextInputType.multiline,
-                            enableSuggestions: true,
+                            // enableSuggestions: true,
                             minLines: 1,
                             maxLines: 3,
                             controller: titleInputCtrl,
+                            autofocus: true,
+                            focusNode: storeFocusNode,
                             onChanged: (String text) {
-                              purchase.name = text;
+                              if (text.endsWith("\n")) {
+                                StaticLogger.append('ENDS_WITH_NEWLINE: $text');
+                                titleInputCtrl.text =
+                                    text.substring(0, text.length - 1);
+                                purItemEditors.value.first.focusNode
+                                    .requestFocus();
+                              } else {
+                                purchase.name = text;
+                              }
                               // ui.rebuild();
                             },
                             decoration: InputDecoration(
@@ -175,9 +177,9 @@ class PurchaseEdit extends HookConsumerWidget {
                       padding: const EdgeInsets.symmetric(vertical: 10),
                       // fixedSize: const Size(20, 20)
                     ),
+                    onPressed: onSaveButtonPressed,
                     child: const Icon(Icons.save,
-                        size: sendMessageInputIconSize, color: Colors.white),
-                    onPressed: onSaveButtonPressed),
+                        size: sendMessageInputIconSize, color: Colors.white)),
               ]),
           const SizedBox(height: 5),
 
@@ -258,16 +260,16 @@ class PurchaseEdit extends HookConsumerWidget {
                               const Spacer(),
                               if (!incoming.thisPurchaseIsNew(purchase))
                                 ElevatedButton(
+                                    onPressed: onCancelButtonPressed,
                                     child: const Icon(Icons.undo_rounded,
                                         color: Colors.white,
-                                        size: sendMessageInputIconSize),
-                                    onPressed: onCancelButtonPressed),
+                                        size: sendMessageInputIconSize)),
                               const SizedBox(width: 10),
                               ElevatedButton(
+                                  onPressed: onSaveButtonPressed,
                                   child: const Icon(Icons.save,
                                       color: Colors.white,
-                                      size: sendMessageInputIconSize),
-                                  onPressed: onSaveButtonPressed),
+                                      size: sendMessageInputIconSize)),
                             ]),
                         Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -418,8 +420,10 @@ List<Widget> groupedEditors(
         },
         canDelete: grouping.canDeleteGroup(pgroupId),
         onDelete: () {
-          grouping.deleteGroup(pgroupId);
-          ui.rebuild();
+          if (purchase.show_pgroup) {
+            grouping.deleteGroup(pgroupId);
+            ui.rebuild();
+          }
         },
         hasDragHandle: hasDragHandle));
 
@@ -433,7 +437,7 @@ List<Widget> groupedEditors(
         onTapNotifyFocused: () {
           pgroupFocused.value = pgroupId;
         },
-        onChangedAddProduct: (newName) {
+        onChange: (newName) {
           final shouldAddProductBelow = grouping.productNameChanged(product);
           if (shouldAddProductBelow) {
             addProduct(pgroupId);
@@ -471,32 +475,106 @@ List<Widget> groupedEditors(
   // }
 }
 
-int i = 0;
+int serno = 0;
 PurchaseItemEdit createPurItemEditor(
-    PurchaseDto purchase, PurItemDto purItem, ValueNotifier<int?> pgroupFocused,
-    [Function(int?, [int?])? addProduct, bool autofocus = false]) {
+    PurchaseDto purchase,
+    PurItemDto purItem,
+    ValueNotifier<int?> pgroupFocused,
+    ValueNotifier<List<PurchaseItemEdit>> purItemEditors,
+    ValueNotifier<Grouping> grouping,
+    UiState ui,
+    [bool autofocus = true]) {
   return PurchaseItemEdit(
-    key: Key('${i++}:${purItem.id}:${purItem.pgroup_id}:${purItem.product_id}'),
+    key: Key(
+        '${serno++}:${purItem.id}:${purItem.pgroup_id}:${purItem.product_id}'),
     purchase: purchase,
     purItem: purItem,
     onTapNotifyFocused: () {
       pgroupFocused.value = null;
     },
-    onChangedAddProduct: (newName) {
-      final shouldAddProduct = allPurItemsHaveName(purchase.purItems);
-      if (shouldAddProduct) {
-        if (addProduct != null) {
-          addProduct(null);
-        }
+    onChange: (newName) {
+      final editingLastProduct = purchase.purItems.last == purItem;
+      final noEmptyProduct = allPurItemsHaveName(purchase.purItems);
+      if (editingLastProduct && noEmptyProduct) {
+        addPurItemDto(
+            purchase, pgroupFocused, purItemEditors, grouping, ui, null);
       }
+      final editor =
+          purItemEditors.value.firstWhere((x) => x.purItem == purItem);
+      editor.focusNode.requestFocus();
     },
     canDelete: true,
-    onDelete: () {},
-    onEnter: () {
-      if (addProduct != null) {
-        addProduct(null, i + 1);
-      }
+    onDelete: () {
+      purItemEditors.value.removeWhere((x) => x.purItem == purItem);
+      ui.rebuild();
     },
     autofocus: autofocus,
+    onEnter: () {
+      // final editingLastProduct = purchase.purItems.last == purItem;
+      // if (editingLastProduct) {
+      //   if (purItem.name.isNotEmpty) {
+      //     final lastEditor = purItemEditors.value.last;
+      //     lastEditor.focusNode.requestFocus();
+      //   }
+      // } else {
+      final myEditorIndex =
+          purItemEditors.value.indexWhere((x) => x.purItem == purItem);
+      final nextEditorIndex = myEditorIndex + 1;
+      final outOfBounds = nextEditorIndex >= purItemEditors.value.length;
+      if (!outOfBounds) {
+        final nextEditor = purItemEditors.value[nextEditorIndex];
+        if (nextEditor.purItem.name.isEmpty) {
+          Future.delayed(const Duration(milliseconds: 100), () {
+            nextEditor.focusNode.requestFocus();
+          });
+        } else {
+          addPurItemDto(purchase, pgroupFocused, purItemEditors, grouping, ui,
+              null, nextEditorIndex);
+          final addedEditor = purItemEditors.value[nextEditorIndex];
+
+          Future.delayed(const Duration(milliseconds: 200), () {
+            addedEditor.focusNode.requestFocus();
+          });
+        }
+        // } else {
+        //   addPurItemDto(purchase, pgroupFocused, purItemEditors, grouping, ui,
+        //       null, nextEditorIndex);
+        //   final addedEditor = purItemEditors.value[nextEditorIndex];
+      }
+      // }
+    },
+    // autofocus: autofocus,
   );
+}
+
+addPurItemDto(
+    PurchaseDto purchase,
+    ValueNotifier<int?> pgroupFocused,
+    ValueNotifier<List<PurchaseItemEdit>> purItemEditors,
+    ValueNotifier<Grouping> grouping,
+    UiState ui,
+    int? pgroupId,
+    [int? insertIndex]) {
+  final newPurItem = PurItemDto(
+    id: 0,
+    bought: 0,
+    name: '',
+    pgroup_id: pgroupId,
+  );
+
+  final editor = createPurItemEditor(
+      purchase, newPurItem, pgroupFocused, purItemEditors, grouping, ui);
+
+  if (insertIndex != null && insertIndex < purchase.purItems.length - 1) {
+    purchase.purItems.insert(insertIndex, newPurItem);
+    purItemEditors.value.insert(insertIndex, editor);
+  } else {
+    purchase.purItems.add(newPurItem);
+    purItemEditors.value.add(editor);
+  }
+
+  if (purchase.show_pgroup) {
+    grouping.value.addProduct(newPurItem);
+  }
+  ui.rebuild(); //will add new field on type
 }

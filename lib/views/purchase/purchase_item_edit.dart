@@ -10,22 +10,25 @@ import '../../utils/ui_state.dart';
 import '../theme.dart';
 import 'purchase_item.dart';
 
+const ENTER_SYMBOL_TYPED = "\n";
+
 class PurchaseItemEdit extends HookConsumerWidget {
   final PurchaseDto purchase;
   final PurItemDto purItem;
   final Function() onTapNotifyFocused;
-  final Function(String newName) onChangedAddProduct;
+  final Function(String newName) onChange;
   final bool canDelete;
   final Function() onDelete;
   final Function() onEnter;
   final bool autofocus;
+  late FocusNode focusNode;
 
-  const PurchaseItemEdit({
+  PurchaseItemEdit({
     Key? key,
     required this.purchase,
     required this.purItem,
     required this.onTapNotifyFocused,
-    required this.onChangedAddProduct,
+    required this.onChange,
     required this.canDelete,
     required this.onDelete,
     required this.onEnter,
@@ -37,6 +40,10 @@ class PurchaseItemEdit extends HookConsumerWidget {
     final ui = ref.watch(uiStateProvider);
 
     final nameInputCtrl = useTextEditingController(text: purItem.name);
+
+    focusNode = useFocusNode(
+      debugLabel: 'PurchaseItemEdit key $key',
+    );
 
     return Row(
       mainAxisSize: MainAxisSize.max,
@@ -61,17 +68,20 @@ class PurchaseItemEdit extends HookConsumerWidget {
                     textInputAction: TextInputAction.newline,
                     keyboardType: TextInputType.multiline,
                     enableSuggestions: true,
-                    autofocus: autofocus,
                     minLines: 1,
                     maxLines: 5,
                     controller: nameInputCtrl,
+                    focusNode: focusNode,
+                    autofocus: autofocus,
                     onChanged: (String text) {
-                      if (text.endsWith("\n")) {
+                      if (text.contains(ENTER_SYMBOL_TYPED)) {
                         StaticLogger.append('ENDS_WITH_NEWLINE: $text');
+                        nameInputCtrl.text =
+                            text.replaceAll(ENTER_SYMBOL_TYPED, '');
                         onEnter();
                       } else {
                         purItem.name = text;
-                        onChangedAddProduct(text);
+                        onChange(text);
                       }
                       ui.rebuild();
                     },
@@ -101,7 +111,6 @@ class PurchaseItemEdit extends HookConsumerWidget {
                     ui.rebuild();
                   },
                   enableFeedback: true,
-                  // autofocus: true,
                 ))
             : const SizedBox(width: sendMessageInputIconSize),
       ],
