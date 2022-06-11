@@ -4,6 +4,7 @@ import 'package:socket_io_client/socket_io_client.dart';
 
 import '../../env/env.dart';
 import '../../utils/static_logger.dart';
+import '../notifications/notifications_plugin.dart';
 import 'connection_state.dart';
 import 'incoming/incoming_handlers.dart';
 import 'incoming/incoming_state.dart';
@@ -50,11 +51,11 @@ class Connection extends ChangeNotifier {
 
     _socket.on('connect', (_) {
       if (_env.myAuthToken != null) {
-        StaticLogger.append('#3/5 connected: [${connectionState.socketId}]');
+        logNetStatus('#3/5 connected: [${connectionState.socketId}]');
         outgoingHandlers.sendLogin(
             _env.myAuthToken!, 'createSocket()/onConnected');
       } else {
-        StaticLogger.append(
+        logNetStatus(
             '#3/5 WILL_NOT_LOGIN(myAuthToken=null) connected: [${connectionState.socketId}]');
         _incomingState.notifyListeners(); // rebuild to show Login()
       }
@@ -62,10 +63,10 @@ class Connection extends ChangeNotifier {
 
     _socket.on('disconnect', (_) {
       if (manuallyDisconnecting) {
-        StaticLogger.append('disconnected manually');
+        logNetStatus('disconnected manually');
         manuallyDisconnecting = false;
       } else {
-        StaticLogger.append('disconnected by server => reconnect()');
+        logNetStatus('disconnected by server => reconnect()');
         connectionState.willGetMessagesOnReconnect = true;
         reconnect();
       }
@@ -89,7 +90,7 @@ class Connection extends ChangeNotifier {
     _socket.on('purItemFilled', incomingHandlers.onPurItemFilled);
     _socket.on('personsFound', incomingHandlers.onPersonsFound);
 
-    StaticLogger.append(
+    logNetStatus(
         '#1/5 handlers hooked to a new socket [${connectionState.sConnected}]' +
             ' autoconnect=' +
             (autoconnect ? 'true' : 'false'));
@@ -97,20 +98,20 @@ class Connection extends ChangeNotifier {
 
   void connect([bool forceConnect = false]) {
     if (_socket.connected) {
-      StaticLogger.append(
+      logNetStatus(
           '#2/5 ALREADY_CONNECTED: NOT connecting to [${_env.websocketURL}]');
       return;
     }
 
     if (autoconnect == false || forceConnect) {
       try {
-        StaticLogger.append('#2/5 connecting to [${_env.websocketURL}]');
+        logNetStatus('#2/5 connecting to [${_env.websocketURL}]');
         _socket.connect();
       } catch (e) {
         StaticLogger.append(e.toString());
       }
     } else {
-      StaticLogger.append(
+      logNetStatus(
           '#2/5 skip connecting to [${_env.websocketURL}] due to autoconnect=true');
     }
     connectionState.socket = _socket;
@@ -120,14 +121,14 @@ class Connection extends ChangeNotifier {
 
   void disconnect() {
     if (_socket.disconnected) {
-      StaticLogger.append('#4/5 ALREADY_DISCONNECTED: NOT disconnecting');
+      logNetStatus('#4/5 ALREADY_DISCONNECTED: NOT disconnecting');
       return;
     }
 
     try {
       manuallyDisconnecting = true;
       _socket.disconnect();
-      StaticLogger.append('#4/5 disconnected manually');
+      logNetStatus('#4/5 disconnected manually');
     } catch (e) {
       StaticLogger.append(e.toString());
     }
@@ -147,6 +148,11 @@ class Connection extends ChangeNotifier {
   @override
   void dispose() {
     _socket.dispose();
-    StaticLogger.append('#5/5 socket disposed');
+    logNetStatus('#5/5 socket disposed');
+  }
+
+  void logNetStatus(String netStatus) {
+    StaticLogger.append(netStatus);
+    NotificationsPlugin.instance.notificator.showNetworkStatus(netStatus);
   }
 }

@@ -1,9 +1,8 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:shopping_list_flutter/network/incoming/room/room_member_dto.dart';
 
 import '../network/incoming/message/message_dto.dart';
-import '../network/incoming/person/person_dto.dart';
 import '../network/incoming/purchase/pur_item_filled_dto.dart';
+import '../network/incoming/room/room_member_dto.dart';
 
 class Notifications {
   late FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
@@ -65,5 +64,22 @@ class Notifications {
   showPurItemFilled(
       PurItemFilledDto purItemFilled, String roomName, RoomMemberDto? author) {
     // TODO
+  }
+
+  showNetworkStatus(String msg) {
+    const AndroidNotificationDetails androidPlatformMessageChannelSpecifics =
+        AndroidNotificationDetails('networkStatus', 'Network status changed',
+            channelDescription: 'Network status',
+            category: 'msg',
+            importance: Importance.max,
+            priority: Priority.high,
+            playSound: false,
+            ongoing: true);
+
+    const NotificationDetails platformMessageChannelSpecifics =
+        NotificationDetails(android: androidPlatformMessageChannelSpecifics);
+
+    flutterLocalNotificationsPlugin.show(
+        0, null, msg, platformMessageChannelSpecifics);
   }
 }
