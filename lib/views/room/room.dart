@@ -3,7 +3,11 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../network/incoming/incoming_state.dart';
+import '../../notifications/notifications_plugin.dart';
+import '../../utils/my_shared_preferences.dart';
+import '../../utils/ui_state.dart';
 import '../../widget/context_menu.dart';
+import '../../widget/toggle.dart';
 import '../log.dart';
 import '../my_router.dart';
 import '../theme.dart';
@@ -16,7 +20,7 @@ class Room extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // final ui = ref.watch(uiStateProvider);
+    final ui = ref.watch(uiStateProvider);
     final router = ref.watch(routerProvider);
     final incoming = ref.watch(incomingStateProvider);
 
@@ -60,18 +64,37 @@ class Room extends HookConsumerWidget {
               actions: [
                 roomActionsDropdown(context, [
                   CtxMenuItem(
-                      'Mute notifications', () => router.getMessages.action()),
+                      title: 'Mute notifications',
+                      onTap: () => router.getMessages.action()),
                   incoming.rooms.canEditCurrentRoom
                       ? CtxMenuItem(
-                          'Delete Room', () => router.getMessages.action())
+                          title: 'Delete Room',
+                          onTap: () => router.getMessages.action())
                       : CtxMenuItem(
-                          'Leave Room', () => router.getMessages.action()),
-                  CtxMenuItem('__________________', () {}),
-                  CtxMenuItem('Reconnect', () => router.reconnect.action()),
+                          title: 'Leave Room',
+                          onTap: () => router.getMessages.action()),
+                  CtxMenuItem(title: '__________________'),
                   CtxMenuItem(
-                      'Get messages', () => router.getMessages.action()),
+                      title: 'Reconnect',
+                      onTap: () => router.reconnect.action()),
                   CtxMenuItem(
-                      'Log', () => debugExpanded.value = !debugExpanded.value),
+                      title: 'Get messages',
+                      onTap: () => router.getMessages.action()),
+                  CtxMenuItem(
+                      title: 'Log',
+                      onTap: () => debugExpanded.value = !debugExpanded.value),
+                  CtxMenuItem(
+                      title: 'Keep Alive',
+                      // onTap: () => NotificationsPlugin.instance.permanent
+                      //     .toggleEnabled(),
+                      widget: ToggleText('Keep Alive',
+                          NotificationsPlugin.instance.permanent.enabled,
+                          (newEnabled) {
+                        NotificationsPlugin.instance.permanent.enabled =
+                            newEnabled;
+                        incoming.connection.lastNetStatusToNotification();
+                        MySharedPreferences.setKeepAlive(newEnabled);
+                      }, ui)),
                 ])
               ],
               bottom: PreferredSize(

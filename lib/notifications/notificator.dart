@@ -4,7 +4,7 @@ import '../network/incoming/message/message_dto.dart';
 import '../network/incoming/purchase/pur_item_filled_dto.dart';
 import '../network/incoming/room/room_member_dto.dart';
 
-class Notifications {
+class Notificator {
   late FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
   late List<Message> messages;
 
@@ -15,7 +15,7 @@ class Notifications {
     // icon: FlutterBitmapAssetAndroidIcon('icons/coworker.png'),
   );
 
-  Notifications({required this.flutterLocalNotificationsPlugin}) {
+  Notificator({required this.flutterLocalNotificationsPlugin}) {
     messages = [];
   }
 
@@ -64,22 +64,5 @@ class Notifications {
   showPurItemFilled(
       PurItemFilledDto purItemFilled, String roomName, RoomMemberDto? author) {
     // TODO
-  }
-
-  showNetworkStatus(String msg) {
-    const AndroidNotificationDetails androidPlatformMessageChannelSpecifics =
-        AndroidNotificationDetails('networkStatus', 'Network status changed',
-            channelDescription: 'Network status',
-            category: 'msg',
-            importance: Importance.max,
-            priority: Priority.high,
-            playSound: false,
-            ongoing: true);
-
-    const NotificationDetails platformMessageChannelSpecifics =
-        NotificationDetails(android: androidPlatformMessageChannelSpecifics);
-
-    flutterLocalNotificationsPlugin.show(
-        0, null, msg, platformMessageChannelSpecifics);
   }
 }

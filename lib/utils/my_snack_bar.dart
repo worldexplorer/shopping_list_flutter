@@ -66,10 +66,10 @@ void buildSnackBar(BuildContext context, WidgetRef ref,
 
   mySnackBar(context, serverError, () {
     clearServerError();
-    if (clearServerErrorCallback != null) clearServerErrorCallback(serverError);
+    clearServerErrorCallback?.call(serverError);
   });
   mySnackBar(context, clientError, () {
     clearClientError();
-    if (clearClientErrorCallback != null) clearClientErrorCallback(clientError);
+    clearClientErrorCallback?.call(clientError);
   });
 }

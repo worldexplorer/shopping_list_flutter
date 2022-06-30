@@ -5,17 +5,19 @@ import '../views/theme.dart';
 
 class CtxMenuItem {
   String title;
+  Function()? onTap;
   bool enabled = true;
-  Function() onTap;
   // TextStyle? textStyle;
   // Icon? icon;
+  Widget? widget;
 
-  CtxMenuItem(
-    this.title,
+  CtxMenuItem({
+    required this.title,
     this.onTap,
     // this.textStyle,
     // this.icon,
-  );
+    this.widget,
+  });
 }
 
 // https://stackoverflow.com/questions/50758121/how-dynamically-create-and-show-a-popup-menu-in-flutter
@@ -44,15 +46,16 @@ showPopupMenu({
     shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.all(Radius.circular(10.0))),
     items: ctxItems
-        .map((x) => PopupMenuItem(
+        .map((ctxItem) => PopupMenuItem(
               // value: x.value,
-              child: Text(x.title),
               textStyle: textStyle ?? ctxMenuItemTextStyle,
               // enabled: x.enabled,
               onTap: () {
                 // debugPrint('itemCallback(${x.title}:${x.value})');
-                x.onTap();
+                ctxItem.onTap?.call();
               },
+              // value: x.value,
+              child: ctxItem.widget ?? Text(ctxItem.title),
             ))
         .toList(),
     // elevation: 8.0,
@@ -65,9 +68,7 @@ showPopupMenu({
       debugPrint('valueCallback($value)');
       //valueTapped?.(value);
     }
-    if (onClosed != null) {
-      onClosed();
-    }
+    onClosed?.call();
   });
 }
 
@@ -89,9 +90,7 @@ Widget wrapWithContextMenu<T extends Widget>({
       tapGlobalPosition.value = details.globalPosition;
     },
     onLongPress: () async {
-      if (onOpened != null) {
-        onOpened();
-      }
+      onOpened?.call();
       await showPopupMenu(
           offset: tapGlobalPosition.value,
           context: context,

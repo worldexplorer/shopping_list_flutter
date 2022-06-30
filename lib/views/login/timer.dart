@@ -49,9 +49,7 @@ class TimerState extends ChangeNotifier {
           onExpired();
         }
       }
-      if (onEachSecond != null) {
-        onEachSecond(secondsLeft);
-      }
+      onEachSecond?.call(secondsLeft);
       notifyListeners();
     });
   }

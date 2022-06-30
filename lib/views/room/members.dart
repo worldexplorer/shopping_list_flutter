@@ -203,14 +203,17 @@ class Members extends HookConsumerWidget {
                     style: ElevatedButton.styleFrom(
                       enableFeedback: true,
                     ),
-                    child: const Icon(Icons.save),
-                    onPressed: onSavePressed),
+                    onPressed: onSavePressed,
+                    child: const Icon(Icons.save)),
               ]
             : [
                 roomActionsDropdown(context, [
-                  CtxMenuItem('Reconnect', () => router.reconnect.action()),
                   CtxMenuItem(
-                      'Get messages', () => router.getMessages.action()),
+                      title: 'Reconnect',
+                      onTap: () => router.reconnect.action()),
+                  CtxMenuItem(
+                      title: 'Get messages',
+                      onTap: () => router.getMessages.action()),
                 ])
               ],
       ),

@@ -255,34 +255,34 @@ class Messages extends HookConsumerWidget {
         messagesSelected.length > 1 ? ' (${messagesSelected.length})' : '';
 
     final editCtx = CtxMenuItem(
-      'Edit$suffix',
-      () {
+      title: 'Edit$suffix',
+      onTap: () {
         StaticLogger.append('Edit$suffix');
       },
     );
     final archiveCtx = CtxMenuItem(
-      'Archive$suffix',
-      () {
+      title: 'Archive$suffix',
+      onTap: () {
         StaticLogger.append('Archive$suffix');
         incoming.outgoingHandlers.sendArchiveMessages(
             [msgWidget.message.id], incoming.personId, true);
       },
     );
     final replyCtx = CtxMenuItem(
-      'Reply$suffix',
-      () {
+      title: 'Reply$suffix',
+      onTap: () {
         StaticLogger.append('Reply$suffix');
       },
     );
     final forwardCtx = CtxMenuItem(
-      'Forward$suffix',
-      () {
+      title: 'Forward$suffix',
+      onTap: () {
         StaticLogger.append('Forward$suffix');
       },
     );
     final deleteCtx = CtxMenuItem(
-      'Delete$suffix',
-      () {
+      title: 'Delete$suffix',
+      onTap: () {
         StaticLogger.append('Delete$suffix');
         incoming.outgoingHandlers
             .sendDeleteMessages([msgWidget.message.id], incoming.personId);

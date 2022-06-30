@@ -7,6 +7,7 @@ import '../../network/incoming/purchase/pur_item_dto.dart';
 import '../../network/incoming/purchase/purchase_dto.dart';
 import '../../utils/static_logger.dart';
 import '../../utils/ui_state.dart';
+import '../../widget/toggle.dart';
 import '../theme.dart';
 import 'grouping.dart';
 import 'pgroup_edit.dart';
@@ -202,7 +203,7 @@ class PurchaseEdit extends HookConsumerWidget {
                   Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        toggleText('Groups', purchase.show_pgroup,
+                        ToggleText('Groups', purchase.show_pgroup,
                             (bool newShowGroups) {
                           purchase.show_pgroup = newShowGroups;
                           ui.newPurchaseSettings.showPgroups = newShowGroups;
@@ -216,32 +217,32 @@ class PurchaseEdit extends HookConsumerWidget {
                         // Padding(
                         //     padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
                         //     child:
-                        toggleText('Sequence', purchase.show_serno,
+                        ToggleText('Sequence', purchase.show_serno,
                             (bool newShowSerno) {
                           purchase.show_serno = newShowSerno;
                           ui.newPurchaseSettings.showSerno = newShowSerno;
                         }, ui),
-                        toggleIconText(iconByBought(BOUGHT_UNKNOWN),
+                        ToggleIconText(iconByBought(BOUGHT_UNKNOWN),
                             'Waiting state', purchase.show_state_unknown,
                             (bool newShowThreeState) {
                           purchase.show_state_unknown = newShowThreeState;
                           ui.newPurchaseSettings.showStateUnknown =
                               newShowThreeState;
                         }, ui),
-                        toggleIconText(iconByBought(BOUGHT_STOP), 'Stop state',
+                        ToggleIconText(iconByBought(BOUGHT_STOP), 'Stop state',
                             purchase.show_state_stop, (bool newShowStateStop) {
                           purchase.show_state_stop = newShowStateStop;
                           ui.newPurchaseSettings.showStateStop =
                               newShowStateStop;
                         }, ui),
-                        toggleIconText(iconByBought(BOUGHT_QUESTION),
+                        ToggleIconText(iconByBought(BOUGHT_QUESTION),
                             'Question state', purchase.show_state_question,
                             (bool newShowStateQuestion) {
                           purchase.show_state_question = newShowStateQuestion;
                           ui.newPurchaseSettings.showStateQuestion =
                               newShowStateQuestion;
                         }, ui),
-                        toggleIconText(iconByBought(BOUGHT_HALFODNE),
+                        ToggleIconText(iconByBought(BOUGHT_HALFODNE),
                             'Half Done', purchase.show_state_halfdone,
                             (bool newShowStateHalfDone) {
                           purchase.show_state_halfdone = newShowStateHalfDone;
@@ -276,19 +277,19 @@ class PurchaseEdit extends HookConsumerWidget {
                             child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  toggleText('Quantity', purchase.show_qnty,
+                                  ToggleText('Quantity', purchase.show_qnty,
                                       (bool newShowQnty) {
                                     purchase.show_qnty = newShowQnty;
                                     ui.newPurchaseSettings.showQnty =
                                         newShowQnty;
                                   }, ui),
-                                  toggleText('Total', purchase.show_price,
+                                  ToggleText('Total', purchase.show_price,
                                       (bool newShowPrice) {
                                     purchase.show_price = newShowPrice;
                                     ui.newPurchaseSettings.showPrice =
                                         newShowPrice;
                                   }, ui),
-                                  toggleText('Weight', purchase.show_weight,
+                                  ToggleText('Weight', purchase.show_weight,
                                       (bool newShowWeight) {
                                     purchase.show_weight = newShowWeight;
                                     ui.newPurchaseSettings.showWeight =
@@ -335,57 +336,6 @@ class PurchaseEdit extends HookConsumerWidget {
                 ]),
         ]);
   }
-}
-
-Widget toggleText(
-    String title, bool value, Function(bool newValue) onChange, UiState ui) {
-  return toggle(Text(title, style: purchaseStyle), value, onChange, ui);
-}
-
-Widget toggleIconText(Icon icon, String title, bool value,
-    Function(bool newValue) onChange, UiState ui) {
-  return toggle(
-      Row(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            icon,
-            const SizedBox(
-              width: 5,
-            ),
-            Text(title, style: purchaseStyle)
-          ]),
-      value,
-      onChange,
-      ui);
-}
-
-Widget toggle(Widget textOrIcon, bool value, Function(bool newValue) onChange,
-    UiState ui) {
-  return Row(
-    mainAxisSize: MainAxisSize.min,
-    mainAxisAlignment: MainAxisAlignment.start,
-    children: [
-      Switch(
-        value: value,
-        onChanged: (newValue) {
-          onChange(newValue);
-          ui.rebuild();
-        },
-      ),
-      // const SizedBox(width: 3),
-      // Expanded(
-      //     child:
-      GestureDetector(
-        onTapDown: (TapDownDetails details) {
-          onChange(!value);
-          ui.rebuild();
-        },
-        child: textOrIcon,
-        // )
-      ),
-    ],
-  );
 }
 
 List<Widget> groupedEditors(

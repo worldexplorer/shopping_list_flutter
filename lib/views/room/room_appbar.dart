@@ -26,6 +26,7 @@ Widget roomTitle(
       onSubmitted: (newText) {
         incoming.outgoingHandlers.sendRenameRoom(roomId, newText);
       },
+      onTap: onTap,
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         titleText(true, incoming.rooms.currentRoomNameOrFetching),
         if (incoming.typing.isNotEmpty) ...[
@@ -36,8 +37,7 @@ Widget roomTitle(
         ] else ...[
           subtitleText(socketConnected, subtitle),
         ]
-      ]),
-      onTap: onTap);
+      ]));
 }
 
 Widget roomActionsDropdown(BuildContext context, List<CtxMenuItem> ctxItems) {

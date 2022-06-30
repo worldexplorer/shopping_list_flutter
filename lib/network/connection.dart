@@ -151,8 +151,15 @@ class Connection extends ChangeNotifier {
     logNetStatus('#5/5 socket disposed');
   }
 
+  String _lastStatusForNotification = 'NO_CONNECTION_ATTEMPT_YET';
   void logNetStatus(String netStatus) {
     StaticLogger.append(netStatus);
-    NotificationsPlugin.instance.notificator.showNetworkStatus(netStatus);
+    _lastStatusForNotification = netStatus;
+    lastNetStatusToNotification();
+  }
+
+  void lastNetStatusToNotification() {
+    NotificationsPlugin.instance.permanent
+        .networkStatusChanged(_lastStatusForNotification);
   }
 }

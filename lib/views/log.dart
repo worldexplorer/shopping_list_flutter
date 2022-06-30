@@ -51,8 +51,8 @@ class Log extends HookConsumerWidget {
           context: context,
           items: [
             CtxMenuItem(
-              'Clear',
-              () {
+              title: 'Clear',
+              onTap: () {
                 StaticLogger.clear();
                 ui.rebuild();
               },

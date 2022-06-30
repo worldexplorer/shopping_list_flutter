@@ -88,10 +88,14 @@ class Rooms extends HookConsumerWidget {
                   offset: const Offset(-80, 70),
                   context: context,
                   ctxItems: [
-                    CtxMenuItem('Reconnect', () => router.reconnect.action()),
-                    CtxMenuItem('Log', () {
-                      Navigator.pushNamed(context, router.log.path);
-                    }),
+                    CtxMenuItem(
+                        title: 'Reconnect',
+                        onTap: () => router.reconnect.action()),
+                    CtxMenuItem(
+                        title: 'Log',
+                        onTap: () {
+                          Navigator.pushNamed(context, router.log.path);
+                        }),
                   ]);
             },
           ),
@@ -127,7 +131,7 @@ class Rooms extends HookConsumerWidget {
 
           String forceReRenderAfterPurItemFill =
               dateFormatterHmsMillis.format(DateTime.now());
-          String key = room.id.toString() + '-' + forceReRenderAfterPurItemFill;
+          String key = '${room.id}-$forceReRenderAfterPurItemFill';
 
           return ListTile(
             key: Key(key),

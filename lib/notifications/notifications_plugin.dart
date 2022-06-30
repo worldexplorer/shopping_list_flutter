@@ -6,7 +6,8 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 // import 'package:flutter_native_timezone/flutter_native_timezone.dart';
 import 'package:rxdart/subjects.dart';
 
-import 'notifications.dart';
+import 'network_status.dart';
+import 'notificator.dart';
 
 // final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
 // FlutterLocalNotificationsPlugin();
@@ -27,13 +28,15 @@ class NotificationsPlugin {
   // String? selectedNotificationPayload;
   late BehaviorSubject<String?> selectNotificationSubject;
   NotificationAppLaunchDetails? notificationAppLaunchDetails;
-  late Notifications notificator;
+  late Notificator notificator;
+  late NetworkStatusPermanent permanent;
 
   NotificationsPlugin() {
     flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
     selectNotificationSubject = BehaviorSubject<String?>();
-    notificator = Notifications(
+    notificator = Notificator(
         flutterLocalNotificationsPlugin: flutterLocalNotificationsPlugin);
+    permanent = NetworkStatusPermanent(flutterLocalNotificationsPlugin);
   }
 
   initInMain() async {
